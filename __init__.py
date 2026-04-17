@@ -2,13 +2,27 @@
 
 Entry point được ComfyUI load.
 Mỗi node concrete đăng ký qua ``NODE_CLASS_MAPPINGS`` ở module con.
-"""
+"""  # noqa: N999 — ComfyUI custom-node packs use hyphenated folder names by convention.
 
 from __future__ import annotations
 
-# Khởi tạo rỗng — Claude Code sẽ fill khi làm T-20260417-03.
 NODE_CLASS_MAPPINGS: dict[str, type] = {}
 NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
+
+# ComfyUI loads this module via ``importlib.util.spec_from_file_location`` with
+# ``submodule_search_locations`` set, so ``__package__`` is truthy and the
+# relative import below resolves to ``.nodes``. Pytest, on the other hand, may
+# walk up and try to import this file as a top-level module during collection
+# (because the parent directory name contains hyphens); in that case
+# ``__package__`` is empty and we skip the registration step — the node tests
+# load the pack themselves via ``importlib.util.spec_from_file_location``.
+if __package__:
+    from .nodes import JHPixelProFrequencySeparation
+
+    NODE_CLASS_MAPPINGS["JHPixelProFrequencySeparation"] = JHPixelProFrequencySeparation
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencySeparation"] = (
+        "GPU Frequency Separation (Kornia)"
+    )
 
 # Web extensions (JS/CSS) — chưa dùng ở Phase 1.
 WEB_DIRECTORY = "./web"
