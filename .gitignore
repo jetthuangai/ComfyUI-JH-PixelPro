@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Env
+.venv/
+venv*/
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Build output
+dist/
+build/
+
+# Local bench artifacts (nếu có file log, ảnh output lớn)
+bench_out/
+*.png.tmp
