@@ -1,0 +1,271 @@
+from __future__ import annotations
+
+import gc
+import logging
+import os
+import statistics
+import sys
+import time
+from dataclasses import dataclass
+from pathlib import Path
+
+import kornia
+import torch
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from core import frequency_separation  # noqa: E402
+
+RADIUS = 8
+WARMUP_ITERS = 3
+MEASURE_ITERS = 10
+STRESS_ITERS = 100
+RESOLUTIONS = (512, 1024, 2048)
+BATCHES = (1, 4)
+PRECISIONS = ("float32", "float16")
+
+
+@dataclass(slots=True)
+class BenchCell:
+    device: str
+    resolution: int
+    batch: int
+    precision: str
+    median_ms: float
+
+
+def _torch_dtype(precision: str) -> torch.dtype:
+    return torch.float16 if precision == "float16" else torch.float32
+
+
+def _device_for_run() -> torch.device:
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def _latency_runner(device: torch.device):
+    if device.type == "cuda":
+        start_event = torch.cuda.Event(enable_timing=True)
+        end_event = torch.cuda.Event(enable_timing=True)
+
+        def measure_once(fn) -> float:
+            torch.cuda.synchronize(device)
+            start_event.record()
+            fn()
+            end_event.record()
+            torch.cuda.synchronize(device)
+            return start_event.elapsed_time(end_event)
+
+        return measure_once
+
+    def measure_once(fn) -> float:
+        start = time.perf_counter()
+        fn()
+        end = time.perf_counter()
+        return (end - start) * 1000.0
+
+    return measure_once
+
+
+def _make_input(
+    batch: int,
+    resolution: int,
+    precision: str,
+    device: torch.device,
+    generator: torch.Generator,
+) -> torch.Tensor:
+    return torch.rand(
+        (batch, 3, resolution, resolution),
+        generator=generator,
+        device=device,
+        dtype=_torch_dtype(precision),
+    )
+
+
+def _run_grid(device: torch.device) -> list[BenchCell]:
+    results: list[BenchCell] = []
+    measure_once = _latency_runner(device)
+
+    for resolution in RESOLUTIONS:
+        for batch in BATCHES:
+            for precision in PRECISIONS:
+                generator = torch.Generator(device="cpu")
+                generator.manual_seed(20260417)
+                image = _make_input(batch, resolution, precision, device, generator)
+
+                with torch.inference_mode():
+                    for _ in range(WARMUP_ITERS):
+                        frequency_separation(image, radius=RADIUS, precision=precision)
+
+                    def run_once(
+                        image_tensor: torch.Tensor = image,
+                        selected_precision: str = precision,
+                    ) -> None:
+                        frequency_separation(
+                            image_tensor,
+                            radius=RADIUS,
+                            precision=selected_precision,
+                        )
+
+                    samples_ms = [
+                        measure_once(run_once)
+                        for _ in range(MEASURE_ITERS)
+                    ]
+
+                results.append(
+                    BenchCell(
+                        device=device.type,
+                        resolution=resolution,
+                        batch=batch,
+                        precision=precision,
+                        median_ms=statistics.median(samples_ms),
+                    )
+                )
+
+                del image
+                if device.type == "cuda":
+                    torch.cuda.empty_cache()
+                gc.collect()
+
+    return results
+
+
+def _stress_test(device: torch.device) -> dict[str, float | int | str | bool | None]:
+    generator = torch.Generator(device="cpu")
+    generator.manual_seed(20260417)
+    image = _make_input(1, 2048, "float32", device, generator)
+
+    if device.type != "cuda":
+        started = time.perf_counter()
+        with torch.inference_mode():
+            for _ in range(STRESS_ITERS):
+                frequency_separation(image, radius=RADIUS, precision="float32")
+        ended = time.perf_counter()
+        return {
+            "mode": "cpu-smoke",
+            "iterations": STRESS_ITERS,
+            "elapsed_s": ended - started,
+            "memory_before": None,
+            "memory_after": None,
+            "delta_percent": None,
+            "passed": True,
+        }
+
+    torch.cuda.empty_cache()
+    torch.cuda.reset_peak_memory_stats(device)
+    torch.cuda.synchronize(device)
+    memory_before = torch.cuda.memory_allocated(device)
+
+    with torch.inference_mode():
+        for iteration in range(STRESS_ITERS):
+            frequency_separation(image, radius=RADIUS, precision="float32")
+            if iteration == 49:
+                torch.cuda.empty_cache()
+
+    torch.cuda.synchronize(device)
+    memory_after = torch.cuda.memory_allocated(device)
+    delta_bytes = memory_after - memory_before
+    delta_percent = 0.0 if memory_before == 0 else (delta_bytes / memory_before) * 100.0
+
+    return {
+        "mode": "cuda-vram",
+        "iterations": STRESS_ITERS,
+        "elapsed_s": None,
+        "memory_before": memory_before,
+        "memory_after": memory_after,
+        "delta_percent": delta_percent,
+        "passed": delta_percent < 5.0,
+    }
+
+
+def _hardware_info(device: torch.device) -> dict[str, str]:
+    cuda_name = "n/a"
+    total_vram_gb = "n/a"
+    cuda_runtime = torch.version.cuda or "n/a"
+
+    if device.type == "cuda":
+        properties = torch.cuda.get_device_properties(device)
+        cuda_name = properties.name
+        total_vram_gb = f"{properties.total_memory / (1024 ** 3):.2f}"
+
+    return {
+        "device_type": device.type,
+        "device_name": cuda_name,
+        "total_vram_gb": total_vram_gb,
+        "cuda_runtime": cuda_runtime,
+        "torch_version": torch.__version__,
+        "kornia_version": kornia.__version__,
+        "python_version": sys.version.split()[0],
+        "platform": os.name,
+    }
+
+
+def render_markdown(
+    hardware: dict[str, str],
+    grid_results: list[BenchCell],
+    stress: dict[str, float | int | str | bool | None],
+) -> str:
+    lines = [
+        "# Frequency Separation Benchmark",
+        "",
+        "## Hardware",
+        "",
+        f"- Device type: {hardware['device_type']}",
+        f"- Device name: {hardware['device_name']}",
+        f"- Total VRAM (GiB): {hardware['total_vram_gb']}",
+        f"- CUDA runtime: {hardware['cuda_runtime']}",
+        f"- PyTorch: {hardware['torch_version']}",
+        f"- Kornia: {hardware['kornia_version']}",
+        f"- Python: {hardware['python_version']}",
+        f"- OS family: {hardware['platform']}",
+        "",
+        "## Grid",
+        "",
+        "| device | resolution | batch | precision | median_ms |",
+        "|---|---:|---:|---|---:|",
+    ]
+
+    for cell in grid_results:
+        lines.append(
+            f"| {cell.device} | {cell.resolution} | {cell.batch} | "
+            f"{cell.precision} | {cell.median_ms:.3f} |"
+        )
+
+    lines.extend(["", "## Stress", ""])
+
+    if stress["mode"] == "cuda-vram":
+        lines.extend(
+            [
+                f"- Iterations: {stress['iterations']}",
+                f"- Memory before (bytes): {int(stress['memory_before'])}",
+                f"- Memory after (bytes): {int(stress['memory_after'])}",
+                f"- Delta percent: {float(stress['delta_percent']):.3f}",
+                f"- Verdict: {'PASS' if stress['passed'] else 'FAIL'}",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                f"- Iterations: {stress['iterations']}",
+                f"- Elapsed seconds: {float(stress['elapsed_s']):.3f}",
+                "- VRAM delta percent: not evaluated (CPU-only runner)",
+                "- Verdict: smoke only",
+            ]
+        )
+
+    return "\n".join(lines)
+
+
+def main() -> int:
+    device = _device_for_run()
+    logging.getLogger("core.frequency").setLevel(logging.ERROR)
+    hardware = _hardware_info(device)
+    grid_results = _run_grid(device)
+    stress = _stress_test(device)
+    print(render_markdown(hardware, grid_results, stress))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
