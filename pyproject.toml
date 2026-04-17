@@ -21,4 +21,9 @@ ignore = []
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-ra --strict-markers"
+# ``--import-mode=importlib`` avoids pytest walking up into the hyphenated
+# pack-root ``__init__.py`` during test collection (which would fail because
+# ``ComfyUI-JH-PixelPro`` is not a valid Python module name).
+addopts = "-ra --strict-markers --import-mode=importlib"
+pythonpath = ["."]
+
