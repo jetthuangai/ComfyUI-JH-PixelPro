@@ -10,7 +10,7 @@ from ..core import frequency_separation
 class JHPixelProFrequencySeparation:
     """Split a ComfyUI IMAGE into Gaussian low/high frequency pins."""
 
-    CATEGORY = "image/pixelpro/filters"
+    CATEGORY = "ComfyUI-JH-PixelPro/filters"
     RETURN_TYPES = ("IMAGE", "IMAGE")
     RETURN_NAMES = ("low", "high")
     FUNCTION = "run"

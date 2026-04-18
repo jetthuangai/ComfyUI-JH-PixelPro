@@ -10,7 +10,7 @@ from ..core import subpixel_mask_refine
 class JHPixelProSubPixelMaskRefiner:
     """Refine a binary-ish ComfyUI MASK into a sub-pixel alpha mask."""
 
-    CATEGORY = "image/pixelpro/morphology"
+    CATEGORY = "ComfyUI-JH-PixelPro/mask"
     RETURN_TYPES = ("MASK",)
     RETURN_NAMES = ("refined_mask",)
     FUNCTION = "run"

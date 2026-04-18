@@ -10,7 +10,7 @@ from ..core import edge_aware_smooth
 class JHPixelProEdgeAwareSmoother:
     """Apply edge-preserving bilateral smoothing to a ComfyUI IMAGE, optionally gated by a MASK."""
 
-    CATEGORY = "image/pixelpro/filters"
+    CATEGORY = "ComfyUI-JH-PixelPro/filters"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("image",)
     FUNCTION = "run"
