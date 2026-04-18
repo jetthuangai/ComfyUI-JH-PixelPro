@@ -51,7 +51,7 @@ def test_node_registered_in_mappings(pack):
 
 
 def test_class_metadata(node_cls):
-    assert node_cls.CATEGORY == "image/pixelpro/filters"
+    assert node_cls.CATEGORY == "ComfyUI-JH-PixelPro/filters"
     assert node_cls.RETURN_TYPES == ("IMAGE", "IMAGE")
     assert node_cls.RETURN_NAMES == ("low", "high")
     assert node_cls.FUNCTION == "run"
