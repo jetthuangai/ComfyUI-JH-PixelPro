@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.1.0 alpha** (2026-04-18) — 2 nodes live: `JHPixelProFrequencySeparation` + `JHPixelProSubPixelMaskRefiner`. See [CHANGELOG](./CHANGELOG.md) for details. Phase 1 M1 has 3 more nodes queued (N-03..N-05).
+**Status:** 🎉 **v0.1.0 alpha** (2026-04-18) — 2 nodes live: `JHPixelProFrequencySeparation` + `JHPixelProSubPixelMaskRefiner`. See [CHANGELOG](./CHANGELOG.md) for details. Phase 1 M1 has 2 more nodes queued (N-04..N-05).
 
 ## Why this pack exists
 
@@ -48,7 +48,7 @@ Restart ComfyUI. The nodes appear under the `image/pixelpro/<group>` menu.
 
 - [x] N-01 GPU Frequency Separation
 - [x] N-02 Sub-Pixel Mask Refiner
-- [ ] N-03 Edge-Aware Skin Smoother
+- [x] N-03 Edge-Aware Skin Smoother
 - [ ] N-04 High-Frequency Detail Masker
 - [ ] N-05 Luminosity Masking
 - [ ] N-06 Landmark-Based Facial Aligner
@@ -127,6 +127,38 @@ Feathers a binary MASK (from SAM / YOLO / rembg upstream) into a sub-pixel alpha
 - **Square kernel (Chebyshev / L∞ metric).** Erosion and dilation use a square kernel, not a Euclidean disk — with `radius > 16`, mask edges look slightly boxy rather than rounded. Disk-kernel option deferred to v0.2.
 - **v1 is float32 only.** Unlike N-01, the mask refiner does not expose a `precision` pin — `feather_sigma > 0` requires enough floating-point precision for the Gaussian. Float16 deferred to v0.2 once lessons from N-01 settle.
 - See the Note node inside [workflows/S-02-subpixel-mask-refiner.json](workflows/S-02-subpixel-mask-refiner.json) for the full invariant description plus the `er=dr=0` edge case.
+
+## N-03 Edge-Aware Skin Smoother
+
+Edge-preserving bilateral smoothing for portrait skin retouch. Smooths flat regions (cheeks, forehead) while preserving sharp edges (eyes, lips, hair). Typical pro dose is 30–50% (`strength=0.4`). An optional `mask` input gates smoothing to a specific region — connect the N-02 refined mask upstream to smooth skin only, leaving eyes and hair untouched.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `strength` | FLOAT | `0.4` | Blend between smoothed and original. `0.0` = identity (bypass), `1.0` = full smoothing. Typical pro dose 0.3–0.5. Range 0.0..1.0 (step 0.01). |
+| `sigma_color` | FLOAT | `0.1` | Intensity sigma on the `[0, 1]` image scale — **not** the 8-bit 10–50 range from OpenCV docs. Small values preserve edges; large values smooth across weak edges. Range 0.01..0.5 (step 0.01). |
+| `sigma_space` | FLOAT | `6.0` | Spatial sigma in pixels. Larger = wider spatial influence = stronger smoothing. Kernel size auto-sized to `2*ceil(3*sigma_space)+1`. Range 1.0..32.0 (step 0.1). |
+| `mask` | MASK | *(optional)* | Optional region gate (BHW float32 `[0, 1]`). Where `mask=0` the output equals the input pixel-exact; where `mask=1` full smoothing applies; intermediate values blend. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image` | IMAGE | Smoothed image. Range `[0, 1]`. Same shape and dtype as the input. |
+
+**Sample workflow:** [workflows/S-03-edge-aware-smoother.json](workflows/S-03-edge-aware-smoother.json)
+
+**Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt. The two PreviewImage nodes render the original and the smoothed result side by side.
+
+![screenshot](workflows/S-03-edge-aware-smoother-screenshot.png)
+
+### Limitations
+
+- **`sigma_color` is on the `[0, 1]` image scale.** OpenCV's `cv2.bilateralFilter` uses 8-bit sigmas in the 10–50 range; they do not port over. Start around `0.05–0.3` for natural skin retouch.
+- **CPU is very slow above 1K.** Bench (T-07) measured `edge_aware_smooth` at ≈6.4 s per call for `1×3×512×512` float32 on CPU, ≈31 s for `1×3×1024×1024`, and OOM (~68 GB allocation) at `1×3×2048×2048`. GPU is strongly recommended for anything above 1K. CPU is supported for correctness only.
+- **Guided-filter mode and float16 are deferred to v2.** The v1 kernel is bilateral-only and float32-only.
 
 ## License
 
