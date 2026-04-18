@@ -193,6 +193,8 @@ Generate a binary detail-preservation mask from high-frequency energy in the ima
 
 **Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt.
 
+![screenshot](workflows/S-04-hf-detail-masker-screenshot.png)
+
 ### Use cases
 
 - **Post-AI texture protection.** Compose the detail mask into a `SetLatentNoiseMask` so denoise keeps the high-frequency regions unchanged.
@@ -228,6 +230,8 @@ Split an image into three smooth luminosity masks (shadows / midtones / highligh
 **Sample workflow:** [workflows/S-05-luminosity-masking.json](workflows/S-05-luminosity-masking.json)
 
 **Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt. Three `MaskPreview` nodes render the shadow, midtone and highlight masks separately.
+
+![screenshot](workflows/S-05-luminosity-masking-screenshot.png)
 
 ### Use cases
 
@@ -265,6 +269,8 @@ Align a face to a canonical FFHQ-like frame via 5 landmarks using a similarity t
 **Sample workflow:** [workflows/S-06-facial-aligner.json](workflows/S-06-facial-aligner.json)
 
 **Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt. Two `PreviewImage` nodes render the original and the aligned result.
+
+![screenshot](workflows/S-06-facial-aligner-screenshot.png)
 
 ### Use cases
 
