@@ -20,4 +20,4 @@ ComfyUI `LoadImage` node chỉ scan folder `ComfyUI/input/`. Để chạy sample
 ## Image credits
 
 - `sample_portrait.jpg` — Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) from Pexels. Source: <https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>. License: [Pexels Content License](https://www.pexels.com/license/) (free for commercial + non-commercial redistribution, attribution not required but ghi nhận best practice).
-- `sample_binary_mask.png` — TBD (sẽ fill trong T-08b artifact task).
+- `sample_binary_mask.png` — derivative work: SAM/rembg cutout (subject mask) từ `sample_portrait.jpg`. Source ảnh gốc: Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on Pexels (<https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>). License: [Pexels Content License](https://www.pexels.com/license/) (derivative redistribute OK).
