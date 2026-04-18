@@ -1,0 +1,205 @@
+{
+  "last_node_id": 5,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        80,
+        200
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "sample_binary_mask.png",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "ImageToMask",
+      "pos": [
+        440,
+        200
+      ],
+      "size": [
+        260,
+        82
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageToMask"
+      },
+      "widgets_values": [
+        "red"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "JHPixelProSubPixelMaskRefiner",
+      "pos": [
+        750,
+        200
+      ],
+      "size": [
+        315,
+        150
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "refined_mask",
+          "type": "MASK",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProSubPixelMaskRefiner"
+      },
+      "widgets_values": [
+        2,
+        4,
+        2.0,
+        0.5
+      ]
+    },
+    {
+      "id": 4,
+      "type": "MaskPreview",
+      "pos": [
+        1110,
+        200
+      ],
+      "size": [
+        300,
+        260
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "Note",
+      "pos": [
+        80,
+        560
+      ],
+      "size": [
+        780,
+        200
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "ℹ️ Sub-Pixel Mask Refiner (N-02)\n- Input: MASK nhị phân (từ SAM/YOLO/rembg upstream).\n- Output: MASK alpha [0,1] với feather band ở mép.\n- Invariant: deep inside = 1.0 exact, far outside = 0.0 exact.\n- Kernel dùng Chebyshev metric (L∞) — square kernel.\n  Với radius > 16, mép sẽ hơi vuông góc.\n- Default (er=2, dr=4, sigma=2.0, threshold=0.5) phù hợp mask\n  từ SAM portrait cutout."
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "MASK"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "MASK"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
