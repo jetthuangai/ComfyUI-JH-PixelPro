@@ -1,6 +1,7 @@
 """Core math — pure tensor in, pure tensor out. No PIL / cv2 / NumPy on the hot path."""  # noqa: N999
 
 from .detail_masker import high_freq_detail_mask
+from .facial_aligner import facial_align
 from .frequency import frequency_separation
 from .luminosity import luminosity_masks
 from .mask_refiner import subpixel_mask_refine
@@ -12,4 +13,5 @@ __all__ = [
     "edge_aware_smooth",
     "high_freq_detail_mask",
     "luminosity_masks",
+    "facial_align",
 ]
