@@ -88,8 +88,10 @@ Tách 1 ảnh thành 2 layer: `low` (Gaussian blur — màu + form mềm) và `h
 
 **Sample workflow:** [workflows/S-01-frequency-separation.json](workflows/S-01-frequency-separation.json)
 
+**Chạy sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg` trước, rồi Load workflow + Queue Prompt. Ảnh mẫu là [Photo by cottonbro studio on Pexels](https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/) (license redistribute free).
+
 ![screenshot](workflows/S-01-frequency-separation-screenshot.png)
-<!-- screenshot fill bởi T-04b -->
+<!-- screenshot: JH chụp sau khi test workflow với sample_portrait.jpg trong ComfyUI -->
 
 ### Limitations
 
