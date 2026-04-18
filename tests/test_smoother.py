@@ -32,6 +32,7 @@ def test_strength_zero_identity(rng: torch.Generator) -> None:
 
     output = edge_aware_smooth(image, strength=0.0)
 
+    assert output.device.type == "cpu"
     assert torch.equal(output, image)
 
 
@@ -41,6 +42,7 @@ def test_mask_zero_identity(rng: torch.Generator) -> None:
 
     output = edge_aware_smooth(image, strength=1.0, mask_bchw=mask)
 
+    assert output.device.type == "cpu"
     assert torch.equal(output, image)
 
 
@@ -84,6 +86,7 @@ def test_output_range(rng: torch.Generator) -> None:
         mask_bchw=mask,
     )
 
+    assert output.device.type == "cpu"
     assert torch.all(output >= 0.0)
     assert torch.all(output <= 1.0)
 
@@ -137,11 +140,19 @@ def test_mask_broadcast(rng: torch.Generator) -> None:
 @pytest.mark.parametrize("shape", [(1, 3, 512, 512), (4, 3, 1024, 1024)])
 def test_shapes(shape: tuple[int, int, int, int], rng: torch.Generator) -> None:
     image = torch.rand(shape, generator=rng, dtype=torch.float32)
+    tile_mode = shape[-1] >= 1024
 
-    output = edge_aware_smooth(image, strength=0.5, sigma_color=0.1, sigma_space=2.0)
+    output = edge_aware_smooth(
+        image,
+        strength=0.5,
+        sigma_color=0.1,
+        sigma_space=2.0,
+        tile_mode=tile_mode,
+    )
 
     assert output.shape == image.shape
     assert output.dtype == torch.float32
+    assert output.device.type == "cpu"
 
 
 @pytest.mark.parametrize("device_name", ["cpu", "cuda"])
@@ -152,13 +163,13 @@ def test_device_parity(device_name: str, rng: torch.Generator) -> None:
     image = torch.rand((1, 3, 64, 64), generator=rng, dtype=torch.float32).to(device_name)
     zero_mask = torch.zeros((1, 1, 64, 64), dtype=torch.float32, device=device_name)
 
-    strength_zero = edge_aware_smooth(image, strength=0.0)
-    mask_zero = edge_aware_smooth(image, strength=1.0, mask_bchw=zero_mask)
+    strength_zero = edge_aware_smooth(image, strength=0.0, device=device_name)
+    mask_zero = edge_aware_smooth(image, strength=1.0, mask_bchw=zero_mask, device=device_name)
 
-    assert strength_zero.device.type == device_name
-    assert mask_zero.device.type == device_name
-    assert torch.equal(strength_zero.cpu(), image.cpu())
-    assert torch.equal(mask_zero.cpu(), image.cpu())
+    assert strength_zero.device.type == "cpu"
+    assert mask_zero.device.type == "cpu"
+    assert torch.equal(strength_zero, image.cpu())
+    assert torch.equal(mask_zero, image.cpu())
 
 
 def test_warning_paths(caplog: pytest.LogCaptureFixture, rng: torch.Generator) -> None:
@@ -173,3 +184,91 @@ def test_warning_paths(caplog: pytest.LogCaptureFixture, rng: torch.Generator) -
     assert "values > 1 will smooth across most edges" in caplog.text
     assert torch.all(output >= 0.0)
     assert torch.all(output <= 1.0)
+
+
+def test_sigma_space_cap(rng: torch.Generator) -> None:
+    image = torch.rand((1, 3, 32, 32), generator=rng, dtype=torch.float32)
+
+    with pytest.raises(ValueError, match=r"must be in \[1.0, 8.0\]"):
+        edge_aware_smooth(image, sigma_space=9.0)
+
+
+def test_sigma_space_at_max(rng: torch.Generator) -> None:
+    image = torch.rand((1, 3, 32, 32), generator=rng, dtype=torch.float32)
+
+    output = edge_aware_smooth(image, sigma_space=8.0, tile_mode=True)
+
+    assert output.shape == image.shape
+    assert output.device.type == "cpu"
+
+
+def test_memory_budget_error() -> None:
+    image = torch.zeros((1, 3, 4096, 4096), dtype=torch.float32)
+
+    with pytest.raises(RuntimeError, match=r"would allocate.*GB.*enable tile_mode"):
+        edge_aware_smooth(image, sigma_space=6.0, tile_mode=False)
+
+
+def test_tile_mode_correctness(rng: torch.Generator) -> None:
+    image = torch.rand((1, 3, 512, 512), generator=rng, dtype=torch.float32)
+
+    tiled = edge_aware_smooth(
+        image,
+        strength=1.0,
+        sigma_color=0.1,
+        sigma_space=1.0,
+        tile_mode=True,
+    )
+    direct = edge_aware_smooth(
+        image,
+        strength=1.0,
+        sigma_color=0.1,
+        sigma_space=1.0,
+        tile_mode=False,
+    )
+
+    assert torch.allclose(tiled, direct, atol=1e-4)
+
+
+def test_device_auto_resolves(rng: torch.Generator) -> None:
+    image = torch.rand((1, 3, 64, 64), generator=rng, dtype=torch.float32)
+
+    output = edge_aware_smooth(image, device="auto")
+
+    assert output.device.type == "cpu"
+    assert output.shape == image.shape
+
+
+def test_device_cuda_unavailable_raises(rng: torch.Generator) -> None:
+    if torch.cuda.is_available():
+        pytest.skip("CUDA is available on this runner.")
+
+    image = torch.rand((1, 3, 64, 64), generator=rng, dtype=torch.float32)
+
+    with pytest.raises(RuntimeError, match="CUDA unavailable"):
+        edge_aware_smooth(image, device="cuda")
+
+
+def test_device_cpu_forced(rng: torch.Generator) -> None:
+    image = torch.rand((1, 3, 64, 64), generator=rng, dtype=torch.float32)
+    image_before = image.clone()
+
+    output = edge_aware_smooth(image, device="cpu")
+
+    assert output.device.type == "cpu"
+    assert torch.equal(image, image_before)
+
+
+def test_invalid_device_value(rng: torch.Generator) -> None:
+    image = torch.rand((1, 3, 64, 64), generator=rng, dtype=torch.float32)
+
+    with pytest.raises(ValueError, match="device must be one of"):
+        edge_aware_smooth(image, device="mps")
+
+
+@pytest.mark.parametrize("tile_mode", [1, "true"])
+def test_invalid_tile_mode_type(rng: torch.Generator, tile_mode: object) -> None:
+    image = torch.rand((1, 3, 64, 64), generator=rng, dtype=torch.float32)
+
+    with pytest.raises(ValueError, match="tile_mode must be a bool"):
+        edge_aware_smooth(image, tile_mode=tile_mode)  # type: ignore[arg-type]
