@@ -8,6 +8,7 @@ Sample workflows that demo each node in the `ComfyUI-JH-PixelPro` pack. Every `.
 |---|---|---|
 | [S-01-frequency-separation.json](S-01-frequency-separation.json) | `JHPixelProFrequencySeparation` | Split an image into low-freq (smooth) and high-freq (detail) layers. Professional retouch demo. An in-canvas Note explains the invariant `low + high = original` and why the `high` pin can contain negative values. |
 | [S-02-subpixel-mask-refiner.json](S-02-subpixel-mask-refiner.json) | `JHPixelProSubPixelMaskRefiner` | Feather a binary mask into a sub-pixel alpha mask for cutout / compositing. Graph: LoadImage → ImageToMask → SubPixelMaskRefiner → MaskPreview. The Note covers the invariant and the Chebyshev-kernel quirk. |
+| [S-03-edge-aware-smoother.json](S-03-edge-aware-smoother.json) | `JHPixelProEdgeAwareSmoother` | Edge-preserving bilateral smoothing for portrait retouch. A/B preview: one PreviewImage shows the original, the other shows the smoothed result (default dose 40%). Mask pin unplugged in this v1 demo; connect the N-02 refined mask upstream to gate by skin region. |
 
 ## Usage
 
