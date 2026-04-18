@@ -50,7 +50,7 @@
       ],
       "size": [
         315,
-        130
+        220
       ],
       "flags": {},
       "order": 1,
@@ -78,7 +78,9 @@
       "widgets_values": [
         0.4,
         0.1,
-        6.0
+        6.0,
+        "auto",
+        false
       ]
     },
     {
@@ -144,7 +146,7 @@
       ],
       "size": [
         700,
-        200
+        260
       ],
       "flags": {},
       "order": 4,
@@ -155,7 +157,7 @@
         "text": ""
       },
       "widgets_values": [
-        "ℹ️ Edge-Aware Skin Smoother (N-03)\n- Invariant: `strength=0` → identity (pixel-exact). `mask=0` region → unchanged.\n- `sigma_color` scale is [0, 1] — NOT OpenCV 8-bit 10–50. Typical 0.05–0.3.\n- Default `strength=0.4` is a pro dose (30–50%). Never run at 1.0 on skin.\n- Mask pin is optional — connect the N-02 refined_mask upstream to gate\n  smoothing to the skin region (SAM/rembg → N-02 → N-03.mask).\n- CPU is very slow at 2K (see T-07 bench). GPU strongly recommended.\n- For the full invariant and edge cases, see test_smoother.py."
+        "ℹ️ Edge-Aware Skin Smoother (S-03 v1.1)\n\nDefaults: strength=0.4, sigma_color=0.1, sigma_space=6.0.\n\n- device: 'auto' picks CUDA if available, else 'cpu' / 'cuda' to force.\n- tile_mode: enable for images ≥ 2K or sigma_space > 4 (avoids OOM).\n- sigma_space max = 8.0. Need wider? Downsample image first.\n- sigma_color scale [0, 1]: typical 0.05–0.3 (NOT 10–50 OpenCV).\n- Invariant: strength=0 → identity. mask=0 region → unchanged.\n\nIf OOM: (1) enable tile_mode, (2) reduce sigma_space, (3) downsample."
       ],
       "color": "#243",
       "bgcolor": "#365"

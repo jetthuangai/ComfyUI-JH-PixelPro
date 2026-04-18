@@ -54,12 +54,37 @@ class JHPixelProEdgeAwareSmoother:
                     {
                         "default": 6.0,
                         "min": 1.0,
-                        "max": 32.0,
+                        "max": 8.0,
                         "step": 0.1,
                         "tooltip": (
-                            "Spatial sigma in pixels. Larger = wider spatial "
-                            "influence = stronger smoothing. Kernel size is "
-                            "auto-sized to 2*ceil(3*sigma_space)+1."
+                            "Spatial sigma in pixels. Range 1.0–8.0 (v1.1 cap). "
+                            "Kernel size auto-sized to 2*ceil(3*sigma_space)+1. "
+                            "Need wider? Downsample the image first with a "
+                            "Resize node upstream."
+                        ),
+                    },
+                ),
+                "device": (
+                    ["auto", "cpu", "cuda"],
+                    {
+                        "default": "auto",
+                        "tooltip": (
+                            "Compute device. 'auto' picks CUDA if available, "
+                            "else CPU. Explicit 'cuda' raises if CUDA "
+                            "unavailable. 'cpu' forces CPU (slow but "
+                            "deterministic)."
+                        ),
+                    },
+                ),
+                "tile_mode": (
+                    "BOOLEAN",
+                    {
+                        "default": False,
+                        "tooltip": (
+                            "Enable 512x512 tile processing to avoid OOM on "
+                            "large images. Required for 4K+ or sigma_space > 4 "
+                            "on most GPUs. Leave off for images ≤1K for max "
+                            "speed."
                         ),
                     },
                 ),
@@ -75,6 +100,8 @@ class JHPixelProEdgeAwareSmoother:
         strength: float,
         sigma_color: float,
         sigma_space: float,
+        device: str,
+        tile_mode: bool,
         mask: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor]:
         with torch.no_grad():
@@ -86,6 +113,8 @@ class JHPixelProEdgeAwareSmoother:
                 sigma_color=sigma_color,
                 sigma_space=sigma_space,
                 mask_bchw=mask_bc1hw,
+                device=device,
+                tile_mode=tile_mode,
             )
             out = out_bchw.permute(0, 2, 3, 1).contiguous()
         return (out,)

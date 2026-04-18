@@ -64,6 +64,8 @@ def test_input_types_structure(node_cls):
         "strength",
         "sigma_color",
         "sigma_space",
+        "device",
+        "tile_mode",
     }
     assert set(types["optional"].keys()) == {"mask"}
 
@@ -77,13 +79,28 @@ def test_input_types_structure(node_cls):
 
     assert types["required"]["sigma_color"][1]["default"] == 0.1
     assert types["required"]["sigma_space"][1]["default"] == 6.0
+    assert types["required"]["sigma_space"][1]["max"] == 8.0
+
+
+def test_node_has_device_and_tile_mode_pins(node_cls):
+    types = node_cls.INPUT_TYPES()
+
+    device_spec = types["required"]["device"]
+    assert device_spec[0] == ["auto", "cpu", "cuda"]
+    assert device_spec[1]["default"] == "auto"
+    assert "tooltip" in device_spec[1]
+
+    tile_spec = types["required"]["tile_mode"]
+    assert tile_spec[0] == "BOOLEAN"
+    assert tile_spec[1]["default"] is False
+    assert "tooltip" in tile_spec[1]
 
 
 def test_run_bhwc_roundtrip_no_mask(node_cls):
     torch.manual_seed(0)
     image = torch.rand(1, 64, 64, 3, dtype=torch.float32)
 
-    out = node_cls().run(image, 0.4, 0.1, 6.0)[0]
+    out = node_cls().run(image, 0.4, 0.1, 6.0, "auto", False)[0]
 
     assert isinstance(out, torch.Tensor)
     assert out.shape == image.shape
@@ -99,7 +116,7 @@ def test_run_with_mask_bhw(node_cls):
     mask = torch.zeros(1, 48, 48, dtype=torch.float32)
     mask[:, :, :24] = 1.0
 
-    out = node_cls().run(image, 1.0, 0.1, 6.0, mask=mask)[0]
+    out = node_cls().run(image, 1.0, 0.1, 6.0, "auto", False, mask=mask)[0]
 
     assert out.shape == image.shape
     assert torch.equal(out[:, :, 24:, :], image[:, :, 24:, :])
@@ -109,7 +126,7 @@ def test_run_strength_zero_identity(node_cls):
     torch.manual_seed(0)
     image = torch.rand(1, 32, 32, 3, dtype=torch.float32)
 
-    out = node_cls().run(image, 0.0, 0.1, 6.0)[0]
+    out = node_cls().run(image, 0.0, 0.1, 6.0, "auto", False)[0]
 
     assert torch.equal(out, image)
 
@@ -118,7 +135,29 @@ def test_run_batch(node_cls):
     torch.manual_seed(0)
     image = torch.rand(4, 32, 32, 3, dtype=torch.float32)
 
-    out = node_cls().run(image, 0.4, 0.1, 6.0)[0]
+    out = node_cls().run(image, 0.4, 0.1, 6.0, "auto", False)[0]
 
     assert out.shape == (4, 32, 32, 3)
     assert out.dtype == torch.float32
+
+
+def test_run_forwards_tile_mode_to_core(node_cls):
+    """tile_mode=True must route through the core tile path without crashing."""
+    torch.manual_seed(0)
+    image = torch.rand(1, 32, 32, 3, dtype=torch.float32)
+
+    out = node_cls().run(image, 0.4, 0.1, 6.0, "auto", True)[0]
+
+    assert out.shape == image.shape
+    assert out.dtype == torch.float32
+
+
+def test_run_forwards_device_to_core(node_cls):
+    """Passing device='cuda' on a CPU-only runner must surface the core's RuntimeError."""
+    if torch.cuda.is_available():
+        pytest.skip("CUDA available on this runner — test targets the CPU-only path")
+
+    image = torch.rand(1, 16, 16, 3, dtype=torch.float32)
+
+    with pytest.raises(RuntimeError, match="CUDA"):
+        node_cls().run(image, 0.4, 0.1, 6.0, "cuda", False)
