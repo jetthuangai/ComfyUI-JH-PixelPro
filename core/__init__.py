@@ -2,6 +2,7 @@
 
 from .detail_masker import high_freq_detail_mask
 from .frequency import frequency_separation
+from .luminosity import luminosity_masks
 from .mask_refiner import subpixel_mask_refine
 from .smoother import edge_aware_smooth
 
@@ -10,4 +11,5 @@ __all__ = [
     "subpixel_mask_refine",
     "edge_aware_smooth",
     "high_freq_detail_mask",
+    "luminosity_masks",
 ]
