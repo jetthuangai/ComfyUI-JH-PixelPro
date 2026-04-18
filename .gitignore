@@ -22,3 +22,7 @@ build/
 # Local bench artifacts (nếu có file log, ảnh output lớn)
 bench_out/
 *.png.tmp
+
+# Agent auto-load files — internal team convention, không ship cho user
+CLAUDE.md
+AGENTS.md
