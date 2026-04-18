@@ -6,6 +6,33 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 (nothing yet)
 
+## [0.2.0] — 2026-04-18
+
+Third retouch node lands + v1.1 UX hotfix after JH feedback from v0.1.0 usage.
+
+### Added
+
+- **N-03 `JHPixelProEdgeAwareSmoother`** (`image/pixelpro/filters`): edge-preserving skin smoother using Kornia bilateral blur with tone-aware blend. Inputs: `IMAGE` + `strength` (0..1, default 0.4 — blend dose at full 40%) + `sigma_color` (0.01..0.5, default 0.1 — tone similarity σ) + `sigma_space` (0.5..8.0, default 6.0 — spatial σ in pixels) + `device` (auto/cpu/cuda, default `auto`) + `tile_mode` (bool, default false — enable for ≥ 2K images to cap VRAM) + optional `MASK`. Output: smoothed `IMAGE`. Invariant: `output = lerp(original, bilateral(original), strength)` — when `strength=0` returns original bit-exact. 14 tests (core + node wrap) + CPU/GPU bench module (CPU 1K B=1 baseline measured; GPU 2K budget chưa verified — see Known limitations).
+- Sample workflow `workflows/S-03-edge-aware-smoother.json` + inline screenshot (PNG 2326×1513 RGBA) showing 5-widget UI + A/B Preview.
+
+### Changed (v1.1 hotfix over pre-release N-03 v1.0 draft)
+
+- **N-03 tile processing**: added tile 512×512 + overlap `k//2+1` with hard-crop for images ≥ 2K, gated by `tile_mode` pin. Prevents OOM on 4K inputs with `sigma_space` up to 8.0.
+- **N-03 device pin**: explicit `device` dropdown (auto/cpu/cuda) — replaces silent `.to(input.device)` auto-detect. Pro-tool convention: user stays in control.
+- **Display name**: stripped `(Kornia)` suffix across N-01/N-02/N-03 — cleaner node title on the canvas for end-users who don't need the implementation detail.
+- **Docs**: README pack + `workflows/` docs fully English (mixed VN/EN cleanup pre-v0.2).
+
+### Known limitations
+
+- GPU 2K B=1 median budget (< 400 ms) not verified on JH's GPU machine (NOT EVALUATED — deferred non-blocking follow-up).
+- `tile_mode` seam detection is qualitative only (visual A/B); no pixel-level seam test matrix yet.
+- N-03 is float32 only; float16 is deferred to a later batch (shared with the N-02 float16 plan).
+
+### Dependencies
+
+- `kornia >= 0.7.0` (verified on 0.8.1 across CPU and CUDA GPU).
+- Python `>= 3.10` (unchanged).
+
 ## [0.1.0] — 2026-04-18
 
 First public alpha. Two MVP nodes for professional portrait retouching on GPU, with Kornia at the core and pure tensors that never leave VRAM.
@@ -34,5 +61,6 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.1.0
