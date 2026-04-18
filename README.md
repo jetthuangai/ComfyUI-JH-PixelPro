@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite cho ComfyUI. Kornia làm lõi. Tensor thuần, không rời VRAM.
 
-**Status:** 🚧 Phase 1 — đang xây N-01 Frequency Separation. Chưa phát hành.
+**Status:** 🎉 **v0.1.0 alpha** (2026-04-18) — 2 node live: `JHPixelProFrequencySeparation` + `JHPixelProSubPixelMaskRefiner`. Xem [CHANGELOG](./CHANGELOG.md) cho chi tiết. Phase 1 M1 còn 3 node (N-03..N-05), roadmap ở `.agent-hub/10_plan/roadmap.md` (internal).
 
 ## Vì sao có pack này
 
