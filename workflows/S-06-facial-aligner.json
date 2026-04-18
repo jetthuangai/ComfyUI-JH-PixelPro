@@ -1,0 +1,199 @@
+{
+  "last_node_id": 5,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        80,
+        200
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            3
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "sample_portrait.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "JHPixelProFacialAligner",
+      "pos": [
+        460,
+        200
+      ],
+      "size": [
+        360,
+        260
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image_aligned",
+          "type": "IMAGE",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "inverse_matrix_json",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProFacialAligner"
+      },
+      "widgets_values": [
+        "[[820, 650], [1420, 640], [1120, 900], [930, 1150], [1310, 1145]]",
+        1024,
+        0.2
+      ]
+    },
+    {
+      "id": 3,
+      "type": "PreviewImage",
+      "pos": [
+        880,
+        140
+      ],
+      "size": [
+        300,
+        260
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "PreviewImage",
+      "pos": [
+        880,
+        440
+      ],
+      "size": [
+        300,
+        260
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "Note",
+      "pos": [
+        80,
+        560
+      ],
+      "size": [
+        780,
+        320
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "\u2139\ufe0f Landmark Facial Aligner (S-06)\n\nDefaults: target_size=1024, padding=0.2.\n\n- landmarks: 5-point JSON [L-eye, R-eye, nose, L-mouth, R-mouth]. Pixel-abs or normalized (values \u2264 1.5 auto-treated as normalized). Default coords target sample_portrait.jpg.\n- target_size: 512 / 768 / 1024 (step=256). 1024 is SDXL-friendly.\n- padding: 0 = tight crop, 0.5 = half-frame reserved around face.\n\nCanonical frame (FFHQ-like, normalized): eyes @ Y=0.40, nose @ Y=0.55, mouth @ Y=0.70. Face is centered horizontally.\n\nWhy align: get a consistent crop before ControlNet / inpaint / face-detail passes. Use inverse_matrix_json output to unwrap the edited face back onto the original canvas (pair with a custom warp node or unwarp script).\n\nWarning: wrong landmarks = wrong alignment — prefer an upstream face-detector node (InsightFace / MediaPipe) instead of hand-pasting in production. Roundtrip (align + unwrap) goes through 2 bilinear resamples, so the result softens ~34/255 in uint8 — good enough for a retouch chain, not near-lossless."
+      ],
+      "color": "#243",
+      "bgcolor": "#365"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

@@ -49,9 +49,9 @@ Restart ComfyUI. The nodes appear under the `image/pixelpro/<group>` menu.
 - [x] N-01 GPU Frequency Separation
 - [x] N-02 Sub-Pixel Mask Refiner
 - [x] N-03 Edge-Aware Skin Smoother
-- [ ] N-04 High-Frequency Detail Masker
-- [ ] N-05 Luminosity Masking
-- [ ] N-06 Landmark-Based Facial Aligner
+- [x] N-04 High-Frequency Detail Masker
+- [x] N-05 Luminosity Masking
+- [x] N-06 Landmark Facial Aligner
 - [ ] N-07 Lens Distortion Corrector
 - [ ] N-08 RAW-Space Color Matcher
 - [ ] N-09 GPU Tone Curve & Color Balance
@@ -168,6 +168,114 @@ Edge-preserving bilateral smoothing for portrait skin retouch. Smooths flat regi
 - **`sigma_color` is on the `[0, 1]` image scale.** OpenCV's `cv2.bilateralFilter` uses 8-bit sigmas in the 10–50 range; they do not port over. Start around `0.05–0.3` for natural skin retouch.
 - **CPU path is correctness-only above 1K.** On CPU a `1×3×1024×1024` run takes tens of seconds. For production-sized images prefer GPU, and enable `tile_mode` for anything ≥2K. The memory guardrail will surface the problem early if you forget.
 - **Guided-filter mode and float16 are deferred to v2.** The v1 kernel is bilateral-only and float32-only.
+
+## N-04 High-Frequency Detail Masker
+
+Generate a binary detail-preservation mask from high-frequency energy in the image. Feeds downstream `ImageBlend` / `MaskCompose` / `SetLatentNoiseMask` nodes so AI passes (inpaint, upscale, style-transfer) can keep the hair, eyebrows, fabric weave and pore texture intact while the rest of the face is freely repainted. Three high-pass operators are selectable and the threshold is either adaptive (per-image percentile) or deterministic (per-image max-normalized).
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `kernel_type` | COMBO | `laplacian` | High-pass operator. `laplacian` is scale-invariant and isotropic (default). `sobel` is directional (emphasizes edges). `fs_gaussian` reuses the N-01 high-pass path. |
+| `sensitivity` | FLOAT | `0.5` | Fraction of pixels kept as detail. Higher = more pixels pass. `0.0` → empty mask, `1.0` → full mask. Range 0.0..1.0 (step 0.01). |
+| `threshold_mode` | COMBO | `relative_percentile` | `relative_percentile` adapts per image (robust cross-image). `absolute` normalizes by per-image max (deterministic but more sensitive to outliers). |
+| `mask` | MASK | *(optional)* | Pre-gate region (BHW float32 `[0, 1]`). Output detail is zeroed where this mask is 0 — useful for restricting detail to the skin region returned by SAM / rembg. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `mask_detail` | MASK | Binary detail mask, BHW float32 `[0, 1]`. |
+
+**Sample workflow:** [workflows/S-04-hf-detail-masker.json](workflows/S-04-hf-detail-masker.json)
+
+**Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt.
+
+### Use cases
+
+- **Post-AI texture protection.** Compose the detail mask into a `SetLatentNoiseMask` so denoise keeps the high-frequency regions unchanged.
+- **Hair/eyelash preservation** during inpaint — blend original hair back on top of the inpainted face using the detail mask as alpha.
+
+### Limitations
+
+- **Output is a MASK, not an IMAGE.** Pipe through `MaskCompose`, `ImageBlend` or `SetLatentNoiseMask` to apply it — there is no built-in visualization beyond `MaskPreview`.
+- **`sensitivity` is fraction-of-pixels, not a hard luma threshold.** Two images with different noise floors will give different absolute thresholds even at the same `sensitivity` — that is the point of `relative_percentile`.
+
+## N-05 Luminosity Masking
+
+Split an image into three smooth luminosity masks (shadows / midtones / highlights), Photoshop-style, with a partition-of-unity guarantee (`shadows + midtones + highlights ≈ 1.0` per pixel). Use each band as an alpha mask to target local contrast, color grading, dodge/burn or AI denoise only in the bright or dark regions — selection by luminance band, not by shape.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `luminance_source` | COMBO | `lab_l` | Luminance channel. `lab_l` is perceptual (Photoshop default, ~120 ms @ 2K CPU). `ycbcr_y` is the fast path (~7 ms @ 1024 CPU) — use it for realtime preview or CPU-bound pipelines. `hsv_v` is simple max-RGB and less perceptual. |
+| `shadow_end` | FLOAT | `0.33` | Upper bound of the shadow band (luminance `[0, 0.5]`). |
+| `highlight_start` | FLOAT | `0.67` | Lower bound of the highlight band (luminance `[0.5, 1.0]`). Must be > `shadow_end` (node raises otherwise). |
+| `soft_edge` | FLOAT | `0.1` | Smoothstep transition width at both band edges. Smaller = sharper bands, larger = smoother blend. Range 0.01..0.3 (step 0.01). |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `mask_shadows` | MASK | Shadow band mask, BHW float32 `[0, 1]`. |
+| `mask_midtones` | MASK | Midtone band mask, BHW float32 `[0, 1]`. |
+| `mask_highlights` | MASK | Highlight band mask, BHW float32 `[0, 1]`. |
+
+**Sample workflow:** [workflows/S-05-luminosity-masking.json](workflows/S-05-luminosity-masking.json)
+
+**Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt. Three `MaskPreview` nodes render the shadow, midtone and highlight masks separately.
+
+### Use cases
+
+- **Luminosity grading.** Multiply a color LUT only through `mask_midtones` to split-tone without touching shadows and highlights.
+- **Band-limited denoise** — restrict denoise to `mask_shadows` so shadow noise is cleaned without softening highlight detail.
+- **Local dodge/burn** — apply exposure lift through `mask_shadows` and crush through `mask_highlights`.
+
+### Limitations
+
+- **Performance tradeoff on CPU.** `lab_l` is perceptual but costs ~120 ms @ 2K CPU vs ~7 ms @ 1024 CPU for `ycbcr_y`. Switch to `ycbcr_y` when driving a realtime preview on CPU; stay on `lab_l` for final renders.
+- **Partition is approximate near band edges.** With small `soft_edge` (< 0.03) the normalize step cannot preserve exact unity at transition pixels — the sum is rescaled to 1.0, so you will see a ~`soft_edge`-wide blend zone.
+
+## N-06 Landmark Facial Aligner
+
+Align a face to a canonical FFHQ-like frame via 5 landmarks using a similarity transform (rotation + uniform scale + translation — no shear), and return both the aligned image and the inverse transform so you can unwrap the result back onto the original canvas. This is the canonical pre-processing step in front of ControlNet, face-detail and inpaint passes — it gives every output a consistent eye / nose / mouth position so batch operations stay stable.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `landmarks` | STRING | *(5-point JSON)* | 5-point landmark JSON in order `[L-eye, R-eye, nose, L-mouth, R-mouth]`. Pixel-absolute or normalized — values ≤ 1.5 are auto-treated as normalized. Shape `5x2` for single image or `Bx5x2` for batch. |
+| `target_size` | INT | `1024` | Square output size in pixels. Accepts `512 / 768 / 1024` (step 256). `1024` is SDXL-friendly. |
+| `padding` | FLOAT | `0.2` | Ratio of canonical frame reserved around the face (hair/chin room). `0.0` = tight crop, `0.5` = half-frame padding. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image_aligned` | IMAGE | Aligned face image at `target_size × target_size`. Range `[0, 1]`. |
+| `inverse_matrix_json` | STRING | JSON-serialized `B × 3 × 3` inverse affine matrix (list of 3×3 per batch item). Use it to unwrap the edited aligned face back onto the original canvas. |
+
+**Canonical frame (FFHQ-like).** In normalized coordinates: eyes at `Y=0.40`, nose at `Y=0.55`, mouth at `Y=0.70`, face centered horizontally. Pulled in by `padding` (default `0.2`).
+
+**Sample workflow:** [workflows/S-06-facial-aligner.json](workflows/S-06-facial-aligner.json)
+
+**Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt. Two `PreviewImage` nodes render the original and the aligned result.
+
+### Use cases
+
+- **Consistent ControlNet / inpaint pipeline.** Align → run `ControlNet` / `KSampler` → unwrap via `inverse_matrix_json` so the edited face lands back in the original composition.
+- **Batch portrait grading** — everyone gets the same eye/mouth position before global filters are applied.
+
+### Limitations
+
+- **Manual landmarks are a stop-gap.** In production, feed landmarks from an upstream face detector (InsightFace, MediaPipe). Wrong landmarks = wrong alignment — this node does not sanity-check face geometry beyond the 5×2 shape.
+- **Roundtrip bilinear smoothing.** Align + unwrap puts the image through two bilinear resamples, which softens the result by ~34/255 in uint8. Good enough for a retouch chain, not near-lossless — do not chain more than one round.
+- **Mediapipe dependency for landmark detection is optional.** The core ships a fallback 5-point JSON so the pack loads without `mediapipe` installed. For automatic landmark detection, pair with a separate face-detect custom node upstream.
 
 ## License
 

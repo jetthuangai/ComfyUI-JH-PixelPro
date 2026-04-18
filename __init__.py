@@ -19,7 +19,10 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 if __package__:
     from .nodes import (
         JHPixelProEdgeAwareSmoother,
+        JHPixelProFacialAligner,
         JHPixelProFrequencySeparation,
+        JHPixelProHighFreqDetailMasker,
+        JHPixelProLuminosityMasking,
         JHPixelProSubPixelMaskRefiner,
     )
 
@@ -31,6 +34,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"
+
+    NODE_CLASS_MAPPINGS["JHPixelProHighFreqDetailMasker"] = JHPixelProHighFreqDetailMasker
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProHighFreqDetailMasker"] = "High-Frequency Detail Masker"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLuminosityMasking"] = JHPixelProLuminosityMasking
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLuminosityMasking"] = "Luminosity Masking"
+
+    NODE_CLASS_MAPPINGS["JHPixelProFacialAligner"] = JHPixelProFacialAligner
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFacialAligner"] = "Landmark Facial Aligner"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"
