@@ -54,7 +54,7 @@ def test_node_registered_in_mappings(pack):
     assert "JHPixelProSubPixelMaskRefiner" in pack.NODE_CLASS_MAPPINGS
     assert (
         pack.NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSubPixelMaskRefiner"]
-        == "Sub-Pixel Mask Refiner (Kornia)"
+        == "Sub-Pixel Mask Refiner"
     )
 
 

@@ -1,4 +1,4 @@
-"""Core math — pure tensor in, pure tensor out. Không PIL/cv2/numpy ở hot path."""
+"""Core math — pure tensor in, pure tensor out. No PIL / cv2 / NumPy on the hot path."""  # noqa: N999
 
 from .frequency import frequency_separation
 from .mask_refiner import subpixel_mask_refine

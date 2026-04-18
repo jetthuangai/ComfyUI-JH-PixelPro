@@ -162,7 +162,7 @@
         "text": ""
       },
       "widgets_values": [
-        "⚠️ Invariant: low + high = original (pre-clamp).\n- `high` pin có giá trị âm (mean ≈ 0) — PreviewImage hiển thị sai màu, bình thường.\n- Reconstruct cần node ImageAdd PURE (không clamp). ComfyUI core chỉ có\n  ImageBlend (clamp [0,1]) → phá invariant. Pack sẽ thêm\n  JHPixelProImageAdd ở v0.2.\n- Tạm thời: tin test_frequency.py đã verify numeric, không cần demo UI."
+        "⚠️ Invariant: low + high = original (pre-clamp).\n- The `high` pin can contain negative values (mean ≈ 0). PreviewImage shows\n  miscoloured output — this is expected.\n- A pure (non-clamping) ImageAdd node is required to reconstruct. ComfyUI\n  core only ships ImageBlend, which clamps to [0, 1] and breaks the\n  invariant. JHPixelProImageAdd is planned for v0.2.\n- For now: trust test_frequency.py — the invariant is verified numerically,\n  no UI demo needed."
       ],
       "color": "#432",
       "bgcolor": "#653"

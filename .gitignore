@@ -19,10 +19,10 @@ venv*/
 dist/
 build/
 
-# Local bench artifacts (nếu có file log, ảnh output lớn)
+# Local bench artifacts (log files, large output images)
 bench_out/
 *.png.tmp
 
-# Agent auto-load files — internal team convention, không ship cho user
+# Local developer notes — not shipped
 CLAUDE.md
 AGENTS.md

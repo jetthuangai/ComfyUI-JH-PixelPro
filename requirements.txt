@@ -1,7 +1,7 @@
-# Runtime deps — PyTorch đã có sẵn qua ComfyUI.
+# Runtime deps — PyTorch is provided by ComfyUI.
 kornia>=0.7.0
 
-# Dev / test (install qua: pip install -r requirements-dev.txt)
+# Dev / test (install via: pip install -r requirements-dev.txt)
 # pytest>=8.0
 # pytest-benchmark>=4.0
 # ruff>=0.5
