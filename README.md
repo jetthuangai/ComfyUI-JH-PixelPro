@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.1.0 alpha** (2026-04-18) — 2 nodes live: `JHPixelProFrequencySeparation` + `JHPixelProSubPixelMaskRefiner`. See [CHANGELOG](./CHANGELOG.md) for details. Phase 1 M1 has 2 more nodes queued (N-04..N-05).
+**Status:** 🎉 **v0.2.0** (2026-04-18) — 3 nodes live: `JHPixelProFrequencySeparation` + `JHPixelProSubPixelMaskRefiner` + `JHPixelProEdgeAwareSmoother`. See [CHANGELOG](./CHANGELOG.md) for details. Phase 1 has 6 more nodes queued (N-04..N-09) — batch mode plan post-v0.2.
 
 ## Why this pack exists
 
