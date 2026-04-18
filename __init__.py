@@ -17,13 +17,20 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # ``__package__`` is empty and we skip the registration step — the node tests
 # load the pack themselves via ``importlib.util.spec_from_file_location``.
 if __package__:
-    from .nodes import JHPixelProFrequencySeparation, JHPixelProSubPixelMaskRefiner
+    from .nodes import (
+        JHPixelProEdgeAwareSmoother,
+        JHPixelProFrequencySeparation,
+        JHPixelProSubPixelMaskRefiner,
+    )
 
     NODE_CLASS_MAPPINGS["JHPixelProFrequencySeparation"] = JHPixelProFrequencySeparation
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencySeparation"] = "GPU Frequency Separation"
 
     NODE_CLASS_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = JHPixelProSubPixelMaskRefiner
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = "Sub-Pixel Mask Refiner"
+
+    NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"
