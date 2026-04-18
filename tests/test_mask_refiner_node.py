@@ -59,7 +59,7 @@ def test_node_registered_in_mappings(pack):
 
 
 def test_class_metadata(node_cls):
-    assert node_cls.CATEGORY == "image/pixelpro/morphology"
+    assert node_cls.CATEGORY == "ComfyUI-JH-PixelPro/mask"
     assert node_cls.RETURN_TYPES == ("MASK",)
     assert node_cls.RETURN_NAMES == ("refined_mask",)
     assert node_cls.FUNCTION == "run"
