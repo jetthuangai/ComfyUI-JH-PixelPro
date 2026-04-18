@@ -2,5 +2,6 @@
 
 from .frequency import frequency_separation
 from .mask_refiner import subpixel_mask_refine
+from .smoother import edge_aware_smooth
 
-__all__ = ["frequency_separation", "subpixel_mask_refine"]
+__all__ = ["frequency_separation", "subpixel_mask_refine", "edge_aware_smooth"]
