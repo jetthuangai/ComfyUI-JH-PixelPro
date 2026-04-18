@@ -66,6 +66,37 @@ Xem chi tiết tại `.agent-hub/10_plan/master-plan.md` (tạm thời bên tron
 4. **Channel convention BCHW** trong core, convert ở integration layer với ComfyUI.
 5. **Không catch exception im lặng.**
 
+## N-01 GPU Frequency Separation
+
+Tách 1 ảnh thành 2 layer: `low` (Gaussian blur — màu + form mềm) và `high` (chi tiết tần số cao — texture, viền, nốt). Đây là kỹ thuật retouch chuẩn của ngành: làm da mịn ở `low` mà không phá texture ở `high`. Math invariant: `low + high = original` (trước clamp), reconstruct lossless với `precision=float32`.
+
+**Inputs:**
+
+| Tên | Type | Default | Mô tả |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 0..1). |
+| `radius` | INT | `8` | Bán kính Gaussian blur (pixel). Range 1..128. |
+| `sigma` | FLOAT | `0.0` | Sigma override. `0.0` = auto `radius/2` (Photoshop convention). |
+| `precision` | COMBO | `float32` | `float32` = lossless reconstruct (atol 1e-5). `float16` = ~2× nhanh trên GPU, reconstruct error ~1e-3. |
+
+**Outputs:**
+
+| Tên | Type | Mô tả |
+|---|---|---|
+| `low` | IMAGE | Low-frequency layer. Range `[0, 1]`. |
+| `high` | IMAGE | High-frequency layer. **⚠️ Có thể có giá trị âm** (mean ≈ 0). PreviewImage hiển thị sai màu — bình thường, không phải bug. Cần `ImageAdd` PURE (không clamp) để reconstruct. |
+
+**Sample workflow:** [workflows/S-01-frequency-separation.json](workflows/S-01-frequency-separation.json)
+
+![screenshot](workflows/S-01-frequency-separation-screenshot.png)
+<!-- screenshot fill bởi T-04b -->
+
+### Limitations
+
+- **Reconstruct branch không nằm trong v0.1.** ComfyUI core chỉ có `ImageBlend` clamp `[0, 1]` → phá invariant khi `high` âm. Dùng external `ImageAdd` pack hoặc chờ `JHPixelProImageAdd` ở v0.2.
+- Xem Note node trong [workflows/S-01-frequency-separation.json](workflows/S-01-frequency-separation.json) để hiểu invariant chi tiết.
+- `precision=float16` chỉ khuyên dùng trên GPU; trên CPU sẽ warn (chậm hơn float32).
+
 ## License
 
 Apache-2.0 — xem [LICENSE](./LICENSE).
