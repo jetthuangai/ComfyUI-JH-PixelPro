@@ -46,7 +46,7 @@ def test_node_registered_in_mappings(pack):
     assert "JHPixelProFrequencySeparation" in pack.NODE_CLASS_MAPPINGS
     assert (
         pack.NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencySeparation"]
-        == "GPU Frequency Separation (Kornia)"
+        == "GPU Frequency Separation"
     )
 
 

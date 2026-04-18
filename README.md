@@ -1,55 +1,53 @@
 # ComfyUI-JH-PixelPro
 
-> GPU-powered pro-grade image suite cho ComfyUI. Kornia làm lõi. Tensor thuần, không rời VRAM.
+> GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.1.0 alpha** (2026-04-18) — 2 node live: `JHPixelProFrequencySeparation` + `JHPixelProSubPixelMaskRefiner`. Xem [CHANGELOG](./CHANGELOG.md) cho chi tiết. Phase 1 M1 còn 3 node (N-03..N-05), roadmap ở `.agent-hub/10_plan/roadmap.md` (internal).
+**Status:** 🎉 **v0.1.0 alpha** (2026-04-18) — 2 nodes live: `JHPixelProFrequencySeparation` + `JHPixelProSubPixelMaskRefiner`. See [CHANGELOG](./CHANGELOG.md) for details. Phase 1 M1 has 3 more nodes queued (N-03..N-05).
 
-## Vì sao có pack này
+## Why this pack exists
 
-ComfyUI mạnh ở pipeline generative nhưng thiếu các thao tác retouch chuyên nghiệp vận hành trực tiếp trên tensor GPU:
+ComfyUI is strong at generative pipelines but lacks the professional retouching operations that work directly on GPU tensors:
 
-- Mất chi tiết da sau VAE / inpaint.
-- Mask cứng, lẹm viền (halo) từ SAM / YOLO.
-- Sai lệch tông màu da sau khi sinh ảnh.
+- Skin detail loss after VAE / inpaint.
+- Hard, chipped mask edges (halo) from SAM / YOLO.
+- Skin tone drift after image generation.
 
-Pack này đóng gói 9 node Kornia-powered cho Phase 1–3, sau đó mở rộng sang các tác vụ CV khác (segmentation, tracking, 3D, color science).
+This pack packages 9 Kornia-powered nodes for Phases 1–3, then expands into other CV tasks (segmentation, tracking, 3D, color science).
 
 ## Scope
 
-| Phase | Nhóm node | Phạm vi |
+| Phase | Node group | Coverage |
 |---|---|---|
 | 1 | filters + morphology | Frequency separation, mask refiner, edge-aware smoother, detail masker, luminosity masking |
 | 2 | geometry | Facial aligner, lens distortion corrector |
 | 3 | color | RAW-space color matcher, tone curve & color balance |
-| sau v1.0 | *(sẽ quyết sau)* | Segmentation, tracking, depth, advanced color |
+| after v1.0 | *(TBD)* | Segmentation, tracking, depth, advanced color |
 
 ## Install
 
-Copy/clone thư mục này vào `ComfyUI/custom_nodes/`:
+Copy or clone this folder into `ComfyUI/custom_nodes/`:
 
 ```bash
 cd ComfyUI/custom_nodes
-git clone <repo-url> ComfyUI-JH-PixelPro
+git clone https://github.com/jetthuangai/ComfyUI-JH-PixelPro.git
 cd ComfyUI-JH-PixelPro
 pip install -r requirements.txt
 ```
 
-Khởi động lại ComfyUI. Các node sẽ xuất hiện dưới menu `image/pixelpro/<group>`.
+Restart ComfyUI. The nodes appear under the `image/pixelpro/<group>` menu.
 
 ## Requirements
 
 - ComfyUI ≥ 0.43.x
 - Python ≥ 3.10
-- PyTorch (đã có qua ComfyUI)
+- PyTorch (installed alongside ComfyUI)
 - Kornia ≥ 0.7.0
-- GPU NVIDIA ≥ 8 GB VRAM (primary); **CPU fallback được support** (correctness, không bảo đảm tốc độ).
+- NVIDIA GPU with ≥ 8 GB VRAM (primary target); **CPU fallback is supported** (correctness only — no speed guarantee).
 
-## Node list *(cập nhật theo tiến độ Phase)*
+## Node list *(updated per Phase progress)*
 
-Xem chi tiết tại `.agent-hub/10_plan/master-plan.md` (tạm thời bên trong ComfyUI, sẽ dời ra umbrella folder).
-
-- [ ] N-01 GPU Frequency Separation *(đang làm — S-01 spec READY)*
-- [ ] N-02 Sub-Pixel Mask Refiner
+- [x] N-01 GPU Frequency Separation
+- [x] N-02 Sub-Pixel Mask Refiner
 - [ ] N-03 Edge-Aware Skin Smoother
 - [ ] N-04 High-Frequency Detail Masker
 - [ ] N-05 Luminosity Masking
@@ -58,84 +56,83 @@ Xem chi tiết tại `.agent-hub/10_plan/master-plan.md` (tạm thời bên tron
 - [ ] N-08 RAW-Space Color Matcher
 - [ ] N-09 GPU Tone Curve & Color Balance
 
-## Triết lý kỹ thuật
+## Engineering principles
 
-1. **Pure tensor in / pure tensor out** — không đụng file, PIL, NumPy trong core math.
-2. **Invariant test là primary acceptance** — không chỉ "output có vẻ đúng".
-3. **Device awareness** — tự động `cpu` và `cuda:N`; không hard-code.
-4. **Channel convention BCHW** trong core, convert ở integration layer với ComfyUI.
-5. **Không catch exception im lặng.**
+1. **Pure tensor in, pure tensor out** — no file I/O, no PIL, no NumPy in the core math.
+2. **Invariant tests as primary acceptance** — not just "output looks right".
+3. **Device awareness** — automatic `cpu` and `cuda:N`, never hard-coded.
+4. **BCHW channel convention** inside the core; convert at the ComfyUI integration boundary.
+5. **No silent exceptions.**
 
 ## N-01 GPU Frequency Separation
 
-Tách 1 ảnh thành 2 layer: `low` (Gaussian blur — màu + form mềm) và `high` (chi tiết tần số cao — texture, viền, nốt). Đây là kỹ thuật retouch chuẩn của ngành: làm da mịn ở `low` mà không phá texture ở `high`. Math invariant: `low + high = original` (trước clamp), reconstruct lossless với `precision=float32`.
+Splits an image into two layers: `low` (Gaussian blur — color + soft form) and `high` (high-frequency detail — texture, edges, pores). This is the industry-standard retouch technique: smooth skin on `low` without destroying texture on `high`. Math invariant: `low + high = original` (pre-clamp), lossless reconstruction with `precision=float32`.
 
 **Inputs:**
 
-| Tên | Type | Default | Mô tả |
+| Name | Type | Default | Description |
 |---|---|---|---|
-| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 0..1). |
-| `radius` | INT | `8` | Bán kính Gaussian blur (pixel). Range 1..128. |
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). |
+| `radius` | INT | `8` | Gaussian blur radius in pixels. Range 1..128. |
 | `sigma` | FLOAT | `0.0` | Sigma override. `0.0` = auto `radius/2` (Photoshop convention). |
-| `precision` | COMBO | `float32` | `float32` = lossless reconstruct (atol 1e-5). `float16` = ~2× nhanh trên GPU, reconstruct error ~1e-3. |
+| `precision` | COMBO | `float32` | `float32` = lossless reconstruction (atol 1e-5). `float16` = ~2× faster on GPU, reconstruction error ~1e-3. |
 
 **Outputs:**
 
-| Tên | Type | Mô tả |
+| Name | Type | Description |
 |---|---|---|
 | `low` | IMAGE | Low-frequency layer. Range `[0, 1]`. |
-| `high` | IMAGE | High-frequency layer. **⚠️ Có thể có giá trị âm** (mean ≈ 0). PreviewImage hiển thị sai màu — bình thường, không phải bug. Cần `ImageAdd` PURE (không clamp) để reconstruct. |
+| `high` | IMAGE | High-frequency layer. **⚠️ May contain negative values** (mean ≈ 0). `PreviewImage` will display miscoloured output — this is expected, not a bug. A pure (non-clamping) `ImageAdd` node is required to reconstruct. |
 
 **Sample workflow:** [workflows/S-01-frequency-separation.json](workflows/S-01-frequency-separation.json)
 
-**Chạy sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg` trước, rồi Load workflow + Queue Prompt. Ảnh mẫu là [Photo by cottonbro studio on Pexels](https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/) (license redistribute free).
+**Run the sample:** copy `workflows/sample_portrait.jpg` → `ComfyUI/input/sample_portrait.jpg`, then Load the workflow and press Queue Prompt. The sample image is [Photo by cottonbro studio on Pexels](https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/) (redistribution free under the Pexels Content License).
 
 ![screenshot](workflows/S-01-frequency-separation-screenshot.png)
-<!-- screenshot: JH chụp sau khi test workflow với sample_portrait.jpg trong ComfyUI -->
 
 ### Limitations
 
-- **Reconstruct branch không nằm trong v0.1.** ComfyUI core chỉ có `ImageBlend` clamp `[0, 1]` → phá invariant khi `high` âm. Dùng external `ImageAdd` pack hoặc chờ `JHPixelProImageAdd` ở v0.2.
-- Xem Note node trong [workflows/S-01-frequency-separation.json](workflows/S-01-frequency-separation.json) để hiểu invariant chi tiết.
-- `precision=float16` chỉ khuyên dùng trên GPU; trên CPU sẽ warn (chậm hơn float32).
+- **The reconstruct branch is not included in v0.1.** ComfyUI core ships only `ImageBlend`, which clamps to `[0, 1]` and breaks the invariant when `high` contains negative values. Use an external `ImageAdd` pack, or wait for `JHPixelProImageAdd` in v0.2.
+- See the Note node inside [workflows/S-01-frequency-separation.json](workflows/S-01-frequency-separation.json) for a detailed invariant explanation.
+- `precision=float16` is recommended on GPU only; on CPU it will warn (slower than float32).
 
 ## N-02 Sub-Pixel Mask Refiner
 
-Feather một MASK nhị phân (từ SAM / YOLO / rembg upstream) thành alpha mask sub-pixel: phần "definitely inside" pin về `1.0`, phần "definitely outside" pin về `0.0`, vùng band uncertain ở mép được Gaussian-feather mượt. Dùng cho cutout, composite, alpha matting trong pipeline retouch chuyên nghiệp.
+Feathers a binary MASK (from SAM / YOLO / rembg upstream) into a sub-pixel alpha mask: "definitely inside" pixels pin to `1.0`, "definitely outside" pixels pin to `0.0`, and the uncertain band near the edge is Gaussian-feathered. Used for cutout, compositing, and alpha matting in professional retouch pipelines.
 
 **Inputs:**
 
-| Tên | Type | Default | Mô tả |
+| Name | Type | Default | Description |
 |---|---|---|---|
-| `mask` | MASK | — | ComfyUI MASK tensor (BHW float32 `[0, 1]`). Binary-ish — có thể có midtone nhưng sẽ bị threshold trước morphology. |
-| `erosion_radius` | INT | `2` | Pixel radius của "definitely inside" core. Range 0..64. `0` = không có inside protection. |
-| `dilation_radius` | INT | `4` | Pixel radius của "definitely outside" core. Set ≥ `erosion_radius` để có band feather ổn định. Range 0..64. |
-| `feather_sigma` | FLOAT | `2.0` | Gaussian sigma (pixel) feather vùng band uncertain. Range 0.1..32.0 (step 0.1). |
-| `threshold` | FLOAT | `0.5` | Binarization threshold (`mask > threshold`) áp trước morphology. Range 0.0..1.0 (step 0.01). |
+| `mask` | MASK | — | ComfyUI MASK tensor (BHW float32 `[0, 1]`). Binary-ish — midtones are allowed but will be thresholded before morphology. |
+| `erosion_radius` | INT | `2` | Pixel radius of the "definitely inside" core. Range 0..64. `0` = no inside protection. |
+| `dilation_radius` | INT | `4` | Pixel radius of the "definitely outside" core. Set ≥ `erosion_radius` for a stable feather band. Range 0..64. |
+| `feather_sigma` | FLOAT | `2.0` | Gaussian sigma (pixels) used to feather the uncertain band. Range 0.1..32.0 (step 0.1). |
+| `threshold` | FLOAT | `0.5` | Strict binarization threshold (`mask > threshold`) applied before morphology. Range 0.0..1.0 (step 0.01). |
 
 **Outputs:**
 
-| Tên | Type | Mô tả |
+| Name | Type | Description |
 |---|---|---|
-| `refined_mask` | MASK | Sub-pixel alpha mask. Range `[0, 1]`. Inside core = `1.0` exact, outside core = `0.0` exact, band feather giữa hai. |
+| `refined_mask` | MASK | Sub-pixel alpha mask. Range `[0, 1]`. Inside core = `1.0` exact, outside core = `0.0` exact, feather band in between. |
 
 **Sample workflow:** [workflows/S-02-subpixel-mask-refiner.json](workflows/S-02-subpixel-mask-refiner.json)
 
-**Chạy sample:** copy `workflows/sample_binary_mask.png` → `ComfyUI/input/sample_binary_mask.png` trước (sẽ có sau T-08b artifact task), rồi Load workflow + Queue Prompt.
+**Run the sample:** copy `workflows/sample_binary_mask.png` → `ComfyUI/input/sample_binary_mask.png`, then Load the workflow and press Queue Prompt.
 
 ![screenshot](workflows/S-02-subpixel-mask-refiner-screenshot.png)
-<!-- screenshot fill bởi T-08b artifact task -->
 
 ### Limitations
 
-- **Square kernel (Chebyshev metric L∞).** Erosion/dilation dùng kernel hình vuông, không phải disk Euclidean — với `radius > 16`, mép mask sẽ hơi vuông góc thay vì tròn mượt. Disk kernel option defer v0.2.
-- **V1 chỉ float32.** Không expose `precision` pin như N-01 — `feather_sigma > 0` cần float precision đủ cho Gaussian. float16 defer v0.2 sau khi có lesson learn từ N-01.
-- Xem Note node trong [workflows/S-02-subpixel-mask-refiner.json](workflows/S-02-subpixel-mask-refiner.json) để hiểu invariant + edge case `er=dr=0`.
+- **Square kernel (Chebyshev / L∞ metric).** Erosion and dilation use a square kernel, not a Euclidean disk — with `radius > 16`, mask edges look slightly boxy rather than rounded. Disk-kernel option deferred to v0.2.
+- **v1 is float32 only.** Unlike N-01, the mask refiner does not expose a `precision` pin — `feather_sigma > 0` requires enough floating-point precision for the Gaussian. Float16 deferred to v0.2 once lessons from N-01 settle.
+- See the Note node inside [workflows/S-02-subpixel-mask-refiner.json](workflows/S-02-subpixel-mask-refiner.json) for the full invariant description plus the `er=dr=0` edge case.
 
 ## License
 
-Apache-2.0 — xem [LICENSE](./LICENSE).
+Apache-2.0 — see [LICENSE](./LICENSE).
 
-## Author
+## Contributors
 
-JH (Product Owner). Pack được build với sự hỗ trợ của team agent (Cowork architect, Codex core math, Claude Code integration).
+- **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
+- Built with AI pair-programming assistance.

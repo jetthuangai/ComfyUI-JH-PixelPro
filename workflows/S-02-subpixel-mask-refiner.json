@@ -166,7 +166,7 @@
         "text": ""
       },
       "widgets_values": [
-        "ℹ️ Sub-Pixel Mask Refiner (N-02)\n- Input: MASK nhị phân (từ SAM/YOLO/rembg upstream).\n- Output: MASK alpha [0,1] với feather band ở mép.\n- Invariant: deep inside = 1.0 exact, far outside = 0.0 exact.\n- Kernel dùng Chebyshev metric (L∞) — square kernel.\n  Với radius > 16, mép sẽ hơi vuông góc.\n- Default (er=2, dr=4, sigma=2.0, threshold=0.5) phù hợp mask\n  từ SAM portrait cutout."
+        "ℹ️ Sub-Pixel Mask Refiner (N-02)\n- Input: a binary MASK (from SAM / YOLO / rembg upstream).\n- Output: an alpha MASK in [0, 1] with a feathered band at the edge.\n- Invariant: deep inside = 1.0 exact, far outside = 0.0 exact.\n- The kernel uses the Chebyshev metric (L∞) — a square kernel.\n  With radius > 16, edges look slightly boxy.\n- Defaults (er=2, dr=4, sigma=2.0, threshold=0.5) are tuned for a SAM\n  portrait cutout."
       ],
       "color": "#322",
       "bgcolor": "#533"

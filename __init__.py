@@ -1,7 +1,7 @@
 """ComfyUI-JH-PixelPro — GPU-accelerated pro image pack for ComfyUI.
 
-Entry point được ComfyUI load.
-Mỗi node concrete đăng ký qua ``NODE_CLASS_MAPPINGS`` ở module con.
+Entry point loaded by ComfyUI. Concrete nodes register themselves through
+``NODE_CLASS_MAPPINGS`` in child modules.
 """  # noqa: N999 — ComfyUI custom-node packs use hyphenated folder names by convention.
 
 from __future__ import annotations
@@ -20,16 +20,12 @@ if __package__:
     from .nodes import JHPixelProFrequencySeparation, JHPixelProSubPixelMaskRefiner
 
     NODE_CLASS_MAPPINGS["JHPixelProFrequencySeparation"] = JHPixelProFrequencySeparation
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencySeparation"] = (
-        "GPU Frequency Separation (Kornia)"
-    )
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencySeparation"] = "GPU Frequency Separation"
 
     NODE_CLASS_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = JHPixelProSubPixelMaskRefiner
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = (
-        "Sub-Pixel Mask Refiner (Kornia)"
-    )
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = "Sub-Pixel Mask Refiner"
 
-# Web extensions (JS/CSS) — chưa dùng ở Phase 1.
+# Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"
 
 __all__ = [
