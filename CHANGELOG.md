@@ -6,6 +6,30 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 (nothing yet)
 
+## [0.5.0] — 2026-04-19
+
+Batch-3 ships the color-grade trio (N-08 + N-09) and consolidates the new `/color` subgroup for Add Node menu discoverability via a Q-L4 retrofit on N-05. Pack now ships **11 live nodes** and the M3 milestone (color-grade layer) closes.
+
+### Added
+
+- **N-08 `JHPixelProColorMatcher`** (`ComfyUI-JH-PixelPro/color`): Reinhard 2001 statistical color transfer in LAB. Inputs: `IMAGE` target + `IMAGE` reference (must match H × W) + `channels` (`ab` default — preserve target luminance / `lab` — full tone match) + `strength` (0..1, default 1.0) + optional `MASK` stat-gate. Output: `IMAGE` matched. Drop-in for re-anchoring AI-generated skin tones to a pre-AI source plate. Pair downstream of any AI generation step before final composite.
+- **N-09 `JHPixelProToneCurve`** (`ComfyUI-JH-PixelPro/color`): 1024-step float LUT from Catmull-Rom cubic interpolation over 8 control points. Inputs: `IMAGE` + `preset` (`linear` / `s_curve_mild` / `s_curve_strong` / `lift_shadows` / `crush_blacks` / `custom`) + `channel` (`rgb_master` / `r` / `g` / `b`) + `points_json` STRING (used only when preset = `custom`) + `strength` (0..1, default 1.0). Output: `IMAGE` toned. Photoshop-style global contrast curves and per-channel color balance — Catmull-Rom guarantees no overshoot at endpoints.
+- 2 sample workflows (`S-08-color-matcher.json` 7-node A/B/matched + `S-09-tone-curve.json` 5-node A/B). Screenshots not bundled in this release — workflows are functional drag-drop ready; `JH` to chụp + commit later (pattern T-10 post-release).
+
+### Changed
+
+- **N-05 `JHPixelProLuminosityMasking` category retrofit**: `ComfyUI-JH-PixelPro/filters` → `ComfyUI-JH-PixelPro/color`. **UI-only change** — existing workflow JSON is **not affected** because ComfyUI references nodes by class name (`JHPixelProLuminosityMasking`), not by category path. Pattern precedent: T-14 v0.3.0 Q-NS retrofit across 3 nodes (zero JSON breakage validated). **Rationale**: consolidate luminance / chroma-grade operations under the new `/color` subgroup alongside N-08 + N-09 for Add Node menu discoverability. Post-v0.5.0 `/color` subgroup = N-05 Luminosity + N-08 Color Matcher + N-09 Tone Curve.
+
+### Known limitations
+
+- **N-08 CPU 2K miss**: `channels=ab` ~549 ms / `channels=lab` ~456 ms vs aspirational `<100 ms` bound. Root cause: Kornia `rgb_to_lab` / `lab_to_rgb` round-trip alone takes ~254 ms at 2K (library throughput ceiling, not the masked-stat math). CPU 1K passes the bound (`ab ~111 ms` / `lab ~82 ms`). See README §N-08 §Performance H3 for honest disclosure table.
+- **N-09 CPU 2K miss**: `rgb_master` ~225 ms / single-channel ~96 ms vs `<30 ms` bound. Root cause: LUT sampling + 3-channel blend hits the CPU memory-bandwidth ceiling at 2K. CPU 1K passes (`rgb_master ~26 ms` / `r ~18 ms`). See README §N-09 §Performance H3.
+- **CUDA benchmarks not evaluated** for N-08 / N-09 (CPU-only runner). Both paths are well-structured for GPU acceleration — Kornia LAB conversion supports CUDA natively, and LUT apply is embarrassingly parallel.
+
+### Dependencies
+
+- **No new dependencies for batch-3**. Kornia ≥ 0.7.0 (used by N-08 LAB round-trip) + torch (LUT Catmull-Rom hand-rolled) + numpy. MediaPipe ≥ 0.10.0 + OpenCV ≥ 4.5 unchanged from v0.4.0.
+
 ## [0.4.0] — 2026-04-19
 
 Batch-2 face pipeline ships (N-07 + N-10 + N-11) and closes the community-pack dependency gap — the full face chain `LoadImage → S-07 Lens → S-10 FaceDetect → S-06 Aligner → [AI block] → S-11 Unwrap → Composite` now runs entirely inside `ComfyUI-JH-PixelPro/*`. Pack now ships **9 live nodes**.
