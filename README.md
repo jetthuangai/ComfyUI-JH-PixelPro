@@ -317,6 +317,8 @@ Apply Brown–Conrady radial + tangential distortion correction (`inverse`) or s
 
 **Sample workflow:** [workflows/S-07-lens-distortion.json](workflows/S-07-lens-distortion.json)
 
+![screenshot](workflows/S-07-lens-distortion-screenshot.png)
+
 ### Use cases
 
 - **Pre-process before face pipeline.** Rectify a wide-angle portrait → run S-10 FaceDetect → S-06 FacialAligner → cleaner landmarks, more natural unwarp.
@@ -349,6 +351,8 @@ MediaPipe `FaceLandmarker` (tasks API) wrapper that detects 5-point face landmar
 | `face_count` | INT | Number of faces returned (after mode/max-faces filtering). |
 
 **Sample workflow:** [workflows/S-10-face-detect.json](workflows/S-10-face-detect.json)
+
+![screenshot](workflows/S-10-face-detect-screenshot.png)
 
 ### Use cases
 
@@ -394,6 +398,8 @@ Pair node for S-06 FacialAligner. Consumes the `inverse_matrix_json` from S-06, 
 **Sample workflow (full chain demo):** [workflows/S-11-unwrap-face.json](workflows/S-11-unwrap-face.json)
 
 The sample workflow chains `LoadImage → S-06 → ImageInvert (mock AI edit) → S-11 → PreviewImage A/B`. Replace `ImageInvert` with your real face-edit chain (ControlNet / IPAdapter / inpaint / face-detail). The `inverse_matrix_json` widget on S-11 is **converted to an input pin** so it wires straight from S-06 — no manual paste.
+
+![screenshot](workflows/S-11-unwrap-face-screenshot.png)
 
 ### Use cases
 
