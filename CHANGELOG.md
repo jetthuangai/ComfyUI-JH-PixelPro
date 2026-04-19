@@ -6,6 +6,33 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 (nothing yet)
 
+## [0.4.0] — 2026-04-19
+
+Batch-2 face pipeline ships (N-07 + N-10 + N-11) and closes the community-pack dependency gap — the full face chain `LoadImage → S-07 Lens → S-10 FaceDetect → S-06 Aligner → [AI block] → S-11 Unwrap → Composite` now runs entirely inside `ComfyUI-JH-PixelPro/*`. Pack now ships **9 live nodes**.
+
+### Added
+
+- **N-07 `JHPixelProLensDistortion`** (`ComfyUI-JH-PixelPro/geometry`): Brown–Conrady 5-coefficient lens distortion corrector / simulator. Inputs: `IMAGE` + `preset` COMBO (4 calibrated presets — `canon_24mm_wide` / `sony_85mm_tele` / `gopro_fisheye` / `no_op_identity` — plus `custom`) + `direction` COMBO (`inverse` = rectify, default; `forward` = simulate) + 5 FLOAT widgets `k1..p2`. Output: `IMAGE` rectified. Drop in upstream of S-10 FaceDetect to clean up wide-angle portrait shots before landmark detection.
+- **N-10 `JHPixelProFaceDetect`** (`ComfyUI-JH-PixelPro/face`): MediaPipe `FaceLandmarker` (tasks API) wrapper. Inputs: `IMAGE` + `mode` (`single_largest` default / `multi_top_k`) + `max_faces` (1..10) + `confidence_threshold` (0.1..0.95, default 0.5). Outputs: `STRING` `landmarks_json` (list[face][5][2] pixel-abs, S-06-compatible — paste `[0]` into S-06 `landmarks` widget for single-face chains) + `STRING` `bbox_json` + `INT` `face_count`. Auto-downloads `face_landmarker.task` (~5 MB) to `ComfyUI/models/mediapipe/` on first call. Zero community-pack dependency for face detection.
+- **N-11 `JHPixelProUnwrapFace`** (`ComfyUI-JH-PixelPro/face`): pair node for S-06 FacialAligner. Consumes the `inverse_matrix_json` from S-06, warps an edited aligned crop back onto the original canvas via `kornia.warp_affine`, and alpha-composites with a feathered face mask. Inputs: `IMAGE` `edited_aligned` + `IMAGE` `original_image` + `STRING` `inverse_matrix_json` (default identity 1×3×3, safe pass-through) + `FLOAT` `feather_radius` (0..128, default 16) + optional `MASK` `mask_override`. Outputs: `IMAGE` `image_composited` + `MASK` `mask_used`. Closes the face-edit chain so ControlNet / IPAdapter / inpaint passes on the canonical-frame face land back in the original composition without losing the rest of the scene.
+- 3 sample workflows (`S-07-lens-distortion.json` 5-node A/B preview + `S-10-face-detect.json` 4-node single-largest detect + `S-11-unwrap-face.json` 7-node chain demo with widget-to-input conversion on `inverse_matrix_json`) + inline screenshots (JH manual smoke test verify).
+
+### Changed
+
+- **Display name convention for batch-2**: N-07 uses a descriptive name (`"Lens Distortion Corrector"`); N-10 and N-11 use the pack-branded literal class names (`"JHPixelProFaceDetect"` / `"JHPixelProUnwrapFace"`) per the Q-NS retrofit precedent established in batch-1. The `ComfyUI-JH-PixelPro/face` category is new.
+
+### Known limitations
+
+- **N-11 CPU 2K is warp-dominated (~217 ms)** — misses the aspirational `< 60 ms` target because `kornia.warp_affine` over the full canvas takes ~110 ms even with `feather_radius = 0`. CUDA recommended for production 2K+. A bbox-crop fast path (warp only the affected canvas region instead of the full canvas) is a candidate optimization for v0.5+. See README §N-11 §Performance H3 honest disclosure table for full numbers; bench report at `R-20260419-bench-S-11.md`.
+- **N-10 `bbox_json[*].conf` is the threshold-gate metadata** that admitted the detection (it echoes `confidence_threshold`), **NOT** MediaPipe's per-face detector probability — the `FaceLandmarker` tasks API does not expose a per-face score. Use `mode = multi_top_k` + bbox area for ranking subjects, not the `conf` field.
+- **N-10 `confidence_threshold > 0.85` may miss faces on typical portraits** (the `sample_portrait.jpg` fixture tested ceiling ~0.85). Default `0.5` is balanced; raise only for strict crowd-filtering scenarios.
+- **CUDA benchmarks not evaluated** for N-07 / N-10 / N-11 (CPU-only runner). JH GPU follow-up is non-blocking — the integration path is validated end-to-end on CPU with `sample_portrait.jpg` (chain S-10 → S-06 produces aligned `(1, 1024, 1024, 3)`; N-11 round-trip identity drift `0.0064`, well under the spec budget `~0.04–0.13`).
+
+### Dependencies
+
+- **New**: `mediapipe >= 0.10.0` for N-10 (tasks API, Python 3.12+ compatible).
+- Unchanged: Kornia ≥ 0.7.0, OpenCV ≥ 4.5.
+
 ## [0.3.0] — 2026-04-19
 
 Batch-1 face-retouch trio ships (N-04 + N-05 + N-06) and the 3 pre-existing nodes are retrofit under the pack-branded namespace so all 6 live nodes appear under a single category in the ComfyUI Add Node menu.

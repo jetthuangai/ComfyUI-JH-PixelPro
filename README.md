@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.3.0** (2026-04-19) — 6 nodes live under unified `ComfyUI-JH-PixelPro/*` namespace. Batch-1 validated end-to-end (core + wrapper + workflow + integration-pass). Batch-2 face pipeline queued: **N-07** Lens Distortion + **N-10** `JHPixelProFaceDetect` + **N-11** `JHPixelProUnwrapFace` (close the face chain internally). See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** 🎉 **v0.4.0** (2026-04-19) — 9 nodes live under unified `ComfyUI-JH-PixelPro/*` namespace. Batch-2 face pipeline ships — full chain `LoadImage → S-07 Lens → S-10 FaceDetect → S-06 Aligner → [AI block] → S-11 Unwrap → Composite` is production-ready with zero community-pack dependency. Batch-3 queued: **N-08** RAW Color Correction + **N-09** Tone Curve. See [CHANGELOG](./CHANGELOG.md) for details.
 
 ## Why this pack exists
 
