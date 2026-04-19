@@ -17,8 +17,8 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # ``__package__`` is empty and we skip the registration step — the node tests
 # load the pack themselves via ``importlib.util.spec_from_file_location``.
 # Category groups exposed to ComfyUI Add Node menu (under root "ComfyUI-JH-PixelPro/"):
-#   filters    — pixel-domain filters (FS, ES, Lum)
-#   color      — color-grade layer (ColorMatcher, ToneCurve)
+#   filters    — pixel-domain filters (FS, ES)
+#   color      — color-grade layer (Lum, ColorMatcher, ToneCurve)
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace)
