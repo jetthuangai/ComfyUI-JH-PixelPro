@@ -9,6 +9,7 @@ from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .mask_refiner import subpixel_mask_refine
 from .smoother import edge_aware_smooth
+from .tone_curve import tone_curve
 from .unwrap_face import unwrap_face
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     "edge_aware_smooth",
     "high_freq_detail_mask",
     "color_matcher",
+    "tone_curve",
     "face_detect",
     "luminosity_masks",
     "facial_align",
