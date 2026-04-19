@@ -1,17 +1,19 @@
 {
-  "last_node_id": 7,
-  "last_link_id": 5,
+  "id": "06dcd0c6-025a-4aba-b73a-87f7089b0c29",
+  "revision": 0,
+  "last_node_id": 13,
+  "last_link_id": 12,
   "nodes": [
     {
-      "id": 1,
+      "id": 8,
       "type": "LoadImage",
       "pos": [
-        80,
-        80
+        -142.9717166690131,
+        431.73941566260413
       ],
       "size": [
         315,
-        314
+        314.00000000000006
       ],
       "flags": {},
       "order": 0,
@@ -21,11 +23,10 @@
         {
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
-            1,
-            4
-          ],
-          "slot_index": 0
+            7
+          ]
         },
         {
           "name": "MASK",
@@ -34,19 +35,31 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.19.0",
+        "Node name for S&R": "LoadImage",
+        "#sdppp_variant": "default",
+        "#sdppp_simple_content": "canvas",
+        "#sdppp_simple_mask": "canvas",
+        "#sdppp_simple_boundary": "canvas",
+        "#sdppp_label": ""
       },
       "widgets_values": [
-        "sample_portrait.jpg",
+        "113ac8fb3c5883514d77b39d9e8e1c1a.jpg",
         "image"
       ]
     },
     {
-      "id": 2,
+      "id": 1,
       "type": "LoadImage",
       "pos": [
-        80,
-        420
+        -148.12884535595845,
+        78.2663037760664
       ],
       "size": [
         315,
@@ -60,11 +73,12 @@
         {
           "name": "IMAGE",
           "type": "IMAGE",
+          "slot_index": 0,
           "links": [
-            2,
-            5
-          ],
-          "slot_index": 0
+            1,
+            4,
+            11
+          ]
         },
         {
           "name": "MASK",
@@ -73,7 +87,19 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "cnr_id": "comfy-core",
+        "ver": "0.19.0",
+        "Node name for S&R": "LoadImage",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        },
+        "#sdppp_variant": "default",
+        "#sdppp_simple_content": "canvas",
+        "#sdppp_simple_mask": "canvas",
+        "#sdppp_simple_boundary": "canvas",
+        "#sdppp_label": ""
       },
       "widgets_values": [
         "sample_portrait.jpg",
@@ -81,62 +107,76 @@
       ]
     },
     {
-      "id": 3,
-      "type": "JHPixelProColorMatcher",
+      "id": 9,
+      "type": "ImageResize+",
       "pos": [
-        460,
-        200
+        191.1644732714431,
+        317.1510216934691
       ],
       "size": [
-        360,
-        180
+        270,
+        218
       ],
       "flags": {},
-      "order": 2,
+      "order": 3,
       "mode": 0,
       "inputs": [
         {
-          "name": "image_target",
+          "name": "image",
           "type": "IMAGE",
-          "link": 1
-        },
-        {
-          "name": "image_reference",
-          "type": "IMAGE",
-          "link": 2
+          "link": 7
         }
       ],
       "outputs": [
         {
-          "name": "image_matched",
+          "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            3
-          ],
-          "slot_index": 0
+            8
+          ]
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": null
         }
       ],
       "properties": {
-        "Node name for S&R": "JHPixelProColorMatcher"
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "cnr_id": "comfyui_essentials",
+        "ver": "1.1.0",
+        "Node name for S&R": "ImageResize+"
       },
       "widgets_values": [
-        "ab",
-        1.0
+        2333,
+        3500,
+        "nearest",
+        "fill / crop",
+        "always",
+        0
       ]
     },
     {
       "id": 4,
       "type": "PreviewImage",
       "pos": [
-        880,
-        60
+        500.7122436919882,
+        86.6281282643011
       ],
       "size": [
-        300,
-        260
+        288.30958656270604,
+        302.8647422414726
       ],
       "flags": {},
-      "order": 3,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -147,34 +187,14 @@
       ],
       "outputs": [],
       "properties": {
-        "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 5,
-      "type": "PreviewImage",
-      "pos": [
-        880,
-        340
-      ],
-      "size": [
-        300,
-        260
-      ],
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 5
+        "cnr_id": "comfy-core",
+        "ver": "0.19.0",
+        "Node name for S&R": "PreviewImage",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
         }
-      ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
       },
       "widgets_values": []
     },
@@ -182,15 +202,15 @@
       "id": 6,
       "type": "PreviewImage",
       "pos": [
-        880,
-        620
+        499.97661397654025,
+        432.4386844418988
       ],
       "size": [
-        300,
-        260
+        292.7107823603012,
+        298.7746759449832
       ],
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -201,34 +221,188 @@
       ],
       "outputs": [],
       "properties": {
-        "Node name for S&R": "PreviewImage"
+        "cnr_id": "comfy-core",
+        "ver": "0.19.0",
+        "Node name for S&R": "PreviewImage",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
       },
       "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "JHPixelProColorMatcher",
+      "pos": [
+        187.61108490197773,
+        86.16104900004389
+      ],
+      "size": [
+        277.5178704210705,
+        180.64944957508214
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_target",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "image_reference",
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image_matched",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            3,
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-workflow-encrypt",
+        "ver": "1.0.0",
+        "Node name for S&R": "JHPixelProColorMatcher",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "lab",
+        1
+      ]
     },
     {
       "id": 7,
       "type": "Note",
       "pos": [
-        80,
-        760
+        -154.6179463343687,
+        798.8981772252689
       ],
       "size": [
-        1100,
-        260
+        1397.5732845334398,
+        264.7233669356931
       ],
       "flags": {},
-      "order": 6,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [],
       "properties": {
-        "text": ""
+        "text": "",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
       },
       "widgets_values": [
-        "\u2139\ufe0f Color Matcher (LAB) \u2014 S-08\n\nDefaults: channels=ab, strength=1.0. mask unconnected.\n\nPRODUCTION USE CASE:\nAfter an AI pass (SDXL face refine / IPAdapter / inpaint) the output often drifts in skin tone / color cast. Feed the AI output into image_target and the pre-AI original into image_reference \u2014 S-08 re-anchors the target's chroma to the reference in LAB space.\n\nCHANNELS:\n- ab (default, pro retouch) = match chroma only, preserve target luminance. Keeps the AI output's lighting intact while pulling skin tone back toward the source.\n- lab = match L + a + b (full tone transfer). Use when the AI output has brightness drift too.\n\nSTRENGTH: 0 = identity target (bypass), 1 = full match. Typical pro dose 0.6\u20130.8 for natural skin-tone correction \u2014 1.0 can look over-corrected.\n\nDEMO LIMITATION: this workflow loads sample_portrait.jpg for BOTH target and reference, so the matched output should be near-identity (proves the node runs end-to-end, not the color-shift magnitude). To see a real color transfer, replace the target LoadImage with a color-drifted version (AI output, different-temp-light copy, or a separate shoot).\n\nMASK (optional, unconnected in this demo): a binary MASK wired upstream restricts statistics computation to that region (e.g., skin-only). Output is always applied to the full target \u2014 mask only gates which pixels are used to estimate the transfer."
+        "ℹ️ Color Matcher (LAB) — S-08\n\nDefaults: channels=ab, strength=1.0. mask unconnected.\n\nPRODUCTION USE CASE:\nAfter an AI pass (SDXL face refine / IPAdapter / inpaint) the output often drifts in skin tone / color cast. Feed the AI output into image_target and the pre-AI original into image_reference — S-08 re-anchors the target's chroma to the reference in LAB space.\n\nCHANNELS:\n- ab (default, pro retouch) = match chroma only, preserve target luminance. Keeps the AI output's lighting intact while pulling skin tone back toward the source.\n- lab = match L + a + b (full tone transfer). Use when the AI output has brightness drift too.\n\nSTRENGTH: 0 = identity target (bypass), 1 = full match. Typical pro dose 0.6–0.8 for natural skin-tone correction — 1.0 can look over-corrected.\n\nDEMO LIMITATION: this workflow loads sample_portrait.jpg for BOTH target and reference, so the matched output should be near-identity (proves the node runs end-to-end, not the color-shift magnitude). To see a real color transfer, replace the target LoadImage with a color-drifted version (AI output, different-temp-light copy, or a separate shoot).\n\nMASK (optional, unconnected in this demo): a binary MASK wired upstream restricts statistics computation to that region (e.g., skin-only). Output is always applied to the full target — mask only gates which pixels are used to estimate the transfer."
       ],
       "color": "#243",
       "bgcolor": "#365"
+    },
+    {
+      "id": 12,
+      "type": "NH_ImageCompare",
+      "pos": [
+        202.68743123882177,
+        592.8310240265654
+      ],
+      "size": [
+        270,
+        150
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "type": "IMAGE",
+          "link": 11
+        },
+        {
+          "name": "image_b",
+          "type": "IMAGE",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "cnr_id": "nh-nodes",
+        "ver": "0e75f569fe7c3f83b0b39ea84f59c3bbefd5159b",
+        "Node name for S&R": "NH_ImageCompare"
+      },
+      "widgets_values": [
+        "split_vertical",
+        0.5,
+        0.5,
+        "lanczos"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "PreviewImage",
+      "pos": [
+        808.4290447596416,
+        97.03524512712043
+      ],
+      "size": [
+        419.68351158852215,
+        624.6891672426984
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 12
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.19.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
     }
   ],
   "links": [
@@ -238,14 +412,6 @@
       0,
       3,
       0,
-      "IMAGE"
-    ],
-    [
-      2,
-      2,
-      0,
-      3,
-      1,
       "IMAGE"
     ],
     [
@@ -265,16 +431,63 @@
       "IMAGE"
     ],
     [
-      5,
-      2,
+      7,
+      8,
       0,
-      5,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      9,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      10,
+      3,
+      0,
+      12,
+      1,
+      "IMAGE"
+    ],
+    [
+      11,
+      1,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      12,
+      0,
+      13,
       0,
       "IMAGE"
     ]
   ],
   "groups": [],
   "config": {},
-  "extra": {},
+  "extra": {
+    "ue_links": [],
+    "links_added_by_ue": [],
+    "ds": {
+      "scale": 1.140539134475977,
+      "offset": [
+        693.6088555716558,
+        93.04691304333483
+      ]
+    },
+    "frontendVersion": "1.42.10",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
   "version": 0.4
 }
