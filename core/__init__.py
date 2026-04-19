@@ -8,6 +8,7 @@ from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .mask_refiner import subpixel_mask_refine
 from .smoother import edge_aware_smooth
+from .unwrap_face import unwrap_face
 
 __all__ = [
     "frequency_separation",
@@ -18,4 +19,5 @@ __all__ = [
     "luminosity_masks",
     "facial_align",
     "lens_distortion",
+    "unwrap_face",
 ]
