@@ -16,14 +16,22 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # (because the parent directory name contains hyphens); in that case
 # ``__package__`` is empty and we skip the registration step — the node tests
 # load the pack themselves via ``importlib.util.spec_from_file_location``.
+# Category groups exposed to ComfyUI Add Node menu (under root "ComfyUI-JH-PixelPro/"):
+#   filters    — pixel-domain filters (FS, ES, Lum)
+#   mask       — mask creation / refinement (MR, HFDM)
+#   geometry   — geometric transforms (Aligner, LensDistortion)
+#   face       — face-pipeline domain (FaceDetect, UnwrapFace)
 if __package__:
     from .nodes import (
         JHPixelProEdgeAwareSmoother,
+        JHPixelProFaceDetect,
         JHPixelProFacialAligner,
         JHPixelProFrequencySeparation,
         JHPixelProHighFreqDetailMasker,
+        JHPixelProLensDistortion,
         JHPixelProLuminosityMasking,
         JHPixelProSubPixelMaskRefiner,
+        JHPixelProUnwrapFace,
     )
 
     NODE_CLASS_MAPPINGS["JHPixelProFrequencySeparation"] = JHPixelProFrequencySeparation
@@ -43,6 +51,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProFacialAligner"] = JHPixelProFacialAligner
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFacialAligner"] = "Landmark Facial Aligner"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLensDistortion"] = JHPixelProLensDistortion
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLensDistortion"] = "Lens Distortion Corrector"
+
+    NODE_CLASS_MAPPINGS["JHPixelProFaceDetect"] = JHPixelProFaceDetect
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceDetect"] = "JHPixelProFaceDetect"
+
+    NODE_CLASS_MAPPINGS["JHPixelProUnwrapFace"] = JHPixelProUnwrapFace
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProUnwrapFace"] = "JHPixelProUnwrapFace"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

@@ -1,0 +1,327 @@
+{
+  "last_node_id": 7,
+  "last_link_id": 7,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        80,
+        200
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            2,
+            3
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "sample_portrait.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "JHPixelProFacialAligner",
+      "pos": [
+        460,
+        200
+      ],
+      "size": [
+        360,
+        260
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image_aligned",
+          "type": "IMAGE",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "inverse_matrix_json",
+          "type": "STRING",
+          "links": [
+            5
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProFacialAligner"
+      },
+      "widgets_values": [
+        "[[820, 650], [1420, 640], [1120, 900], [930, 1150], [1310, 1145]]",
+        1024,
+        0.2
+      ]
+    },
+    {
+      "id": 3,
+      "type": "ImageInvert",
+      "pos": [
+        880,
+        200
+      ],
+      "size": [
+        260,
+        80
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageInvert"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "JHPixelProUnwrapFace",
+      "pos": [
+        1200,
+        200
+      ],
+      "size": [
+        380,
+        220
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "edited_aligned",
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "name": "original_image",
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "name": "inverse_matrix_json",
+          "type": "STRING",
+          "link": 5,
+          "widget": {
+            "name": "inverse_matrix_json"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image_composited",
+          "type": "IMAGE",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "mask_used",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProUnwrapFace"
+      },
+      "widgets_values": [
+        16.0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        1640,
+        80
+      ],
+      "size": [
+        300,
+        260
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        1640,
+        380
+      ],
+      "size": [
+        300,
+        260
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [
+        80,
+        560
+      ],
+      "size": [
+        1500,
+        360
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "\u2139\ufe0f JHPixelProUnwrapFace (S-11) \u2014 chain demo: Load \u2192 S-06 \u2192 [mock AI edit] \u2192 S-11 \u2192 composite\n\nDefaults: feather_radius=16.0, mask_override=None.\n\nCHAIN PIPELINE (this workflow):\n  LoadImage \u2192 S-06 FacialAligner \u2192 ImageInvert (stand-in for an AI face-edit block) \u2192 S-11 UnwrapFace \u2192 PreviewImage A/B (before vs composited).\n\nReplace ImageInvert with your real AI edit chain (ControlNet, IPAdapter, inpaint, face-detail) wired on the aligned crop. The inverse_matrix_json wire from S-06 is required so S-11 knows where to warp the edit back onto the original canvas.\n\nWIDGETS:\n- inverse_matrix_json (converted to input pin): wire from S-06.inverse_matrix_json. Default identity 1x3x3 is a safe pass-through if you disconnect the wire.\n- feather_radius (pixels): Gaussian blur on the auto-generated mask. 16 is a good portrait default. Higher = smoother blend; 0 = hard edge. Ignored when mask_override is wired.\n- mask_override (optional MASK): wire a custom skin-only / SAM mask upstream to restrict composite to that region.\n\nROUND-TRIP IDENTITY (sanity test):\n  If you replace ImageInvert with a passthrough (or set ImageInvert.mode bypass), the composite should approximate the original. Two bilinear resamples (align + unwarp) plus the feather will soften details slightly \u2014 expected ~10\u201334/255 in uint8. Good enough for retouch chains, not near-lossless.\n\nMASK OUTPUT:\nThe mask_used MASK output exposes the feathered face region in canvas coords. Wire it downstream into ImageBlend for advanced compositing modes (multiply, screen) instead of the built-in alpha-over."
+      ],
+      "color": "#243",
+      "bgcolor": "#365"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      1,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      1,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      2,
+      1,
+      4,
+      2,
+      "STRING"
+    ],
+    [
+      6,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      4,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

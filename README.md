@@ -283,6 +283,138 @@ Align a face to a canonical FFHQ-like frame via 5 landmarks using a similarity t
 - **Roundtrip bilinear smoothing.** Align + unwrap puts the image through two bilinear resamples, which softens the result by ~34/255 in uint8. Good enough for a retouch chain, not near-lossless — do not chain more than one round.
 - **Mediapipe dependency for landmark detection is optional.** The core ships a fallback 5-point JSON so the pack loads without `mediapipe` installed. For automatic landmark detection, pair with a separate face-detect custom node upstream.
 
+## N-07 Lens Distortion Corrector
+
+Apply Brown–Conrady radial + tangential distortion correction (`inverse`) or simulation (`forward`) to a ComfyUI IMAGE. Drop in **before** face-detect or alignment to rectify wide-angle portrait shots — barrel distortion at 24mm pulls corners inward and throws off landmark detection. Ships with four calibrated presets so you don't have to hand-tune coefficients for the common cases.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `preset` | COMBO | `no_op_identity` | One of `canon_24mm_wide`, `sony_85mm_tele`, `gopro_fisheye`, `no_op_identity`, `custom`. When `≠ custom`, the 5 widget values below are overridden by the preset tuple. |
+| `direction` | COMBO | `inverse` | `inverse` = rectify a distorted source (default; the retouch use case). `forward` = simulate distortion on a clean source (creative effect). |
+| `k1` | FLOAT | `0.0` | Radial coefficient k1, range `[-1.0, 1.0]`, step `0.001`. Used only when `preset = custom`. |
+| `k2` | FLOAT | `0.0` | Radial coefficient k2, same range. |
+| `k3` | FLOAT | `0.0` | Radial coefficient k3, same range. |
+| `p1` | FLOAT | `0.0` | Tangential coefficient p1, range `[-0.1, 0.1]`, step `0.0001`. |
+| `p2` | FLOAT | `0.0` | Tangential coefficient p2, same range. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image_rectified` | IMAGE | Distortion-corrected (or simulated) IMAGE at the same shape as input. Range `[0, 1]`. |
+
+**Preset coefficients** (mid-range approximations, tested on 35mm-equivalent crop):
+
+| Preset | k1 | k2 | k3 | p1 | p2 |
+|---|---|---|---|---|---|
+| `canon_24mm_wide` | -0.18 | 0.08 | -0.02 | 0.0 | 0.0 |
+| `sony_85mm_tele` | 0.03 | -0.01 | 0.0 | 0.0 | 0.0 |
+| `gopro_fisheye` | -0.35 | 0.12 | -0.04 | 0.0 | 0.0 |
+| `no_op_identity` | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
+
+**Sample workflow:** [workflows/S-07-lens-distortion.json](workflows/S-07-lens-distortion.json)
+
+### Use cases
+
+- **Pre-process before face pipeline.** Rectify a wide-angle portrait → run S-10 FaceDetect → S-06 FacialAligner → cleaner landmarks, more natural unwarp.
+- **Creative fake-fisheye.** `direction = forward` + `gopro_fisheye` preset on a flat 50mm shot for a lens-distorted look.
+
+### Limitations
+
+- **Presets are approximations, not lens-specific calibration.** For pro retouch, calibrate the actual lens via OpenCV `calibrateCamera` (checkerboard) and paste the resulting `(k1..p2)` tuple into the `custom` preset for accurate correction.
+- **CPU path uses `cv2.remap` for `inverse`.** GPU path uses Kornia `undistort_image` and falls back to cv2 if Kornia raises. The forward path always uses Kornia `undistort_points` + `grid_sample`.
+
+## N-10 JHPixelProFaceDetect
+
+MediaPipe `FaceLandmarker` (tasks API) wrapper that detects 5-point face landmarks on a ComfyUI IMAGE and emits S-06-compatible JSON. Drop-in replacement for community face-detect packs — no extra dependencies beyond `mediapipe ≥ 0.10.33` (auto-checked at first call). The 5 points use MediaPipe canonical indices `(33, 263, 1, 61, 291)` = `[L-eye, R-eye, nose-tip, L-mouth, R-mouth]`, so `landmarks_json[0]` pastes directly into S-06's `landmarks` widget for single-face chains.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `mode` | COMBO | `single_largest` | `single_largest` returns 1 face with the largest bbox (~90% portrait use case). `multi_top_k` returns up to `max_faces` ranked by bbox area. |
+| `max_faces` | INT | `1` | Cap on detected faces, range `[1, 10]`. Ignored when `mode = single_largest`. Bump to 5–10 for crowd scenes. |
+| `confidence_threshold` | FLOAT | `0.5` | MediaPipe `min_face_detection_confidence` gate, range `[0.1, 0.95]`, step `0.05`. Default `0.5` is balanced. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `landmarks_json` | STRING | JSON `list[face][5][2]` of pixel-abs `(x, y)`. 5 points per face, S-06-compatible. For a single-face chain, paste `landmarks_json[0]` into S-06 `landmarks` widget. |
+| `bbox_json` | STRING | JSON `list[face]` of `{x, y, w, h, conf, batch_index}`. See caveat 2 below for `conf` semantics. |
+| `face_count` | INT | Number of faces returned (after mode/max-faces filtering). |
+
+**Sample workflow:** [workflows/S-10-face-detect.json](workflows/S-10-face-detect.json)
+
+### Use cases
+
+- **Auto-feed S-06 FacialAligner.** Replace hand-pasted landmarks with detected ones for batch portrait pipelines.
+- **Crowd filtering.** `mode = multi_top_k` + bbox area for ranking subjects.
+
+### Caveats
+
+- **`confidence_threshold` ceiling on typical portraits ~0.85.** Values above this may *miss* faces on standard portrait shots (sample_portrait fixture tested ceiling). Default `0.5` is balanced. Raise only for strict crowd-filtering scenarios.
+- **`bbox_json[*].conf` is the threshold-gate metadata, NOT MediaPipe's per-face detector probability.** The MediaPipe `FaceLandmarker` tasks API does not expose per-face score, so `conf` simply repeats the `confidence_threshold` value used to admit the detection. Use `mode = multi_top_k` + bbox area for ranking, not `conf`.
+
+### Limitations
+
+- **First call downloads ~5 MB model file.** `face_landmarker.task` is fetched to `ComfyUI/models/mediapipe/` on first invocation; subsequent calls reuse the cached file. Network-restricted environments must pre-place the file.
+- **`mediapipe` dependency required.** If `pip install mediapipe` fails (e.g., Python version mismatch), the node raises a clear `RuntimeError` with install instructions and a fallback note: bypass S-10 and paste 5-point JSON manually into S-06.
+
+## N-11 JHPixelProUnwrapFace
+
+Pair node for S-06 FacialAligner. Consumes the `inverse_matrix_json` from S-06, warps an edited aligned crop back onto the original canvas via `kornia.warp_affine`, and alpha-composites with a feathered face mask. Closes the face-edit pipeline `LoadImage → S-06 → [AI block] → S-11 → composite` so you can run ControlNet / IPAdapter / inpaint on a canonical-frame face and project the edit back into the original composition without losing the rest of the scene.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `edited_aligned` | IMAGE | — | The aligned face IMAGE *after* AI editing (BHWC float32 `[0,1]`). Typically wired from a ControlNet / inpaint chain that consumed S-06's `image_aligned` output. |
+| `original_image` | IMAGE | — | The original full-canvas IMAGE — composite target. The output canvas size = `original_image` shape exactly. |
+| `inverse_matrix_json` | STRING | identity 1×3×3 | S-06 `inverse_matrix_json` output (JSON-serialized `B × 3 × 3` or `B × 2 × 3` per-batch affine). Default is identity 1×3×3 — a safe pass-through if nothing is wired. |
+| `feather_radius` | FLOAT | `16.0` | Gaussian edge blur (pixels) on the auto-generated mask. Range `[0, 128]`, step `1.0`. Higher = smoother blend at the cost of softer face edge; `0` = hard edge. **Ignored** when `mask_override` is wired. |
+
+**Optional inputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `mask_override` | MASK | Custom MASK (BHW or B×1×H×W) in `original_image` canvas coords to override the auto-feathered face mask. Use a skin-only / SAM mask upstream to restrict composite to a precise region. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image_composited` | IMAGE | The edited face composited back onto the original canvas. Same shape as `original_image`. Range `[0, 1]`. |
+| `mask_used` | MASK | The actual mask applied (BHW). Wire downstream into `ImageBlend` for advanced compositing modes (multiply, screen) instead of the built-in alpha-over. |
+
+**Sample workflow (full chain demo):** [workflows/S-11-unwrap-face.json](workflows/S-11-unwrap-face.json)
+
+The sample workflow chains `LoadImage → S-06 → ImageInvert (mock AI edit) → S-11 → PreviewImage A/B`. Replace `ImageInvert` with your real face-edit chain (ControlNet / IPAdapter / inpaint / face-detail). The `inverse_matrix_json` widget on S-11 is **converted to an input pin** so it wires straight from S-06 — no manual paste.
+
+### Use cases
+
+- **Post-AI face edit unwrap.** Run ControlNet on the canonical aligned crop → S-11 unwarps the edited face onto the full original composition while preserving everything outside the face mask.
+- **Skin-targeted retouch.** Wire a SAM / Impact skin segmentation mask into `mask_override` to apply the AI edit only within the actual skin region.
+
+### Performance
+
+| Resolution | CPU latency | Status |
+|---|---|---|
+| 1024 × 1024 | ~52 ms | Acceptable for interactive use. |
+| 2048 × 2048 | ~217 ms | Misses the aspirational `< 60 ms` target — accepted with caveat (see below). |
+
+`unwrap_face` is **warp-dominated**: even with `feather_radius = 0` (no Gaussian blur), the full-canvas `kornia.warp_affine` keeps CPU 2K runtime around ~110 ms. The Gaussian feather adds another ~100 ms on CPU. **CUDA is recommended for production 2K+** — the GPU path stays well under the 60 ms target. A bbox-crop fast path (warp only the affected canvas region instead of the full canvas) is a candidate optimization for v0.5+. See [`R-20260419-bench-S-11.md`](../../.agent-hub/50_reports/R-20260419-bench-S-11.md) for full numbers.
+
+### Limitations
+
+- **Chain requires upstream S-06.** Manual `inverse_matrix_json` paste is risky — the matrix shape and units must match S-06's exact convention. Always pair with S-06 in production.
+- **Round-trip bilinear softening.** Align (S-06) + edit + unwrap (S-11) goes through two bilinear resamples plus a feather blur, which softens the composite by ~10–34/255 in uint8. Good enough for a retouch chain, not near-lossless — do not stack multiple unwarp rounds.
+- **Simple alpha-over composite only.** For multiply / screen / overlay blend modes, wire the `mask_used` output into a downstream `ImageBlend` node.
+
 ## License
 
 Apache-2.0 — see [LICENSE](./LICENSE).
