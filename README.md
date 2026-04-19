@@ -356,6 +356,8 @@ Reinhard LAB color transfer for ComfyUI IMAGE tensors. Match the chroma of a tar
 
 **Sample workflow:** [workflows/S-08-color-matcher.json](workflows/S-08-color-matcher.json)
 
+![screenshot](workflows/S-08-color-matcher-screenshot.png)
+
 ### Use cases
 
 - **AI output color drift fix.** Pass the SDXL / IPAdapter / inpaint result as `image_target` and the pre-AI source as `image_reference` — restores the original skin tone without touching the AI's facial detail.
@@ -403,6 +405,8 @@ Photoshop-style 8-control-point tone curve baked into a 1024-step Catmull-Rom LU
 | `crush_blacks` | shadows pushed down | Dramatic / cinematic. |
 
 **Sample workflow:** [workflows/S-09-tone-curve.json](workflows/S-09-tone-curve.json)
+
+![screenshot](workflows/S-09-tone-curve-screenshot.png)
 
 ### Use cases
 
