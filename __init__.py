@@ -18,11 +18,13 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # load the pack themselves via ``importlib.util.spec_from_file_location``.
 # Category groups exposed to ComfyUI Add Node menu (under root "ComfyUI-JH-PixelPro/"):
 #   filters    — pixel-domain filters (FS, ES, Lum)
+#   color      — color-grade layer (ColorMatcher, ToneCurve)
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace)
 if __package__:
     from .nodes import (
+        JHPixelProColorMatcher,
         JHPixelProEdgeAwareSmoother,
         JHPixelProFaceDetect,
         JHPixelProFacialAligner,
@@ -31,6 +33,7 @@ if __package__:
         JHPixelProLensDistortion,
         JHPixelProLuminosityMasking,
         JHPixelProSubPixelMaskRefiner,
+        JHPixelProToneCurve,
         JHPixelProUnwrapFace,
     )
 
@@ -60,6 +63,12 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProUnwrapFace"] = JHPixelProUnwrapFace
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProUnwrapFace"] = "JHPixelProUnwrapFace"
+
+    NODE_CLASS_MAPPINGS["JHPixelProColorMatcher"] = JHPixelProColorMatcher
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorMatcher"] = "Color Matcher (LAB)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProToneCurve"] = JHPixelProToneCurve
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProToneCurve"] = "Tone Curve (RGB)"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

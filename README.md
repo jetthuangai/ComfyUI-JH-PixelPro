@@ -329,6 +329,97 @@ Apply Brown–Conrady radial + tangential distortion correction (`inverse`) or s
 - **Presets are approximations, not lens-specific calibration.** For pro retouch, calibrate the actual lens via OpenCV `calibrateCamera` (checkerboard) and paste the resulting `(k1..p2)` tuple into the `custom` preset for accurate correction.
 - **CPU path uses `cv2.remap` for `inverse`.** GPU path uses Kornia `undistort_image` and falls back to cv2 if Kornia raises. The forward path always uses Kornia `undistort_points` + `grid_sample`.
 
+## N-08 Color Matcher (LAB)
+
+Reinhard LAB color transfer for ComfyUI IMAGE tensors. Match the chroma of a target image (typically the output of an AI pass — SDXL face refine, IPAdapter, inpaint) to a reference image (the pre-AI source) so the AI result keeps the original's skin tone, white balance, and color cast. Operates in LAB space so you can choose between matching chroma only (`ab`, preserves the AI output's lighting) or full tone (`lab`).
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image_target` | IMAGE | — | The image to be corrected — typically the AI output that drifted in color (BHWC, float32 `[0, 1]`). |
+| `image_reference` | IMAGE | — | The image whose color statistics will be transferred — typically the pre-AI source. **Must have the same H × W as `image_target`** (batch can be 1 or match target). |
+| `channels` | COMBO | `ab` | `ab` = match chroma only, preserve target luminance (pro retouch default — avoids washing out the AI output's lighting). `lab` = match L + a + b (full tone transfer including brightness). |
+| `strength` | FLOAT | `1.0` | Blend factor `[0, 1]`, step `0.01`. `0` = identity target (bypass), `1` = full match. Typical pro dose `0.6–0.8` for natural skin-tone correction. |
+
+**Optional inputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `mask` | MASK | Optional MASK (BHW float32 `[0, 1]`) restricting **statistics computation** to the masked region — useful when you only want to match skin tone, not the background. The output is always applied to the full target; the mask only gates which pixels are used to estimate the mean / std transfer. Each batch item must contain at least one positive pixel. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image_matched` | IMAGE | The target image with its chroma (and optionally luminance) re-anchored to the reference. Same shape as `image_target`. Range `[0, 1]`. |
+
+**Sample workflow:** [workflows/S-08-color-matcher.json](workflows/S-08-color-matcher.json)
+
+### Use cases
+
+- **AI output color drift fix.** Pass the SDXL / IPAdapter / inpaint result as `image_target` and the pre-AI source as `image_reference` — restores the original skin tone without touching the AI's facial detail.
+- **Skin-tone consistency across a batch.** Pick one anchor portrait as the reference, run every other portrait through `channels=ab` strength `0.7` for a unified look.
+- **Product photography color matching.** Match a re-shot product against a brand-approved reference for consistent catalog color.
+
+### Caveats
+
+- **Reference must match target H × W.** No automatic resize — pre-resize the reference upstream with `ImageScale` if needed.
+- **`mask` is a stat-gate, not an output mask.** It restricts which pixels feed the Reinhard mean/std estimation. The output composite is always applied to the full target. For region-restricted output, multiply downstream with the same mask via `ImageBlend`.
+- **Reinhard transfer assumes both target and reference share a similar tonal regime.** A daylight portrait matched against a tungsten reference will look unnatural — pre-grade closer first, then use small `strength` to fine-tune.
+
+### Performance
+
+CPU 2K benchmark misses the aspirational `< 100 ms` bound on a CPU-only runner: `ab` mode `~549 ms`, `lab` mode `~456 ms`. Root cause is the Kornia `rgb_to_lab` / `lab_to_rgb` round-trip alone — about `~254 ms` at 2K — which is the library throughput ceiling, not the masked-stat math itself. CPU 1K modes pass the bound (`ab ~111 ms` / `lab ~82 ms`). The GPU path is **not evaluated** on this CPU-only runner; LAB conversion + masked stats are likely fast on CUDA. For 2K pro retouch, recommend running on GPU or the downsample → match → upsample pattern. See [`R-20260419-bench-S-08.md`](../../.agent-hub/50_reports/R-20260419-bench-S-08.md) for full numbers.
+
+## N-09 Tone Curve (RGB)
+
+Photoshop-style 8-control-point tone curve baked into a 1024-step Catmull-Rom LUT and applied to a ComfyUI IMAGE. Five hand-tuned presets cover the common contrast / lift / crush moves; the `custom` preset takes an 8-point JSON for arbitrary curves. Apply globally (`rgb_master`) for contrast, or to a single channel (`r` / `g` / `b`) for white-balance / color-balance correction.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `preset` | COMBO | `linear` | One of `linear` / `s_curve_mild` / `s_curve_strong` / `lift_shadows` / `crush_blacks` / `custom`. When `≠ custom`, `points_json` is ignored. |
+| `channel` | COMBO | `rgb_master` | `rgb_master` = apply curve to R, G, B equally (global contrast). `r` / `g` / `b` = apply only to that channel (color balance / white-balance correction). |
+| `points_json` | STRING | *(8-point identity-ish JSON)* | Custom 8 control points `[[x1,y1],...,[x8,y8]]` in `[0, 1]^2`. Endpoints **must** be `(0,0)` and `(1,1)`. `x` must be strictly increasing (monotone). Used only when `preset = custom`. |
+| `strength` | FLOAT | `1.0` | Blend factor `[0, 1]`, step `0.01`. `0` = identity (bypass), `1` = full curve. Use `0.5–0.8` for subtle grading. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image_toned` | IMAGE | The image after applying the tone curve, same shape as input. Range `[0, 1]`. |
+
+**Preset shapes** (8 control points each, Catmull-Rom interpolated):
+
+| Preset | Shape | When to use |
+|---|---|---|
+| `linear` | identity diagonal | Bypass / A/B comparison anchor. |
+| `s_curve_mild` | gentle S | Default safe portrait contrast bump. |
+| `s_curve_strong` | aggressive S | Editorial / commercial look. |
+| `lift_shadows` | shadows pulled up | Matte / film-stock vibe. |
+| `crush_blacks` | shadows pushed down | Dramatic / cinematic. |
+
+**Sample workflow:** [workflows/S-09-tone-curve.json](workflows/S-09-tone-curve.json)
+
+### Use cases
+
+- **Global contrast bump.** `preset = s_curve_mild`, `channel = rgb_master`, `strength = 1.0` — a one-click portrait punch-up.
+- **Per-channel color balance.** `channel = b` + a curve that lifts shadows of the blue channel for the classic teal-and-orange grade.
+- **Region-aware grading.** Pair upstream with `S-05 Luminosity Masking` and a downstream `ImageBlend` to apply the curve to shadows / midtones / highlights only.
+
+### Caveats
+
+- **Endpoints are mandatory.** `(0, 0)` and `(1, 1)` must be the first and last points — the wrapper raises a clear `ValueError` otherwise. This is not a bug; it guarantees the curve clamps blacks-to-blacks and whites-to-whites.
+- **Monotone x is mandatory.** `x` values must be strictly increasing. Repeated or out-of-order x values raise `ValueError`.
+- **Photoshop `.acv` import requires manual 8-point sampling.** Photoshop curves can have 2–16 points; the wrapper expects exactly 8. Re-sample your `.acv` curve to 8 evenly-spaced control points before pasting into `points_json`.
+
+### Performance
+
+CPU 2K benchmark misses the aspirational `< 30 ms` bound on a CPU-only runner: `rgb_master` `~225 ms` (applies LUT to all 3 channels then blends — memory-bandwidth-bound at 2K), single-channel `r` / `g` / `b` `~96 ms`. CPU 1K modes pass the bound (`rgb_master ~26 ms` / `r ~18 ms`). Root cause is LUT sampling + 3-channel blend at 2K hitting the CPU memory bandwidth ceiling. The GPU path is **not evaluated** on this CPU-only runner; LUT apply is embarrassingly parallel and likely fast on CUDA. For 2K pro retouch, recommend GPU device. See [`R-20260419-bench-S-09.md`](../../.agent-hub/50_reports/R-20260419-bench-S-09.md) for full numbers.
+
 ## N-10 JHPixelProFaceDetect
 
 MediaPipe `FaceLandmarker` (tasks API) wrapper that detects 5-point face landmarks on a ComfyUI IMAGE and emits S-06-compatible JSON. Drop-in replacement for community face-detect packs — no extra dependencies beyond `mediapipe ≥ 0.10.33` (auto-checked at first call). The 5 points use MediaPipe canonical indices `(33, 263, 1, 61, 291)` = `[L-eye, R-eye, nose-tip, L-mouth, R-mouth]`, so `landmarks_json[0]` pastes directly into S-06's `landmarks` widget for single-face chains.
