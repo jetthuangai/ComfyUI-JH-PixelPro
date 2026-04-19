@@ -10,7 +10,7 @@ from ..core import luminosity_masks
 class JHPixelProLuminosityMasking:
     """Split an image into three smooth luminosity masks (shadows / midtones / highlights)."""
 
-    CATEGORY = "ComfyUI-JH-PixelPro/filters"
+    CATEGORY = "ComfyUI-JH-PixelPro/color"
     RETURN_TYPES = ("MASK", "MASK", "MASK")
     RETURN_NAMES = ("mask_shadows", "mask_midtones", "mask_highlights")
     FUNCTION = "run"
