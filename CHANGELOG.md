@@ -4,7 +4,9 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
-(nothing yet)
+### Added
+
+- 2 workflow screenshots for S-08 Color Matcher + S-09 Tone Curve (batch-3 follow-up, JH manual smoke test verified post-v0.5.0). README §N-08 + §N-09 now render reference image like §N-01..§N-07. Workflow JSONs themselves were also extended by JH with optional community-pack utility nodes (`ImageResize+` from `comfyui_essentials`, `NH_ImageCompare` from `nh-nodes`) for richer interactive demo — the pack's core nodes (`JHPixelProColorMatcher` / `JHPixelProToneCurve`) remain zero-community-dep. No tag bump — docs-only commit post-v0.5.0; v0.5.0 historic record at peel `d0691db` is unchanged.
 
 ## [0.5.0] — 2026-04-19
 
