@@ -3,6 +3,7 @@
 from .detail_masker import high_freq_detail_mask
 from .facial_aligner import facial_align
 from .frequency import frequency_separation
+from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .mask_refiner import subpixel_mask_refine
 from .smoother import edge_aware_smooth
@@ -14,4 +15,5 @@ __all__ = [
     "high_freq_detail_mask",
     "luminosity_masks",
     "facial_align",
+    "lens_distortion",
 ]
