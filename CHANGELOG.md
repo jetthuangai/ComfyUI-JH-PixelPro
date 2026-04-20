@@ -4,6 +4,10 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Added
+
+- Workflow screenshot for S-15 LUT Import (batch-5 follow-up, JH manual smoke test verified post-T-24-b). README §N-14 LUT Import now renders reference image. Smoke test verified trilinear 3D-LUT apply via `grid_sample` on the `S-14 Demo.cube` file JH had previously exported from the S-14 workflow — closing the round-trip loop concretely. The workflow JSON itself was extended by JH with an `NH_ImageCompare` node (from the `nh-nodes` community pack) wired between the original image and the LUT-applied output for split-vertical before/after preview; pack's core node (`JHPixelProLUTImport`) remains zero-community-dep. No tag bump yet — docs-only commit post-T-24-b; v0.7.0 release bundled in commit 3 of this 3-commit thread.
+
 ## [0.6.0] — 2026-04-20
 
 Batch-4 ships the LUT portability layer. The new **N-12 / N-13** pair generates an identity HALD tensor, runs it through the existing color-grade chain (tone curve, color match), and exports the result as a valid Adobe Cube 1.0 `.cube` file — letting users bake their ComfyUI grade into a portable artifact readable by DaVinci Resolve 18+, Premiere Pro 2023+, OBS Studio 29+, and any OCIO-compatible tool. `/color` subgroup consolidates to 5 nodes (N-05 + N-08 + N-09 + N-12 + N-13). Pack now ships **13 live nodes** and the **M4-head milestone ships**.
