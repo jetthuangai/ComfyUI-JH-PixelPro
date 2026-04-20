@@ -12,6 +12,7 @@ from .mask_refiner import subpixel_mask_refine
 from .selective_color import apply_hue_sat_shift, hue_range_mask, saturation_range_mask
 from .smoother import edge_aware_smooth
 from .tone_curve import tone_curve
+from .tone_match import compute_lab_histogram_match, tone_match_lut
 from .unwrap_face import unwrap_face
 
 __all__ = [
@@ -24,6 +25,8 @@ __all__ = [
     "hue_range_mask",
     "apply_hue_sat_shift",
     "saturation_range_mask",
+    "compute_lab_histogram_match",
+    "tone_match_lut",
     "face_detect",
     "luminosity_masks",
     "facial_align",
