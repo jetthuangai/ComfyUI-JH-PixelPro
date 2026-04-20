@@ -9,6 +9,7 @@ from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .lut import export_cube, identity_hald
 from .mask_refiner import subpixel_mask_refine
+from .selective_color import apply_hue_sat_shift, hue_range_mask, saturation_range_mask
 from .smoother import edge_aware_smooth
 from .tone_curve import tone_curve
 from .unwrap_face import unwrap_face
@@ -20,6 +21,9 @@ __all__ = [
     "high_freq_detail_mask",
     "color_matcher",
     "tone_curve",
+    "hue_range_mask",
+    "apply_hue_sat_shift",
+    "saturation_range_mask",
     "face_detect",
     "luminosity_masks",
     "facial_align",
