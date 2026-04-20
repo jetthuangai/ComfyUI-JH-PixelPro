@@ -4,9 +4,30 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-04-21
+
+Batch-6 mega ships **6 new nodes** and closes two roadmap vectors at once: selective color tooling on `/color` (N-15 / N-16 / N-17) and face-pipeline v2 on `/face` (N-19 / N-20 / N-21). Pack now ships **20 live nodes** under the unified `ComfyUI-JH-PixelPro/*` namespace. `/color` expands to **9 nodes** and `/face` expands to **5 nodes**. Batch-6 also validates the one-time Codex full-stack execution path: core math, wrappers, workflows, docs and release bundled in a single autonomous thread.
+
 ### Added
 
-- Batch-6 mega pipeline lands unreleased: **N-15 `JHPixelProHueSaturationRange`** + **N-16 `JHPixelProSaturationMask`** + **N-17 `JHPixelProToneMatchLUT`** extend `/color` selective-color tooling, while **N-19 `JHPixelProFaceLandmarks`** + **N-20 `JHPixelProFaceWarp`** + **N-21 `JHPixelProFaceBeautyBlend`** extend the `/face` subgroup into a full landmarks → warp → blend pipeline. Three sample workflows (`S-16`, `S-17`, `S-18`) and README sections for N-15/N-16/N-17/N-19/N-20/N-21 ship alongside the wrappers.
+- **N-15 `JHPixelProHueSaturationRange`** (`ComfyUI-JH-PixelPro/color`): builds a soft HSV hue-band mask and applies hue rotation + saturation changes only inside that band. Inputs: `IMAGE` + `hue_center` + `band_width` + `hue_shift` + `sat_mult` + `sat_add`. Output: selectively adjusted `IMAGE`.
+- **N-16 `JHPixelProSaturationMask`** (`ComfyUI-JH-PixelPro/color`): extracts a saturation-range `MASK` from the HLS S-channel with optional threshold feather. Inputs: `IMAGE` + `sat_min` + `sat_max` + `feather`. Output: `MASK` `(B, H, W)` float32 `[0, 1]`.
+- **N-17 `JHPixelProToneMatchLUT`** (`ComfyUI-JH-PixelPro/color`): auto-generates an Adobe Cube 1.0 `.cube` file by histogram-matching an identity HALD to a graded reference frame in LAB space, then exporting the graded HALD. Inputs: `IMAGE` reference + `level` + `filename` + `title`. Output: absolute `STRING` path. `OUTPUT_NODE = True`.
+- **N-19 `JHPixelProFaceLandmarks`** (`ComfyUI-JH-PixelPro/face`): dense MediaPipe landmark extraction returning a custom `LANDMARKS` tensor `(B, F, 468, 2)` plus an overlay `IMAGE` with landmark dots. Inputs: `IMAGE` + `max_num_faces` + `min_detection_confidence` + `refine_landmarks` + `draw_overlay`. Outputs: `LANDMARKS`, `IMAGE`.
+- **N-20 `JHPixelProFaceWarp`** (`ComfyUI-JH-PixelPro/face`): per-triangle Delaunay face warp using SciPy triangulation + OpenCV affine warps. Inputs: `IMAGE` + `LANDMARKS` source + `LANDMARKS` destination. Output: warped `IMAGE`. Identity invariant covered in test suite.
+- **N-21 `JHPixelProFaceBeautyBlend`** (`ComfyUI-JH-PixelPro/face`): mask-aware beauty blend with optional Gaussian feather and global `strength`. Inputs: `IMAGE` base + `IMAGE` retouched + `MASK` + `strength` + `feather`. Output: blended `IMAGE`.
+- **3 sample workflows + 6 README sections**: `S-16-selective-color.json`, `S-17-tone-match-lut.json`, `S-18-face-pipeline-v2.json`, plus README coverage for N-15 / N-16 / N-17 / N-19 / N-20 / N-21. The new `/color` subgroup is now 9 nodes and the `/face` subgroup is now 5 nodes, with the custom `LANDMARKS` type introduced for batch-6 chaining.
+
+### Known limitations
+
+- **Face warp is CPU-only and triangle-heavy.** N-20 uses SciPy Delaunay + OpenCV affine compositing on CPU; expect roughly `~100–300 ms` per 1K face depending on landmark spread and triangle coverage.
+- **GPU parity NOT EVALUATED for batch-6 nodes.** Functional correctness is covered by the new test suite (`254 passed / 10 skipped` at release), but no CUDA benchmark numbers were recorded on this runner.
+- **MediaPipe dense landmarks rely on the tasks backend.** The installed backend emits 478 landmarks internally; the pack truncates to the canonical first 468 to keep shape compatibility stable for N-19 / N-20.
+- **Selective-color + tone-match tools are color-statistical, not semantic.** N-15/N-16 operate on hue / saturation bands only, and N-17 transfers LAB histograms rather than scene understanding. Strong inputs can produce aggressive looks.
+
+### Dependencies
+
+**Unchanged from v0.7.0 — zero new pinned dependency.** Batch-6 reuses the existing pack stack: `kornia >= 0.7.0`, `mediapipe >= 0.10.0`, plus the already-available SciPy/OpenCV runtime on this runner for N-20. `scipy>=1.10` was verified present during pre-flight and did not require an explicit new pin for this release.
 
 ## [0.7.0] — 2026-04-20
 
