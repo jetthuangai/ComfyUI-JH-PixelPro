@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.5.0** (2026-04-19) — 11 nodes live under unified `ComfyUI-JH-PixelPro/*` namespace. Batch-3 color-grade layer ships — `/color` subgroup consolidated (N-05 Luminosity + **N-08** Color Matcher (LAB) + **N-09** Tone Curve (RGB)) via Q-L4 retrofit (UI-only, workflow JSON unaffected). Face pipeline chain `LoadImage → S-07 Lens → S-10 FaceDetect → S-06 Aligner → [AI block] → S-11 Unwrap → Composite` from v0.4.0 remains production-ready. **M3 milestone closed.** See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** 🎉 **v0.6.0** (2026-04-20) — 13 nodes live under unified `ComfyUI-JH-PixelPro/*` namespace. Batch-4 ships the LUT portability layer — new **N-12** HALD Identity generator + **N-13** LUT Export pair write valid Adobe Cube 1.0 `.cube` files for DaVinci Resolve / Premiere Pro / OBS Studio / OCIO pipelines. `/color` subgroup now 5 nodes (N-05 Luminosity + N-08 Color Matcher + N-09 Tone Curve + N-12 HALD Identity + N-13 LUT Export). **M4-head ships.** Face pipeline (v0.4.0) + color-grade trio (v0.5.0) + LUT round-trip (v0.6.0) all production-ready. See [CHANGELOG](./CHANGELOG.md) for details.
 
 ## Why this pack exists
 
