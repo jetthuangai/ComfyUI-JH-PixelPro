@@ -7,6 +7,7 @@ from .facial_aligner import facial_align
 from .frequency import frequency_separation
 from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
+from .lut import export_cube, identity_hald
 from .mask_refiner import subpixel_mask_refine
 from .smoother import edge_aware_smooth
 from .tone_curve import tone_curve
@@ -24,4 +25,6 @@ __all__ = [
     "facial_align",
     "lens_distortion",
     "unwrap_face",
+    "identity_hald",
+    "export_cube",
 ]
