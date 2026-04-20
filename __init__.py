@@ -19,25 +19,31 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # Category groups exposed to ComfyUI Add Node menu (under root "ComfyUI-JH-PixelPro/"):
 #   filters    — pixel-domain filters (FS, ES)
 #   color      — color-grade layer (Lum, ColorMatcher, ToneCurve, HALDIdentity,
-#                 LUTExport, LUTImport)
+#                 LUTExport, LUTImport, HueSatRange, SatMask, ToneMatchLUT)
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
-#   face       — face-pipeline domain (FaceDetect, UnwrapFace)
+#   face       — face-pipeline domain (FaceDetect, UnwrapFace, Landmarks, Warp, BeautyBlend)
 if __package__:
     from .nodes import (
         JHPixelProColorMatcher,
         JHPixelProEdgeAwareSmoother,
+        JHPixelProFaceBeautyBlend,
         JHPixelProFaceDetect,
+        JHPixelProFaceLandmarks,
+        JHPixelProFaceWarp,
         JHPixelProFacialAligner,
         JHPixelProFrequencySeparation,
         JHPixelProHALDIdentity,
         JHPixelProHighFreqDetailMasker,
+        JHPixelProHueSaturationRange,
         JHPixelProLensDistortion,
         JHPixelProLuminosityMasking,
         JHPixelProLUTExport,
         JHPixelProLUTImport,
+        JHPixelProSaturationMask,
         JHPixelProSubPixelMaskRefiner,
         JHPixelProToneCurve,
+        JHPixelProToneMatchLUT,
         JHPixelProUnwrapFace,
     )
 
@@ -65,6 +71,15 @@ if __package__:
     NODE_CLASS_MAPPINGS["JHPixelProFaceDetect"] = JHPixelProFaceDetect
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceDetect"] = "JHPixelProFaceDetect"
 
+    NODE_CLASS_MAPPINGS["JHPixelProFaceLandmarks"] = JHPixelProFaceLandmarks
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceLandmarks"] = "Face Landmarks (MediaPipe 468)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProFaceWarp"] = JHPixelProFaceWarp
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceWarp"] = "Face Warp (Delaunay per-triangle)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProFaceBeautyBlend"] = JHPixelProFaceBeautyBlend
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceBeautyBlend"] = "Face Beauty Blend"
+
     NODE_CLASS_MAPPINGS["JHPixelProUnwrapFace"] = JHPixelProUnwrapFace
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProUnwrapFace"] = "JHPixelProUnwrapFace"
 
@@ -82,6 +97,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProLUTImport"] = JHPixelProLUTImport
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLUTImport"] = "LUT Import (.cube)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProHueSaturationRange"] = JHPixelProHueSaturationRange
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProHueSaturationRange"] = "Hue/Saturation per Range"
+
+    NODE_CLASS_MAPPINGS["JHPixelProSaturationMask"] = JHPixelProSaturationMask
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSaturationMask"] = "Saturation Mask Builder"
+
+    NODE_CLASS_MAPPINGS["JHPixelProToneMatchLUT"] = JHPixelProToneMatchLUT
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProToneMatchLUT"] = "Tone Match LUT (auto-gen .cube)"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

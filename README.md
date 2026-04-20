@@ -618,6 +618,220 @@ Read a portable Adobe Cube 1.0 (`.cube`) 3D LUT from disk and apply it to an ima
 - **RGB-only, no alpha LUT.** Input is assumed linear `[0, 1]` float; ACES / LogC / HLG users should bake the input transform upstream or supply a `.cube` that encodes it. Alpha is not remapped (3D LUT format limitation).
 - **Domain clamp, no extrapolation.** Colors outside the `.cube` `DOMAIN_MIN` / `DOMAIN_MAX` range are clamped to the LUT boundary before sampling (no linear extrapolation). Extended-range grading should use an HDR-aware LUT with expanded domain metadata.
 
+## N-15 Hue/Saturation per Range
+
+Selective color adjustment by hue band. The node builds a soft HSV hue-wheel mask around a chosen center (red / yellow / green / cyan / blue / magenta or anything in between), then applies hue rotation and saturation changes only inside that band. Use it when a global LAB / RGB grade is too broad and you need to push one family of colors without disturbing the rest of the image.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `hue_center` | FLOAT | `0.0` | Hue center in degrees. `0 = red`, `60 = yellow`, `120 = green`, `180 = cyan`, `240 = blue`, `300 = magenta`. |
+| `band_width` | FLOAT | `30.0` | Half-width of the selected band in degrees. `30°` = narrow isolated band, `60°` = wider family, `180°` = full wheel. |
+| `hue_shift` | FLOAT | `0.0` | Hue rotation inside the selected band, in degrees `[-180, 180]`. |
+| `sat_mult` | FLOAT | `1.0` | Multiplicative saturation change inside the band. `1.0 = no-op`, `0 = desaturate`, `2 = double saturation`. |
+| `sat_add` | FLOAT | `0.0` | Additive saturation offset after multiplication, range `[-1, 1]`. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image` | IMAGE | Selectively adjusted image. Same shape and dtype as the input. |
+
+**Sample workflow:** [workflows/S-16-selective-color.json](workflows/S-16-selective-color.json)
+
+**Screenshot:** `workflows/S-16-selective-color-screenshot.png` *(placeholder; JH post-smoke test)*.
+
+### Use cases
+
+- **Tighten skin reds** without shifting the rest of the palette.
+- **Push foliage greens** or sky cyans for commercial color styling.
+- **Build secondary grades** before exporting the result into N-17 / N-13 LUT pipelines.
+
+### Caveats
+
+- **Grayscale pixels are excluded.** Hue is undefined where saturation is zero, so the band mask is forced to `0` there.
+- **V is preserved.** The node changes hue and saturation only; value / brightness stays untouched.
+- **Wide bands become global quickly.** `band_width = 180` effectively means "whole hue wheel" and behaves like a global hue / saturation adjustment.
+
+## N-16 Saturation Mask Builder
+
+Build a MASK from the HLS saturation channel. This is the quickest way to isolate richly colored regions, suppress neutrals, or create a reusable blend gate for downstream compositing and grading nodes.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `sat_min` | FLOAT | `0.3` | Minimum saturation included in the mask. |
+| `sat_max` | FLOAT | `1.0` | Maximum saturation included in the mask. Must be greater than `sat_min`. |
+| `feather` | FLOAT | `0.1` | Soft edge width around `sat_min` / `sat_max`. `0 = hard threshold`. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `mask` | MASK | Saturation-range mask `(B, H, W)` float32 in `[0, 1]`. |
+
+**Sample workflow:** [workflows/S-16-selective-color.json](workflows/S-16-selective-color.json)
+
+**Screenshot:** `workflows/S-16-selective-color-screenshot.png` *(placeholder; JH post-smoke test)*.
+
+### Use cases
+
+- **Mask vivid colors** before blending a creative look.
+- **Suppress neutrals / grayscale regions** in a retouch chain.
+- **Drive selective blends** with a lightweight, automatically derived mask.
+
+### Caveats
+
+- **Range must be ordered.** `sat_max <= sat_min` raises `ValueError`.
+- **MASK only.** The node does not visualize the mask by itself; wire it into any downstream mask consumer.
+- **Feather is channel-space, not pixel-space.** It softens threshold edges in saturation space, not spatial edges in the image.
+
+## N-17 Tone Match LUT (auto-gen .cube)
+
+Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. The node histogram-matches an identity HALD in LAB space, then exports the graded HALD as a `.cube` file. It turns a single hero frame into a reusable look that can be reapplied with N-14 LUT Import or shipped outside ComfyUI.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `reference` | IMAGE | — | Graded reference frame (BHWC, float32 `[0, 1]`) whose look should be captured. |
+| `level` | COMBO | `"8"` | HALD level in `{4, 6, 8, 10, 12}`. `8` = `64^3` cube entries, the standard creative-look sweet spot. |
+| `filename` | STRING | `"tone_match.cube"` | Output `.cube` filename. Relative paths resolve against ComfyUI `output/`; absolute paths are honored verbatim. |
+| `title` | STRING | `"Tone Match LUT"` | Adobe Cube `TITLE` header embedded in the file. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `lut_path` | STRING | Absolute path to the written `.cube` file. |
+
+**Sample workflow:** [workflows/S-17-tone-match-lut.json](workflows/S-17-tone-match-lut.json)
+
+**Screenshot:** `workflows/S-17-tone-match-lut-screenshot.png` *(placeholder; JH post-smoke test)*.
+
+### Use cases
+
+- **Capture a finished grade** from one hero image and reuse it across a sequence.
+- **Bootstrap a show LUT** for N-14, Resolve, Premiere, OBS or OCIO.
+- **Move from manual grading to repeatable look-dev** without rebuilding a node chain per shot.
+
+### Caveats
+
+- **Histogram matching is per-channel LAB.** It transfers tonal statistics, not semantic scene understanding.
+- **Output is LUT-only.** The node does not apply the look itself; use N-14 LUT Import downstream.
+- **Garbage in, garbage out.** Extreme reference images yield extreme LUTs. Curate the hero frame before exporting.
+
+## N-19 Face Landmarks (MediaPipe 468)
+
+Dense 468-point face landmark extraction on a ComfyUI IMAGE. The node returns a `LANDMARKS` tensor suitable for downstream face-warp nodes plus an overlay preview for quick visual validation on the canvas.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `max_num_faces` | INT | `1` | Maximum faces per image, range `[1, 10]`. Missing detections are NaN-padded. |
+| `min_detection_confidence` | FLOAT | `0.5` | MediaPipe detection threshold in `[0, 1]`. |
+| `refine_landmarks` | BOOLEAN | `True` | Kept for API compatibility. Dense 468-point output is always returned. |
+| `draw_overlay` | BOOLEAN | `True` | Draw detected landmarks as green dots on the overlay output image. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `landmarks` | LANDMARKS | Dense face landmarks `(B, F, 468, 2)`, normalized to the image extent. Missing faces are NaN-padded. |
+| `overlay` | IMAGE | Original image with landmark dots painted for validation. |
+
+**Sample workflow:** [workflows/S-18-face-pipeline-v2.json](workflows/S-18-face-pipeline-v2.json)
+
+**Screenshot:** `workflows/S-18-face-pipeline-v2-screenshot.png` *(placeholder; JH post-smoke test)*.
+
+### Use cases
+
+- **Feed N-20 Face Warp** with dense per-face correspondences.
+- **Quickly validate detection quality** on a portrait before running a heavier retouch chain.
+- **Prototype future face-aware tools** around a stable custom `LANDMARKS` type in the pack.
+
+### Caveats
+
+- **MediaPipe dependency required.** Missing `mediapipe` raises a clear import error.
+- **Tasks backend returns 478 points internally.** The pack truncates to the canonical first 468 to keep batch-6 shapes stable.
+- **Visibility score is not exposed in the wrapper.** The UI output is landmarks + overlay only.
+
+## N-20 Face Warp (Delaunay per-triangle)
+
+Piecewise-affine face warp driven by Delaunay triangulation over dense landmarks. This is the geometry stage of the batch-6 face pipeline: warp the source face to a new target shape without globally distorting the frame.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). |
+| `src_landmarks` | LANDMARKS | — | Source landmarks. The node uses the first detected face per batch item. |
+| `dst_landmarks` | LANDMARKS | — | Target landmarks. The node uses the first detected face per batch item. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `warped` | IMAGE | Warped image, same shape as the input. |
+
+**Sample workflow:** [workflows/S-18-face-pipeline-v2.json](workflows/S-18-face-pipeline-v2.json)
+
+**Screenshot:** `workflows/S-18-face-pipeline-v2-screenshot.png` *(placeholder; JH post-smoke test)*.
+
+### Use cases
+
+- **Correct geometry** after a face-aware retouch or generated edit.
+- **Prototype facial morph / pose transfer** inside ComfyUI without leaving the pack.
+- **Build local deformations** driven by dense landmarks instead of a single affine transform.
+
+### Caveats
+
+- **CPU-only path.** SciPy Delaunay + OpenCV affine warps run on CPU; they are not a GPU tensor kernel.
+- **Single-face scope per batch item.** Multi-face users should pre-index the desired face before N-20.
+- **Requires both SciPy and OpenCV.** Missing dependencies raise a clear import error.
+
+## N-21 Face Beauty Blend
+
+Mask-aware beauty blend between a base plate and a retouched plate. This is the lightweight finishing node of the face pipeline: feather a mask, apply a strength control, and composite the retouched face back onto the original frame.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `base` | IMAGE | — | Original image / base plate. |
+| `retouched` | IMAGE | — | Retouched face plate or warped edit to be blended back. |
+| `mask` | MASK | — | Blend mask `(B, H, W)` float32 in `[0, 1]`. |
+| `strength` | FLOAT | `1.0` | Overall blend strength in `[0, 1]`. |
+| `feather` | INT | `0` | Gaussian feather radius in pixels. `0 = hard mask`. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `blended` | IMAGE | Beauty-blended result, same shape as the base image. |
+
+**Sample workflow:** [workflows/S-18-face-pipeline-v2.json](workflows/S-18-face-pipeline-v2.json)
+
+**Screenshot:** `workflows/S-18-face-pipeline-v2-screenshot.png` *(placeholder; JH post-smoke test)*.
+
+### Use cases
+
+- **Blend a retouched face pass** back onto the untouched original frame.
+- **Soften seams** after warping, inpaint or external beauty work.
+- **Dial edit intensity** with `strength` instead of committing to a binary on/off composite.
+
+### Caveats
+
+- **Mask quality controls result quality.** This node does not invent a face mask; it only composites with the mask you supply.
+- **Feather is spatial blur, not semantic edge awareness.** Use a better upstream mask if you need pixel-accurate skin boundaries.
+- **Base and retouched must match shape exactly.** Mismatched images raise `ValueError`.
+
 ## License
 
 Apache-2.0 — see [LICENSE](./LICENSE).
