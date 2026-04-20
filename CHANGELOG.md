@@ -4,6 +4,10 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Added
+
+- Batch-6 mega pipeline lands unreleased: **N-15 `JHPixelProHueSaturationRange`** + **N-16 `JHPixelProSaturationMask`** + **N-17 `JHPixelProToneMatchLUT`** extend `/color` selective-color tooling, while **N-19 `JHPixelProFaceLandmarks`** + **N-20 `JHPixelProFaceWarp`** + **N-21 `JHPixelProFaceBeautyBlend`** extend the `/face` subgroup into a full landmarks → warp → blend pipeline. Three sample workflows (`S-16`, `S-17`, `S-18`) and README sections for N-15/N-16/N-17/N-19/N-20/N-21 ship alongside the wrappers.
+
 ## [0.7.0] — 2026-04-20
 
 Batch-5 closes the LUT round-trip loop. The new **N-14 `JHPixelProLUTImport`** pairs with N-13 `JHPixelProLUTExport` (v0.6.0) so a color-grade chain developed inside ComfyUI can be exported as a portable Adobe Cube 1.0 `.cube` file, re-applied on fresh sources via N-14, or shipped downstream to DaVinci Resolve 18+ / Premiere Pro 2023+ / OBS Studio 29+ / OCIO 2.2+ and any Cube-1.0-reading tool. The `/color` subgroup consolidates to **6 nodes** (N-05 + N-08 + N-09 + N-12 + N-13 + N-14). Pack now ships **14 live nodes** and the **M4-tail milestone ships**.
