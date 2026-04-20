@@ -45,8 +45,7 @@ def node_cls(pack):
 def test_node_registered_in_mappings(pack):
     assert "JHPixelProEdgeAwareSmoother" in pack.NODE_CLASS_MAPPINGS
     assert (
-        pack.NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"]
-        == "Edge-Aware Skin Smoother"
+        pack.NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] == "Edge-Aware Skin Smoother"
     )
 
 

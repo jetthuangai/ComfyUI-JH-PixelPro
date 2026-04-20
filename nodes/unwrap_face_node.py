@@ -27,8 +27,7 @@ def _parse_inverse_matrix(matrix_str: str) -> torch.Tensor:
 
     if tensor.ndim != 3 or tensor.shape[-2:] not in {(2, 3), (3, 3)}:
         raise ValueError(
-            "inverse_matrix_json must shape Bx3x3 or Bx2x3, got "
-            f"{tuple(tensor.shape)}."
+            f"inverse_matrix_json must shape Bx3x3 or Bx2x3, got {tuple(tensor.shape)}."
         )
     return tensor
 

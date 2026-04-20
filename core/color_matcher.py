@@ -142,9 +142,9 @@ def _masked_mean_std(
 
     weight_sum = mask_b1hw.sum(dim=(-1, -2), keepdim=True)
     mean = (values_bchw * mask_b1hw).sum(dim=(-1, -2), keepdim=True) / weight_sum
-    variance = (
-        (((values_bchw - mean) ** 2) * mask_b1hw).sum(dim=(-1, -2), keepdim=True) / weight_sum
-    )
+    variance = (((values_bchw - mean) ** 2) * mask_b1hw).sum(
+        dim=(-1, -2), keepdim=True
+    ) / weight_sum
     return mean, torch.sqrt(variance + 1e-6)
 
 
@@ -180,11 +180,9 @@ def color_matcher(
 
     target_mean, target_std = _masked_mean_std(target_selected, mask_b1hw)
     reference_mean, reference_std = _masked_mean_std(reference_selected, mask_b1hw)
-    matched_selected = (
-        (target_selected - target_mean)
-        * (reference_std / target_std.clamp_min(1e-6))
-        + reference_mean
-    )
+    matched_selected = (target_selected - target_mean) * (
+        reference_std / target_std.clamp_min(1e-6)
+    ) + reference_mean
 
     matched_lab = target_lab.clone()
     matched_lab[:, channel_slice] = matched_selected

@@ -117,6 +117,7 @@ def test_direction_forward_monotone() -> None:
         p1=0.0,
         p2=0.0,
     )[0]
+
     def displacement(y: int, x: int) -> float:
         source_x = ((grid[y, x, 0].item() + 1.0) * size / 2.0) - 0.5
         source_y = ((grid[y, x, 1].item() + 1.0) * size / 2.0) - 0.5

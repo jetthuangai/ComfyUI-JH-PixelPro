@@ -61,9 +61,9 @@ def _latency_runner():
 
 def _load_image(long_side: int) -> torch.Tensor:
     image_path = REPO_ROOT / "workflows" / "sample_portrait.jpg"
-    image = torch.from_numpy(
-        np.array(Image.open(image_path).convert("RGB"), copy=True)
-    ).float() / 255.0
+    image = (
+        torch.from_numpy(np.array(Image.open(image_path).convert("RGB"), copy=True)).float() / 255.0
+    )
     bchw = image.permute(2, 0, 1).unsqueeze(0)
     _, _, height, width = bchw.shape
     scale = long_side / max(height, width)

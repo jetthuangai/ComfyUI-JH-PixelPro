@@ -62,8 +62,7 @@ class JHPixelProLensDistortion:
                         "max": 1.0,
                         "step": 0.001,
                         "tooltip": (
-                            "Radial coefficient k1 (Brown-Conrady). "
-                            "Used only when preset = custom."
+                            "Radial coefficient k1 (Brown-Conrady). Used only when preset = custom."
                         ),
                     },
                 ),

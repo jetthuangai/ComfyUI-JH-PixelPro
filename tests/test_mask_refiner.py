@@ -146,12 +146,16 @@ def test_erosion_dilation_both_zero(caplog: pytest.LogCaptureFixture) -> None:
             feather_sigma=2.0,
         )
 
-    expected = gaussian_blur2d(
-        mask_binary,
-        kernel_size=(3, 3),
-        sigma=(2.0, 2.0),
-        border_type="replicate",
-    ).squeeze(1).clamp(0.0, 1.0)
+    expected = (
+        gaussian_blur2d(
+            mask_binary,
+            kernel_size=(3, 3),
+            sigma=(2.0, 2.0),
+            border_type="replicate",
+        )
+        .squeeze(1)
+        .clamp(0.0, 1.0)
+    )
 
     assert "no protected zone" in caplog.text
     assert torch.allclose(refined, expected, atol=1e-6)

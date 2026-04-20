@@ -10,24 +10,54 @@ from ..core import tone_curve
 
 _PRESETS: dict[str, list[list[float]]] = {
     "linear": [
-        [0.0, 0.0], [0.14, 0.14], [0.29, 0.29], [0.43, 0.43],
-        [0.57, 0.57], [0.71, 0.71], [0.86, 0.86], [1.0, 1.0],
+        [0.0, 0.0],
+        [0.14, 0.14],
+        [0.29, 0.29],
+        [0.43, 0.43],
+        [0.57, 0.57],
+        [0.71, 0.71],
+        [0.86, 0.86],
+        [1.0, 1.0],
     ],
     "s_curve_mild": [
-        [0.0, 0.0], [0.15, 0.10], [0.30, 0.25], [0.45, 0.43],
-        [0.55, 0.57], [0.70, 0.75], [0.85, 0.90], [1.0, 1.0],
+        [0.0, 0.0],
+        [0.15, 0.10],
+        [0.30, 0.25],
+        [0.45, 0.43],
+        [0.55, 0.57],
+        [0.70, 0.75],
+        [0.85, 0.90],
+        [1.0, 1.0],
     ],
     "s_curve_strong": [
-        [0.0, 0.0], [0.15, 0.05], [0.30, 0.18], [0.45, 0.38],
-        [0.55, 0.62], [0.70, 0.82], [0.85, 0.95], [1.0, 1.0],
+        [0.0, 0.0],
+        [0.15, 0.05],
+        [0.30, 0.18],
+        [0.45, 0.38],
+        [0.55, 0.62],
+        [0.70, 0.82],
+        [0.85, 0.95],
+        [1.0, 1.0],
     ],
     "lift_shadows": [
-        [0.0, 0.0], [0.10, 0.15], [0.25, 0.30], [0.40, 0.45],
-        [0.55, 0.58], [0.70, 0.72], [0.85, 0.87], [1.0, 1.0],
+        [0.0, 0.0],
+        [0.10, 0.15],
+        [0.25, 0.30],
+        [0.40, 0.45],
+        [0.55, 0.58],
+        [0.70, 0.72],
+        [0.85, 0.87],
+        [1.0, 1.0],
     ],
     "crush_blacks": [
-        [0.0, 0.0], [0.15, 0.05], [0.30, 0.22], [0.45, 0.40],
-        [0.60, 0.57], [0.75, 0.75], [0.90, 0.90], [1.0, 1.0],
+        [0.0, 0.0],
+        [0.15, 0.05],
+        [0.30, 0.22],
+        [0.45, 0.40],
+        [0.60, 0.57],
+        [0.75, 0.75],
+        [0.90, 0.90],
+        [1.0, 1.0],
     ],
 }
 
@@ -50,15 +80,11 @@ def _parse_control_points(points_json: str) -> torch.Tensor:
 
     if not isinstance(raw, list) or len(raw) != 8:
         actual = len(raw) if isinstance(raw, list) else type(raw).__name__
-        raise ValueError(
-            f"points_json must be a list of exactly 8 control points, got {actual}."
-        )
+        raise ValueError(f"points_json must be a list of exactly 8 control points, got {actual}.")
 
     for index, point in enumerate(raw):
         if not isinstance(point, list) or len(point) != 2:
-            raise ValueError(
-                f"points_json[{index}] must be a [x, y] pair, got {point!r}."
-            )
+            raise ValueError(f"points_json[{index}] must be a [x, y] pair, got {point!r}.")
 
     try:
         tensor = torch.tensor(raw, dtype=torch.float32)

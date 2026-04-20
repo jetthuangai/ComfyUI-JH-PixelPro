@@ -59,9 +59,7 @@ def _luminance(image_bchw: torch.Tensor, source: str) -> torch.Tensor:
             image_bchw / 12.92,
         )
         y_channel = (
-            (0.2126 * linear[:, 0:1])
-            + (0.7152 * linear[:, 1:2])
-            + (0.0722 * linear[:, 2:3])
+            (0.2126 * linear[:, 0:1]) + (0.7152 * linear[:, 1:2]) + (0.0722 * linear[:, 2:3])
         )
         delta = 6.0 / 29.0
         f_y = torch.where(
@@ -93,9 +91,7 @@ def luminosity_masks(
 
     luminance_source = _validate_choice("luminance_source", luminance_source, _VALID_SOURCES)
     shadow_end = _validate_real_range("shadow_end", shadow_end, lower=0.0, upper=0.5)
-    highlight_start = _validate_real_range(
-        "highlight_start", highlight_start, lower=0.5, upper=1.0
-    )
+    highlight_start = _validate_real_range("highlight_start", highlight_start, lower=0.5, upper=1.0)
     soft_edge = _validate_real_range("soft_edge", soft_edge, lower=0.01, upper=0.3)
     if shadow_end >= highlight_start:
         raise ValueError("shadow_end must be < highlight_start.")
