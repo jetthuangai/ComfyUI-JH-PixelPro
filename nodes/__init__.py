@@ -5,8 +5,10 @@ from .detail_masker_node import JHPixelProHighFreqDetailMasker
 from .face_detect_node import JHPixelProFaceDetect
 from .facial_aligner_node import JHPixelProFacialAligner
 from .frequency_node import JHPixelProFrequencySeparation
+from .hald_identity_node import JHPixelProHALDIdentity
 from .lens_distortion_node import JHPixelProLensDistortion
 from .luminosity_node import JHPixelProLuminosityMasking
+from .lut_export_node import JHPixelProLUTExport
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .smoother_node import JHPixelProEdgeAwareSmoother
 from .tone_curve_node import JHPixelProToneCurve
@@ -18,7 +20,9 @@ __all__ = [
     "JHPixelProFaceDetect",
     "JHPixelProFacialAligner",
     "JHPixelProFrequencySeparation",
+    "JHPixelProHALDIdentity",
     "JHPixelProHighFreqDetailMasker",
+    "JHPixelProLUTExport",
     "JHPixelProLensDistortion",
     "JHPixelProLuminosityMasking",
     "JHPixelProSubPixelMaskRefiner",

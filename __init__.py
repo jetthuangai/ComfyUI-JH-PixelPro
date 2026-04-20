@@ -18,7 +18,7 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # load the pack themselves via ``importlib.util.spec_from_file_location``.
 # Category groups exposed to ComfyUI Add Node menu (under root "ComfyUI-JH-PixelPro/"):
 #   filters    — pixel-domain filters (FS, ES)
-#   color      — color-grade layer (Lum, ColorMatcher, ToneCurve)
+#   color      — color-grade layer (Lum, ColorMatcher, ToneCurve, HALDIdentity, LUTExport)
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace)
@@ -29,9 +29,11 @@ if __package__:
         JHPixelProFaceDetect,
         JHPixelProFacialAligner,
         JHPixelProFrequencySeparation,
+        JHPixelProHALDIdentity,
         JHPixelProHighFreqDetailMasker,
         JHPixelProLensDistortion,
         JHPixelProLuminosityMasking,
+        JHPixelProLUTExport,
         JHPixelProSubPixelMaskRefiner,
         JHPixelProToneCurve,
         JHPixelProUnwrapFace,
@@ -69,6 +71,12 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProToneCurve"] = JHPixelProToneCurve
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProToneCurve"] = "Tone Curve (RGB)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProHALDIdentity"] = JHPixelProHALDIdentity
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProHALDIdentity"] = "HALD Identity"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLUTExport"] = JHPixelProLUTExport
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLUTExport"] = "LUT Export (.cube)"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"
