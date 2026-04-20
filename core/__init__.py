@@ -3,6 +3,7 @@
 from .color_matcher import color_matcher
 from .detail_masker import high_freq_detail_mask
 from .face_detect import face_detect
+from .face_pipeline import beauty_blend, extract_landmarks, face_warp_delaunay
 from .facial_aligner import facial_align
 from .frequency import frequency_separation
 from .lens_distortion import lens_distortion
@@ -28,6 +29,9 @@ __all__ = [
     "compute_lab_histogram_match",
     "tone_match_lut",
     "face_detect",
+    "extract_landmarks",
+    "face_warp_delaunay",
+    "beauty_blend",
     "luminosity_masks",
     "facial_align",
     "lens_distortion",
