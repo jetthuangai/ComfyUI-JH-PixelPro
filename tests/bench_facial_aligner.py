@@ -142,7 +142,7 @@ def _hardware_info() -> dict[str, str]:
         device = torch.device("cuda")
         properties = torch.cuda.get_device_properties(device)
         device_name = properties.name
-        total_vram_gb = f"{properties.total_memory / (1024 ** 3):.2f}"
+        total_vram_gb = f"{properties.total_memory / (1024**3):.2f}"
     else:
         device_name = "n/a"
         total_vram_gb = "n/a"

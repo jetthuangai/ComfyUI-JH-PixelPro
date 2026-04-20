@@ -37,8 +37,7 @@ class JHPixelProFrequencySeparation:
                         "max": 50.0,
                         "step": 0.1,
                         "tooltip": (
-                            "Sigma override. 0.0 = auto-compute radius/2 "
-                            "(Photoshop convention)."
+                            "Sigma override. 0.0 = auto-compute radius/2 (Photoshop convention)."
                         ),
                     },
                 ),

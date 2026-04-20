@@ -76,7 +76,7 @@ def test_roundtrip_identity_cube_body(tmp_path) -> None:
     export_cube(hald, level, path, title="roundtrip")
 
     _, body = _parse_cube_body(path)
-    assert len(body) == n ** 3 == 262144
+    assert len(body) == n**3 == 262144
 
     # Spot-check 4 entries distributed across the cube — full 262144 compare is slow.
     for idx in (0, 37, 64 * 64 - 1, 262143):
@@ -108,7 +108,7 @@ def test_export_cube_header_and_body_count(tmp_path) -> None:
     assert any("LUT_3D_SIZE 64" in line for line in header)
     assert any("DOMAIN_MIN 0.0 0.0 0.0" in line for line in header)
     assert any("DOMAIN_MAX 1.0 1.0 1.0" in line for line in header)
-    assert len(body) == 64 ** 3 == 262144
+    assert len(body) == 64**3 == 262144
 
 
 def test_export_cube_shape_mismatch_raises(tmp_path) -> None:

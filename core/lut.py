@@ -42,7 +42,7 @@ def identity_hald(
         raise ValueError(f"HALD level must be int in [2, 16], got {level!r}")
 
     n = level * level
-    side = level ** 3  # n * level == level ** 3
+    side = level**3  # n * level == level ** 3
     x = torch.arange(side, device=device).view(1, side).expand(side, side)
     y = torch.arange(side, device=device).view(side, 1).expand(side, side)
     r = (x % n).to(dtype) / (n - 1)
@@ -82,19 +82,16 @@ def export_cube(
         raise ValueError(f"HALD level must be int in [2, 16], got {level!r}")
 
     n = level * level
-    side = level ** 3
+    side = level**3
 
     if hald.ndim == 4:
         hald = hald[0]
     if hald.shape != (side, side, 3):
         raise ValueError(
-            f"hald shape must be ({side},{side},3) for level={level}, "
-            f"got {tuple(hald.shape)}"
+            f"hald shape must be ({side},{side},3) for level={level}, got {tuple(hald.shape)}"
         )
     if not torch.isfinite(hald).all():
-        raise ValueError(
-            "hald contains non-finite values (NaN/Inf) — clamp or filter upstream"
-        )
+        raise ValueError("hald contains non-finite values (NaN/Inf) — clamp or filter upstream")
 
     samples = hald.clamp(0.0, 1.0).detach().to("cpu", torch.float32).numpy()
 

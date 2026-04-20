@@ -101,9 +101,7 @@ def test_output_range(rng: torch.Generator) -> None:
         (torch.rand((1, 3, 32, 32), dtype=torch.float32), {"strength": 1.5}, "strength"),
     ],
 )
-def test_reject_invalid_input(
-    image: torch.Tensor, kwargs: dict[str, float], match: str
-) -> None:
+def test_reject_invalid_input(image: torch.Tensor, kwargs: dict[str, float], match: str) -> None:
     with pytest.raises(ValueError, match=match):
         edge_aware_smooth(image, **kwargs)
 
@@ -124,14 +122,18 @@ def test_mask_broadcast(rng: torch.Generator) -> None:
     mask[:, :, 16:48, 16:48] = 1.0
 
     output = edge_aware_smooth(image, strength=1.0, mask_bchw=mask)
-    expected = mask * bilateral_blur(
-        image,
-        kernel_size=(37, 37),
-        sigma_color=0.1,
-        sigma_space=(6.0, 6.0),
-        border_type="replicate",
-        color_distance_type="l1",
-    ) + (1.0 - mask) * image
+    expected = (
+        mask
+        * bilateral_blur(
+            image,
+            kernel_size=(37, 37),
+            sigma_color=0.1,
+            sigma_space=(6.0, 6.0),
+            border_type="replicate",
+            color_distance_type="l1",
+        )
+        + (1.0 - mask) * image
+    )
 
     assert output.shape == image.shape
     assert torch.allclose(output, expected.clamp(0.0, 1.0), atol=1e-6)

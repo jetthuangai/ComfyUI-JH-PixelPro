@@ -155,18 +155,19 @@ def _umeyama_similarity(src_points: torch.Tensor, dst_points: torch.Tensor) -> t
     covariance = dst_centered.transpose(1, 2) @ src_centered / float(num_points)
     u_matrix, singular_values, v_matrix_t = torch.linalg.svd(covariance)
 
-    correction = torch.eye(2, dtype=src_points.dtype, device=src_points.device).unsqueeze(0).repeat(
-        src_points.shape[0], 1, 1
+    correction = (
+        torch.eye(2, dtype=src_points.dtype, device=src_points.device)
+        .unsqueeze(0)
+        .repeat(src_points.shape[0], 1, 1)
     )
     determinant = torch.linalg.det(u_matrix @ v_matrix_t)
     correction[:, 1, 1] = torch.where(determinant < 0.0, -1.0, 1.0)
 
     rotation = u_matrix @ correction @ v_matrix_t
     src_variance = (src_centered**2).sum(dim=(1, 2)) / float(num_points)
-    scale = (
-        (singular_values * correction.diagonal(dim1=-2, dim2=-1)).sum(dim=1)
-        / src_variance.clamp_min(1e-8)
-    )
+    scale = (singular_values * correction.diagonal(dim1=-2, dim2=-1)).sum(
+        dim=1
+    ) / src_variance.clamp_min(1e-8)
     translation = dst_mean.squeeze(1) - scale.unsqueeze(1) * (
         rotation @ src_mean.squeeze(1).unsqueeze(-1)
     ).squeeze(-1)
