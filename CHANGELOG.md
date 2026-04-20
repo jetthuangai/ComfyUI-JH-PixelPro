@@ -4,9 +4,26 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-04-20
+
+Batch-5 closes the LUT round-trip loop. The new **N-14 `JHPixelProLUTImport`** pairs with N-13 `JHPixelProLUTExport` (v0.6.0) so a color-grade chain developed inside ComfyUI can be exported as a portable Adobe Cube 1.0 `.cube` file, re-applied on fresh sources via N-14, or shipped downstream to DaVinci Resolve 18+ / Premiere Pro 2023+ / OBS Studio 29+ / OCIO 2.2+ and any Cube-1.0-reading tool. The `/color` subgroup consolidates to **6 nodes** (N-05 + N-08 + N-09 + N-12 + N-13 + N-14). Pack now ships **14 live nodes** and the **M4-tail milestone ships**.
+
 ### Added
 
-- Workflow screenshot for S-15 LUT Import (batch-5 follow-up, JH manual smoke test verified post-T-24-b). README §N-14 LUT Import now renders reference image. Smoke test verified trilinear 3D-LUT apply via `grid_sample` on the `S-14 Demo.cube` file JH had previously exported from the S-14 workflow — closing the round-trip loop concretely. The workflow JSON itself was extended by JH with an `NH_ImageCompare` node (from the `nh-nodes` community pack) wired between the original image and the LUT-applied output for split-vertical before/after preview; pack's core node (`JHPixelProLUTImport`) remains zero-community-dep. No tag bump yet — docs-only commit post-T-24-b; v0.7.0 release bundled in commit 3 of this 3-commit thread.
+- **N-14 `JHPixelProLUTImport`** (`ComfyUI-JH-PixelPro/color`): Reads a portable Adobe Cube 1.0 (`.cube`) 3D LUT from disk and applies it to a BHWC image via trilinear 3D `grid_sample`. Inputs: `IMAGE` + `filename` STRING (relative to ComfyUI `input/` dir or absolute, `.cube` extension NOT auto-appended on read for explicit intent) + `strength` FLOAT `[0, 1]` default `1.0` (linear blend `in * (1 - s) + lut(in) * s`) + optional `MASK` (spatial gating, `(B, H, W)` or `(B, 1, H, W)` shape both accepted transparently). Output: `IMAGE` LUT-applied (same shape as input). `RETURN_TYPES = ("IMAGE",)`, `FUNCTION = "apply"`. Honors `.cube` `DOMAIN_MIN` / `DOMAIN_MAX` header (default `[0,0,0]` / `[1,1,1]`) with clamp-no-extrapolation policy.
+- **Sample workflow `S-15-lut-import.json`** — demo chain `LoadImage → JHPixelProLUTImport(filename="S-14 Demo.cube", strength=0.8) → NH_ImageCompare → PreviewImage` + Note block documenting the round-trip demo, tunables, and caveats. JH smoke test in ComfyUI confirmed trilinear LUT apply round-trip against the `S-14 Demo.cube` file previously exported from the S-14 workflow (closing the Export → Import loop concretely). The demo JSON was extended by JH with an `NH_ImageCompare` node (from the `nh-nodes` community pack) for split-vertical before/after preview; the pack's core N-14 node remains zero-community-dep.
+- **Workflow screenshot for S-15 LUT Import**, so README §N-14 now renders its reference image alongside §N-01..§N-13 (consolidated from the `[Unreleased]` buffer cleared at release).
+
+### Known limitations
+
+- **CPU 2K bench throughput**: trilinear 3D `grid_sample` on `2048 × 2048` image with `N=65` LUT runs at roughly `~547 ms` per invocation on the CPU-only runner (measured in `tests/R-20260420-bench-S-15.md`). Acceptable for single-frame preview and batch exports; for realtime monitor grading on 2K+ input, recommend GPU.
+- **GPU path NOT EVALUATED** on this runner (`torch.cuda.is_available() == False` during T-24-a bench authorship). JH's RTX 4090 should be well within headroom, but no formal parity number is recorded yet.
+- **3-channel RGB only**: `(B, H, W, 3)` input required. No alpha LUT, no multi-channel, no depth. Documented in N-14 wrapper tooltip + README §N-14 Caveats.
+- **Trilinear interpolation only**: tetrahedral interpolation (slightly smoother at LUT vertex boundaries) is deferred to v2. Trilinear matches the DaVinci / OBS / OCIO default and most reference implementations.
+
+### Dependencies
+
+**Unchanged from v0.6.0 — zero new dependency.** `core/lut.py`'s new `parse_cube` + `apply_lut_3d` functions use pure `torch.nn.functional.grid_sample` + `pathlib` + `re` stdlib (§2b one-time single-agent exception NOT invoked — canonical 2-agent Codex core + Claude Code wrapper split restored). `kornia >= 0.7.0`, `mediapipe >= 0.10.0`, `opencv-python-headless >= 4.5`, plus core `torch` and `numpy` — all preserved from v0.6.0.
 
 ## [0.6.0] — 2026-04-20
 
