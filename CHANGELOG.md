@@ -4,10 +4,27 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-04-20
+
+Batch-4 ships the LUT portability layer. The new **N-12 / N-13** pair generates an identity HALD tensor, runs it through the existing color-grade chain (tone curve, color match), and exports the result as a valid Adobe Cube 1.0 `.cube` file — letting users bake their ComfyUI grade into a portable artifact readable by DaVinci Resolve 18+, Premiere Pro 2023+, OBS Studio 29+, and any OCIO-compatible tool. `/color` subgroup consolidates to 5 nodes (N-05 + N-08 + N-09 + N-12 + N-13). Pack now ships **13 live nodes** and the **M4-head milestone ships**.
+
 ### Added
 
-- 2 workflow screenshots for S-08 Color Matcher + S-09 Tone Curve (batch-3 follow-up, JH manual smoke test verified post-v0.5.0). README §N-08 + §N-09 now render reference image like §N-01..§N-07. Workflow JSONs themselves were also extended by JH with optional community-pack utility nodes (`ImageResize+` from `comfyui_essentials`, `NH_ImageCompare` from `nh-nodes`) for richer interactive demo — the pack's core nodes (`JHPixelProColorMatcher` / `JHPixelProToneCurve`) remain zero-community-dep. No tag bump — docs-only commit post-v0.5.0; v0.5.0 historic record at peel `d0691db` is unchanged.
-- Workflow screenshot for S-14 LUT Export (batch-4 follow-up, JH manual smoke test verified post-T-20). README §N-12 HALD Identity + §N-13 LUT Export now render reference image. Smoke test produced a valid Adobe Cube 1.0 `.cube` file (~7 MB for level 8 = 262144 body lines) and the workflow JSON was extended by JH with a `ShowText|pysssss` node wired to `N-13.path` so the resolved output path is visible in the UI — pack's core nodes (`JHPixelProHALDIdentity` / `JHPixelProLUTExport`) remain zero-community-dep. No tag bump yet — docs-only commit post-T-20; v0.6.0 release batched in T-22.
+- **N-12 `JHPixelProHALDIdentity`** (`ComfyUI-JH-PixelPro/color`): Generates an identity HALD image encoding a cube of `N = L²` color samples as a single `L³ × L³` RGB image (ImageMagick HALD convention). Inputs: `level` COMBO `{4, 6, 8, 10, 12}` default `"8"` (L=8 → N=64, image 512×512, cube 262144 samples — industry standard). Outputs: `IMAGE` identity HALD tensor `(1, L³, L³, 3)` float32 `[0, 1]` + `INT` pass-through `level` (wire to N-13 to match cube size).
+- **N-13 `JHPixelProLUTExport`** (`ComfyUI-JH-PixelPro/color`): Writes a graded HALD image as an Adobe Cube 1.0 (`.cube`) 3D-LUT file. Inputs: `IMAGE` graded HALD + `INT` level (validates `H == W == L³`) + `STRING` filename (relative to ComfyUI `output/` or absolute; `.cube` extension auto-appended) + `STRING` title (Adobe Cube `TITLE` header). Output: `STRING` absolute resolved path. `OUTPUT_NODE = True`. File body is N³ float lines blue-outer / green-middle / red-innermost, Unix LF separator, `%.6f` precision — readable by DaVinci Resolve / Premiere / OBS / OCIO / LUTCalc / CubeLUT / pillow-lut.
+- **Sample workflow `S-14-lut-export.json`** — 3-node chain `N-12 HALD Identity(level=8) → N-09 Tone Curve(s_curve_mild) → N-13 LUT Export(filename="s14_demo.cube")` + Note block documenting the color-only-chain constraint between N-12 and N-13. JH smoke test in ComfyUI real produced a valid Adobe Cube 1.0 `.cube` file (~7 MB = 262144 body lines for level 8). The demo workflow JSON was extended by JH with a `ShowText|pysssss` node wired to `N-13.path` so the resolved output path is visible in the UI — pack's core nodes (`JHPixelProHALDIdentity` / `JHPixelProLUTExport`) remain zero-community-dep.
+- **3 workflow screenshots** consolidated from the `[Unreleased]` buffer: S-08 Color Matcher (batch-3 follow-up) + S-09 Tone Curve (batch-3 follow-up) + S-14 LUT Export (batch-4 follow-up). README §N-08 + §N-09 + §N-12 + §N-13 now render reference images like §N-01..§N-07. Workflow JSONs for S-08 / S-09 were extended by JH with optional community-pack utility nodes (`ImageResize+` from `comfyui_essentials`, `NH_ImageCompare` from `nh-nodes`) for richer interactive demos — the pack's core nodes remain zero-community-dep.
+
+### Known limitations
+
+- **Level 12 intermediate VRAM**: `identity_hald(level=12)` produces a `(1, 1728, 1728, 3)` float32 tensor (~35.8 MB) before the color-grade chain runs; downstream operations may briefly 2–3× that footprint. JH's RTX 4090 (24 GB) has no issue; CPU runners with 8 GB+ RAM are fine; low-memory setups should stay at level ≤ 10.
+- **GPU path NOT EVALUATED for N-12 / N-13**: `core/lut.py` is pure `torch.arange` + stdlib file I/O, so there is no CUDA/CPU parity math to validate. `identity_hald` trivially runs on any device; `export_cube` moves the tensor to CPU for the file write. No perf-critical path — functional correctness verified via 8 `tests/test_lut.py` AC pass (214 passed / 10 CUDA-skip at release).
+- **N-13 is file-I/O bound, not compute-bound**: writing 262144 float triplets is dominated by `open()` + `write()` latency, not tensor math. No CPU/GPU bench applicable by design — no `bench_lut.py` shipped.
+- **LUT export validates only 3-channel images**: `(B, H, W, 3)` input required. No alpha / no depth / no multi-channel LUT variant. Users needing ACES / LogC / HLG should bake the transform upstream of N-12. Documented in N-13 wrapper tooltip + README §N-13 Caveats.
+
+### Dependencies
+
+Unchanged from v0.5.0 — zero new dependency. `core/lut.py` is pure `torch.arange` + stdlib file I/O (§2b one-time single-agent exception ratified in T-20 pack precedent for trivial-math nodes with no Kornia / no bench-critical GPU parity). `kornia >= 0.7.0`, `mediapipe >= 0.10.0`, `opencv-python-headless >= 4.5`, plus core `torch` and `numpy` — all preserved from v0.5.0.
 
 ## [0.5.0] — 2026-04-19
 
