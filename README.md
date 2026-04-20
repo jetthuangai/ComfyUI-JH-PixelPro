@@ -583,6 +583,41 @@ Export a graded HALD image as an Adobe Cube 1.0 (`.cube`) 3D-LUT file. Pairs wit
 - **RGB-only, no alpha, no shaper.** Input is assumed linear `[0, 1]` float; ACES / LogC / HLG users should bake the transform upstream of N-12. Alpha is not exported (3D LUT format limitation).
 - **Parent directory must exist.** The wrapper does not silently `mkdir` — an `OSError` is raised if the parent directory is missing, to avoid writing LUTs into unexpected places.
 
+## N-14 LUT Import (.cube)
+
+Read a portable Adobe Cube 1.0 (`.cube`) 3D LUT from disk and apply it to an image via trilinear 3D `grid_sample`. Pairs with `N-13 LUT Export` to close the round-trip loop: develop a color-grade chain in ComfyUI, export the `.cube`, then re-apply it with N-14 on a fresh source (or ship the `.cube` to DaVinci / Premiere / OBS / OCIO and apply it there). Accepts any Adobe Cube 1.0 file — DaVinci exports, Premiere creative-look LUTs, Film Convert / IWLTBAP / Lutify.me / LUTCalc output, etc.
+
+**Inputs:**
+
+| Name | Type | Default | Description |
+|---|---|---|---|
+| `image` | IMAGE | — | ComfyUI IMAGE tensor (BHWC, float32 `[0, 1]`). RGB only. |
+| `filename` | STRING | `"pack_lut.cube"` | Path to the `.cube` file. Relative paths resolve against ComfyUI's `input/` directory; absolute paths are honored verbatim. `.cube` extension is NOT auto-appended on read (explicit). |
+| `strength` | FLOAT | `1.0` | Blend factor between the original image and the LUT-applied result. `0.0 = pass-through`, `1.0 = full LUT`. Linear interpolation `out = in * (1 - s) + lut(in) * s`. Use `0.5 – 0.8` for subtle grading. |
+| `mask` | MASK | — | *(Optional.)* Gates the LUT apply spatially. Pairs with S-05 Luminosity Masking or a skin/face segmentation mask. Accepts `(B, H, W)` or `(B, 1, H, W)` shape transparently. |
+
+**Outputs:**
+
+| Name | Type | Description |
+|---|---|---|
+| `image` | IMAGE | LUT-applied image (BHWC, float32 `[0, 1]`). Same shape as input. |
+
+**Sample workflow:** [workflows/S-15-lut-import.json](workflows/S-15-lut-import.json)
+
+![screenshot](workflows/S-15-lut-import-screenshot.png)
+
+### Use cases
+
+- **Apply a creative-look LUT from DaVinci / Premiere / LUTCalc.** Drop any Adobe Cube 1.0 `.cube` file into ComfyUI's `input/` folder, set the filename widget, and grade your source image with the same look used downstream.
+- **Round-trip your ComfyUI grade.** Run the S-14 workflow to emit `pack_lut.cube` → copy from `output/` to `input/` → run the S-15 workflow to verify the round-trip or re-apply the look on a different source (closes the loop with `N-13 LUT Export`).
+- **Selective look application via mask.** Wire an S-05 luminosity mask or a skin/face segmentation mask into the `mask` input to apply the LUT only in shadows / midtones / highlights / skin / background.
+
+### Caveats
+
+- **Trilinear interpolation only.** Tetrahedral interpolation (slightly smoother on LUT vertex boundaries) is deferred to v2. Trilinear is the DaVinci / OBS / OCIO default and matches most reference implementations.
+- **RGB-only, no alpha LUT.** Input is assumed linear `[0, 1]` float; ACES / LogC / HLG users should bake the input transform upstream or supply a `.cube` that encodes it. Alpha is not remapped (3D LUT format limitation).
+- **Domain clamp, no extrapolation.** Colors outside the `.cube` `DOMAIN_MIN` / `DOMAIN_MAX` range are clamped to the LUT boundary before sampling (no linear extrapolation). Extended-range grading should use an HDR-aware LUT with expanded domain metadata.
+
 ## License
 
 Apache-2.0 — see [LICENSE](./LICENSE).
