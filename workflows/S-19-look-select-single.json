@@ -1,5 +1,5 @@
 {
-  "id": "s22-look-faded-film-20260421",
+  "id": "s19-look-select-single-20260421",
   "revision": 0,
   "last_node_id": 3,
   "last_link_id": 2,
@@ -22,20 +22,20 @@
     },
     {
       "id": 2,
-      "type": "JHPixelProLookFadedFilm",
+      "type": "JHPixelProLookSelect",
       "pos": [460, 205],
-      "size": [330, 110],
+      "size": [330, 130],
       "flags": {},
       "order": 1,
       "mode": 0,
       "inputs": [{"name": "image", "type": "IMAGE", "link": 1}],
-      "outputs": [{"name": "image", "type": "IMAGE", "slot_index": 0, "links": [2]}],
+      "outputs": [{"name": "IMAGE", "type": "IMAGE", "slot_index": 0, "links": [2]}],
       "properties": {
         "cnr_id": "ComfyUI-JH-PixelPro",
-        "ver": "0.9.0",
-        "Node name for S&R": "JHPixelProLookFadedFilm"
+        "ver": "0.10.0",
+        "Node name for S&R": "JHPixelProLookSelect"
       },
-      "widgets_values": [1.0, false]
+      "widgets_values": ["cinematic-teal-orange", 0.7, false]
     },
     {
       "id": 3,
