@@ -23,7 +23,7 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace, Landmarks, Warp, BeautyBlend)
-#   looks      — JSON-driven one-slider look presets (N-22..N-27 M6 Looks)
+#   looks      — JSON-driven dropdown look presets (N-22 M6 Looks)
 if __package__:
     from .nodes import (
         JHPixelProColorMatcher,
@@ -38,12 +38,7 @@ if __package__:
         JHPixelProHighFreqDetailMasker,
         JHPixelProHueSaturationRange,
         JHPixelProLensDistortion,
-        JHPixelProLookCinematicTealOrange,
-        JHPixelProLookDesaturatedPop,
-        JHPixelProLookFadedFilm,
-        JHPixelProLookGoldenHour,
-        JHPixelProLookMoodyGreen,
-        JHPixelProLookWarmSkinTone,
+        JHPixelProLookSelect,
         JHPixelProLuminosityMasking,
         JHPixelProLUTExport,
         JHPixelProLUTImport,
@@ -114,23 +109,8 @@ if __package__:
     NODE_CLASS_MAPPINGS["JHPixelProToneMatchLUT"] = JHPixelProToneMatchLUT
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProToneMatchLUT"] = "Tone Match LUT (auto-gen .cube)"
 
-    NODE_CLASS_MAPPINGS["JHPixelProLookCinematicTealOrange"] = JHPixelProLookCinematicTealOrange
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookCinematicTealOrange"] = "Look: Cinematic Teal/Orange"
-
-    NODE_CLASS_MAPPINGS["JHPixelProLookWarmSkinTone"] = JHPixelProLookWarmSkinTone
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookWarmSkinTone"] = "Look: Warm Skin Tone"
-
-    NODE_CLASS_MAPPINGS["JHPixelProLookMoodyGreen"] = JHPixelProLookMoodyGreen
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookMoodyGreen"] = "Look: Moody Green"
-
-    NODE_CLASS_MAPPINGS["JHPixelProLookFadedFilm"] = JHPixelProLookFadedFilm
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookFadedFilm"] = "Look: Faded Film"
-
-    NODE_CLASS_MAPPINGS["JHPixelProLookGoldenHour"] = JHPixelProLookGoldenHour
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookGoldenHour"] = "Look: Golden Hour"
-
-    NODE_CLASS_MAPPINGS["JHPixelProLookDesaturatedPop"] = JHPixelProLookDesaturatedPop
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookDesaturatedPop"] = "Look: Desaturated Pop"
+    NODE_CLASS_MAPPINGS["JHPixelProLookSelect"] = JHPixelProLookSelect
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookSelect"] = "Look: Select Preset"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"
