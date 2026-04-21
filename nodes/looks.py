@@ -36,7 +36,9 @@ class _BaseLookPreset:
                     "BOOLEAN",
                     {
                         "default": False,
-                        "tooltip": "Reduce each preset operation over orange-pink skin-tone pixels.",
+                        "tooltip": (
+                            "Reduce each preset operation over orange-pink skin-tone pixels."
+                        ),
                     },
                 ),
             },
