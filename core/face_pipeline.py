@@ -102,6 +102,20 @@ def _to_pixel_landmarks(points: torch.Tensor, *, width: int, height: int) -> np.
     return cpu.numpy().astype(np.float32, copy=False)
 
 
+def _clip_rect_to_image(
+    rect: tuple[int, int, int, int],
+    *,
+    width: int,
+    height: int,
+) -> tuple[int, int, int, int]:
+    x, y, w, h = rect
+    x0 = max(0, x)
+    y0 = max(0, y)
+    x1 = min(width, x + w)
+    y1 = min(height, y + h)
+    return x0, y0, x1, y1
+
+
 def extract_landmarks(
     image: torch.Tensor,
     *,
@@ -196,28 +210,37 @@ def face_warp_delaunay(
             if np.linalg.det(np.stack([src_tri[1] - src_tri[0], src_tri[2] - src_tri[0]])) == 0.0:
                 continue
 
-            src_rect = cv2.boundingRect(src_tri)
-            dst_rect = cv2.boundingRect(dst_tri)
-            if src_rect[2] <= 0 or src_rect[3] <= 0 or dst_rect[2] <= 0 or dst_rect[3] <= 0:
+            src_x0, src_y0, src_x1, src_y1 = _clip_rect_to_image(
+                cv2.boundingRect(src_tri),
+                width=width,
+                height=height,
+            )
+            dst_x0, dst_y0, dst_x1, dst_y1 = _clip_rect_to_image(
+                cv2.boundingRect(dst_tri),
+                width=width,
+                height=height,
+            )
+            src_w, src_h = src_x1 - src_x0, src_y1 - src_y0
+            dst_w, dst_h = dst_x1 - dst_x0, dst_y1 - dst_y0
+            if src_w <= 0 or src_h <= 0 or dst_w <= 0 or dst_h <= 0:
                 continue
 
-            src_offset = src_tri - np.array([src_rect[0], src_rect[1]], dtype=np.float32)
-            dst_offset = dst_tri - np.array([dst_rect[0], dst_rect[1]], dtype=np.float32)
+            src_offset = src_tri - np.array([src_x0, src_y0], dtype=np.float32)
+            dst_offset = dst_tri - np.array([dst_x0, dst_y0], dtype=np.float32)
 
-            src_patch = image_np[
-                src_rect[1] : src_rect[1] + src_rect[3],
-                src_rect[0] : src_rect[0] + src_rect[2],
-            ]
+            src_patch = image_np[src_y0:src_y1, src_x0:src_x1]
+            if src_patch.size == 0:
+                continue
             matrix = cv2.getAffineTransform(src_offset, dst_offset)
             warped_patch = cv2.warpAffine(
                 src_patch,
                 matrix,
-                (dst_rect[2], dst_rect[3]),
+                (dst_w, dst_h),
                 flags=cv2.INTER_LINEAR,
                 borderMode=cv2.BORDER_REFLECT_101,
             )
 
-            tri_mask = np.zeros((dst_rect[3], dst_rect[2]), dtype=np.float32)
+            tri_mask = np.zeros((dst_h, dst_w), dtype=np.float32)
             cv2.fillConvexPoly(
                 tri_mask,
                 np.round(dst_offset).astype(np.int32),
@@ -226,12 +249,13 @@ def face_warp_delaunay(
             )
             mask_3c = tri_mask[..., None]
 
-            y0, x0 = dst_rect[1], dst_rect[0]
-            y1, x1 = y0 + dst_rect[3], x0 + dst_rect[2]
-            composite[y0:y1, x0:x1] = (
-                composite[y0:y1, x0:x1] * (1.0 - mask_3c) + warped_patch * mask_3c
+            composite[dst_y0:dst_y1, dst_x0:dst_x1] = (
+                composite[dst_y0:dst_y1, dst_x0:dst_x1] * (1.0 - mask_3c) + warped_patch * mask_3c
             )
-            coverage[y0:y1, x0:x1] = np.maximum(coverage[y0:y1, x0:x1], tri_mask)
+            coverage[dst_y0:dst_y1, dst_x0:dst_x1] = np.maximum(
+                coverage[dst_y0:dst_y1, dst_x0:dst_x1],
+                tri_mask,
+            )
 
         output_np = composite * coverage[..., None] + image_np * (1.0 - coverage[..., None])
         outputs.append(torch.from_numpy(np.clip(output_np, 0.0, 1.0)))
