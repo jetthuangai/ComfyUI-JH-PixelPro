@@ -51,6 +51,7 @@ if __package__:
         JHPixelProLUTExport,
         JHPixelProLUTImport,
         JHPixelProMaskCombine,
+        JHPixelProMaskEdgeSmoother,
         JHPixelProMaskMorphology,
         JHPixelProSaturationMask,
         JHPixelProSubPixelMaskRefiner,
@@ -80,6 +81,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProMaskCombine"] = JHPixelProMaskCombine
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMaskCombine"] = "Mask: Combine"
+
+    NODE_CLASS_MAPPINGS["JHPixelProMaskEdgeSmoother"] = JHPixelProMaskEdgeSmoother
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMaskEdgeSmoother"] = "Mask: Edge Smoother"
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"

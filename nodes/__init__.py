@@ -25,6 +25,7 @@ from .lut_import_node import JHPixelProLUTImport
 from .mask_alpha_matte_node import JHPixelProAlphaMatteExtractor
 from .mask_combine_node import JHPixelProMaskCombine
 from .mask_edge_refine_node import JHPixelProEdgeAwareMaskRefiner
+from .mask_edge_smooth_node import JHPixelProMaskEdgeSmoother
 from .mask_morphology_node import JHPixelProMaskMorphology
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .mask_trimap_node import JHPixelProTrimapBuilder
@@ -59,6 +60,7 @@ __all__ = [
     "JHPixelProAlphaMatteExtractor",
     "JHPixelProEdgeAwareMaskRefiner",
     "JHPixelProMaskCombine",
+    "JHPixelProMaskEdgeSmoother",
     "JHPixelProMaskMorphology",
     "JHPixelProSubPixelMaskRefiner",
     "JHPixelProSaturationMask",
