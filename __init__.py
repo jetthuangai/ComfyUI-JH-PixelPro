@@ -23,6 +23,7 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace, Landmarks, Warp, BeautyBlend)
+#   looks      — JSON-driven one-slider look presets (Cinematic, Warm Skin, Moody)
 if __package__:
     from .nodes import (
         JHPixelProColorMatcher,
@@ -40,6 +41,9 @@ if __package__:
         JHPixelProLuminosityMasking,
         JHPixelProLUTExport,
         JHPixelProLUTImport,
+        JHPixelProLookCinematicTealOrange,
+        JHPixelProLookMoodyGreen,
+        JHPixelProLookWarmSkinTone,
         JHPixelProSaturationMask,
         JHPixelProSubPixelMaskRefiner,
         JHPixelProToneCurve,
@@ -106,6 +110,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProToneMatchLUT"] = JHPixelProToneMatchLUT
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProToneMatchLUT"] = "Tone Match LUT (auto-gen .cube)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLookCinematicTealOrange"] = JHPixelProLookCinematicTealOrange
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookCinematicTealOrange"] = "Look: Cinematic Teal/Orange"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLookWarmSkinTone"] = JHPixelProLookWarmSkinTone
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookWarmSkinTone"] = "Look: Warm Skin Tone"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLookMoodyGreen"] = JHPixelProLookMoodyGreen
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookMoodyGreen"] = "Look: Moody Green"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"
