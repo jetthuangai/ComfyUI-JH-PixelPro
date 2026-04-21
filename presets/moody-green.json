@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "moody-green",
+  "display_name": "Moody Green",
+  "description": "Deep editorial greens with crushed shadows and muted highlights.",
+  "compose_ops": [
+    {
+      "op": "tone_curve_s",
+      "primitive": "N-09",
+      "params": {
+        "curve_points": [[0.0, 0.0], [0.15, 0.05], [0.3, 0.22], [0.45, 0.4], [0.6, 0.57], [0.75, 0.75], [0.9, 0.9], [1.0, 1.0]]
+      }
+    },
+    {
+      "op": "lab_color_shift",
+      "primitive": "N-08",
+      "params": {
+        "shadow_shift": {"L_threshold": 0.62, "a_shift": -8.0, "b_shift": 4.0}
+      }
+    },
+    {
+      "op": "saturation_mask",
+      "primitive": "N-16",
+      "params": {"sat_mult": 0.82, "sat_min": 0.0, "sat_max": 1.0, "feather": 0.12}
+    }
+  ],
+  "default_intensity": 1.0,
+  "protect_skin_default": false
+}
