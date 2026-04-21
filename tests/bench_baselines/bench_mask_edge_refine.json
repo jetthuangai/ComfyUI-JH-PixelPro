@@ -1,0 +1,26 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-1024-b1-guided_filter",
+    "device": "cpu",
+    "mean_ms": 369.9079,
+    "measure_iters": 10,
+    "module": "mask_edge_refine",
+    "resolution": 1024,
+    "scenario": "guided_filter",
+    "stdev_ms": 31.8986,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-b1-guided_filter",
+    "device": "cpu",
+    "mean_ms": 79.4909,
+    "measure_iters": 10,
+    "module": "mask_edge_refine",
+    "resolution": 512,
+    "scenario": "guided_filter",
+    "stdev_ms": 3.1338,
+    "warmup_iters": 3
+  }
+]

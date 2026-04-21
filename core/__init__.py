@@ -9,6 +9,7 @@ from .frequency import frequency_separation
 from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .lut import export_cube, identity_hald
+from .mask_edge_refine import edge_aware_refine
 from .mask_refiner import subpixel_mask_refine
 from .selective_color import apply_hue_sat_shift, hue_range_mask, saturation_range_mask
 from .smoother import edge_aware_smooth
@@ -19,6 +20,7 @@ from .unwrap_face import unwrap_face
 __all__ = [
     "frequency_separation",
     "subpixel_mask_refine",
+    "edge_aware_refine",
     "edge_aware_smooth",
     "high_freq_detail_mask",
     "color_matcher",
