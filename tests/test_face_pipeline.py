@@ -184,6 +184,30 @@ def test_beauty_blend_mask_one_returns_retouched() -> None:
     assert torch.allclose(blended, retouched, atol=1e-6)
 
 
+def test_beauty_blend_auto_resizes_small_mask_to_image_dims() -> None:
+    base = torch.zeros((1, 1024, 768, 3), dtype=torch.float32)
+    retouched = torch.ones_like(base)
+    mask = torch.ones((1, 64, 64), dtype=torch.float32)
+
+    blended = beauty_blend(base, retouched, mask, strength=1.0, feather=0)
+
+    assert blended.shape == base.shape
+    assert blended.dtype == base.dtype
+    assert torch.isfinite(blended).all()
+
+
+def test_beauty_blend_resized_mask_preserves_semantics() -> None:
+    base = torch.zeros((1, 128, 96, 3), dtype=torch.float32)
+    retouched = torch.ones_like(base)
+    mask = torch.zeros((1, 32, 32), dtype=torch.float32)
+    mask[:, :, :16] = 1.0
+
+    blended = beauty_blend(base, retouched, mask, strength=1.0, feather=0)
+
+    assert blended.shape == base.shape
+    assert abs(blended.mean().item() - 0.5) < 0.02
+
+
 def test_beauty_blend_half_strength_midpoint() -> None:
     base = _gradient_image()
     retouched = 1.0 - base

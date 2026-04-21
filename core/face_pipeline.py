@@ -7,6 +7,7 @@ from numbers import Integral, Real
 
 import numpy as np
 import torch
+import torch.nn.functional as functional
 from kornia.filters import gaussian_blur2d
 
 from .face_detect import _ensure_model_file, _get_landmarker, _import_mediapipe
@@ -278,10 +279,10 @@ def beauty_blend(
     retouched_prepared = _prepare_image("retouched", retouched).to(device=base_prepared.device)
     if base_prepared.shape != retouched_prepared.shape:
         raise ValueError("base and retouched must have the same shape.")
-    if mask.ndim != 3 or mask.shape != base_prepared.shape[:3]:
-        raise ValueError(
-            f"mask must have shape {base_prepared.shape[:3]}, got {tuple(mask.shape)}."
-        )
+    if mask.ndim != 3:
+        raise ValueError(f"mask must have shape (B,H,W), got {tuple(mask.shape)}.")
+    if mask.shape[0] not in (1, base_prepared.shape[0]):
+        raise ValueError(f"mask batch must be 1 or {base_prepared.shape[0]}, got {mask.shape[0]}.")
     if not torch.is_floating_point(mask) and mask.dtype is not torch.bool:
         raise ValueError(f"mask must be float or bool, got {mask.dtype}.")
 
@@ -291,6 +292,16 @@ def beauty_blend(
     feather = int(feather)
 
     mask_prepared = mask.to(device=base_prepared.device, dtype=torch.float32).clamp(0.0, 1.0)
+    if mask_prepared.shape[0] == 1 and base_prepared.shape[0] > 1:
+        mask_prepared = mask_prepared.expand(base_prepared.shape[0], -1, -1)
+    if mask_prepared.shape[-2:] != base_prepared.shape[1:3]:
+        mask_prepared = functional.interpolate(
+            mask_prepared.unsqueeze(1),
+            size=base_prepared.shape[1:3],
+            mode="bilinear",
+            align_corners=False,
+        ).squeeze(1)
+        mask_prepared = mask_prepared.clamp(0.0, 1.0)
     if feather > 0:
         sigma = max(float(feather) / 3.0, 1e-3)
         kernel_size = _gaussian_kernel_size(sigma)
