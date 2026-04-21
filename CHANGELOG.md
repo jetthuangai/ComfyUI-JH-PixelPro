@@ -4,6 +4,18 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Fixed
+
+- **N-21 `JHPixelProFaceBeautyBlend`**: auto-resizes masks to image height/width instead of raising `ValueError` on spatial shape mismatch, resolving the S-18 crash when placeholder masks are `64×64`.
+
+### Changed
+
+- **N-17 `JHPixelProToneMatchLUT`**: upgrades generated LUTs from Reinhard LAB mean/std transfer to MKL (Monge-Kantorovich Linear) covariance transfer, capturing cross-channel color correlations with a mean-only fallback for singular covariance references.
+
+### Sample workflows
+
+- **S-18 Face Pipeline v2**: rewires the scaffold mask path to core `ImageToMask` from the loaded image red channel instead of `LoadImage.MASK`, keeping the demo self-contained with image-sized masks.
+
 ## [0.8.1] — 2026-04-21
 
 Batch-6 smoke-test patch release for two issues found by JH in real ComfyUI runs after v0.8.0: N-20 Face Warp edge-landmark crashes and N-17 Tone Match LUT wrong-color bias.
