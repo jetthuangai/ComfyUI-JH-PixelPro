@@ -1,8 +1,8 @@
 {
   "id": "s18-face-pipeline-v2-20260421",
   "revision": 0,
-  "last_node_id": 6,
-  "last_link_id": 7,
+  "last_node_id": 7,
+  "last_link_id": 10,
   "nodes": [
     {
       "id": 1,
@@ -14,8 +14,8 @@
       "mode": 0,
       "inputs": [],
       "outputs": [
-        { "name": "IMAGE", "type": "IMAGE", "slot_index": 0, "links": [1, 2, 5] },
-        { "name": "MASK", "type": "MASK", "links": [6] }
+        { "name": "IMAGE", "type": "IMAGE", "slot_index": 0, "links": [1, 2, 5, 9] },
+        { "name": "MASK", "type": "MASK", "links": null }
       ],
       "properties": { "Node name for S&R": "LoadImage" },
       "widgets_values": ["sample_portrait.jpg", "image"]
@@ -74,7 +74,7 @@
       "inputs": [
         { "name": "base", "type": "IMAGE", "link": 5 },
         { "name": "retouched", "type": "IMAGE", "link": 7 },
-        { "name": "mask", "type": "MASK", "link": 6 }
+        { "name": "mask", "type": "MASK", "link": 10 }
       ],
       "outputs": [
         { "name": "blended", "type": "IMAGE", "slot_index": 0, "links": [8] }
@@ -87,12 +87,25 @@
       "widgets_values": [0.8, 16]
     },
     {
+      "id": 7,
+      "type": "ImageToMask",
+      "pos": [840, 320],
+      "size": [260, 58],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [{ "name": "image", "type": "IMAGE", "link": 9 }],
+      "outputs": [{ "name": "MASK", "type": "MASK", "slot_index": 0, "links": [10] }],
+      "properties": { "Node name for S&R": "ImageToMask" },
+      "widgets_values": ["red"]
+    },
+    {
       "id": 5,
       "type": "PreviewImage",
       "pos": [1620, 160],
       "size": [340, 340],
       "flags": {},
-      "order": 4,
+      "order": 5,
       "mode": 0,
       "inputs": [{ "name": "images", "type": "IMAGE", "link": 8 }],
       "outputs": [],
@@ -105,7 +118,7 @@
       "pos": [80, 560],
       "size": [1880, 220],
       "flags": {},
-      "order": 5,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -117,7 +130,7 @@
         }
       },
       "widgets_values": [
-        "ℹ️ S-18 Face Pipeline v2 — extract dense landmarks, do a Delaunay warp, then blend the warped result back\n\nChain: LoadImage → N-19 Face Landmarks → N-20 Face Warp → N-21 Face Beauty Blend → PreviewImage. The same source image is wired as both the base plate and the retouched plate here so the scaffold stays self-contained and pack-core-only; replace the N-20 output or the base image with your own retouched face pass in production.\n\nThe LoadImage MASK output is wired into N-21 as a convenient placeholder mask for the demo graph. In a real retouch workflow, replace it with a proper face / skin mask from your own upstream segmentation chain."
+        "ℹ️ S-18 Face Pipeline v2 — extract dense landmarks, do a Delaunay warp, then blend the warped result back\n\nChain: LoadImage → N-19 Face Landmarks → N-20 Face Warp → N-21 Face Beauty Blend → PreviewImage. The same source image is wired as both the base plate and the retouched plate here so the scaffold stays self-contained and pack-core-only; replace the N-20 output or the base image with your own retouched face pass in production.\n\nImageToMask converts the loaded image red channel into a same-size placeholder mask for N-21, avoiding ComfyUI's default 64×64 LoadImage.MASK fallback when source images have no alpha. In a real retouch workflow, replace it with a proper face / skin mask from your own upstream segmentation chain."
       ],
       "color": "#243",
       "bgcolor": "#365"
@@ -129,9 +142,10 @@
     [3, 2, 0, 3, 1, "LANDMARKS"],
     [4, 2, 0, 3, 2, "LANDMARKS"],
     [5, 1, 0, 4, 0, "IMAGE"],
-    [6, 1, 1, 4, 2, "MASK"],
     [7, 3, 0, 4, 1, "IMAGE"],
-    [8, 4, 0, 5, 0, "IMAGE"]
+    [8, 4, 0, 5, 0, "IMAGE"],
+    [9, 1, 0, 7, 0, "IMAGE"],
+    [10, 7, 0, 4, 2, "MASK"]
   ],
   "groups": [],
   "config": {},
