@@ -4,6 +4,23 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-04-21
+
+### ⚠️ BREAKING CHANGES
+
+- **M6 Looks refactor from 6 per-preset node classes to 1 dropdown-based node**. Workflow JSON saved from v0.9.0 **WILL NOT LOAD** — re-create from new scaffolds `S-19-look-select-single.json` or `S-20-look-select-compare-6up.json`.
+- Removed classes: `JHPixelProLookCinematicTealOrange`, `JHPixelProLookWarmSkinTone`, `JHPixelProLookMoodyGreen`, `JHPixelProLookFadedFilm`, `JHPixelProLookGoldenHour`, `JHPixelProLookDesaturatedPop`.
+- Added class: `JHPixelProLookSelect` with `preset` COMBO input (6 option dropdown).
+
+### Changed
+
+- Pack node count: 26 → 21 (`/looks` category reduced from 6 to 1 node).
+- Workflow scaffolds: 7 removed (S-19..S-25 per-preset), 2 added (S-19 single + S-20 compare-6up).
+
+### Rationale
+
+UX feedback from JH smoke-test 2026-04-21 12:48: 6 per-preset nodes cluttered `/looks` menu (scaling concern for 20+ presets future) + rotate-preset required delete/reconnect instead of dropdown toggle. 1-node dropdown matches ComfyUI KSampler/sampler_name convention. Preset JSON framework + `nodes/look_base.py` dispatch unchanged — zero new core math, pure UX refactor.
+
 ## [0.9.0] — 2026-04-21
 
 Batch-7 ships the **M6 Looks preset palette**: 6 JSON-driven one-slider look nodes under the new `/looks` category. Pack now ships **26 live nodes** across 6 categories.
