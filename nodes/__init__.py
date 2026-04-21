@@ -1,5 +1,6 @@
 """ComfyUI node wrappers — wrap core math into classes exposing INPUT_TYPES / RETURN_TYPES."""  # noqa: N999
 
+from .color_lab import JHPixelProColorLab
 from .color_matcher_node import JHPixelProColorMatcher
 from .detail_masker_node import JHPixelProHighFreqDetailMasker
 from .face_beauty_blend_node import JHPixelProFaceBeautyBlend
@@ -10,6 +11,12 @@ from .facial_aligner_node import JHPixelProFacialAligner
 from .frequency_node import JHPixelProFrequencySeparation
 from .hald_identity_node import JHPixelProHALDIdentity
 from .hue_saturation_range_node import JHPixelProHueSaturationRange
+from .layer_compositing import (
+    JHPixelProLayerAdd,
+    JHPixelProLayerFlatten,
+    JHPixelProLayerGroup,
+    JHPixelProLayerStackStart,
+)
 from .lens_distortion_node import JHPixelProLensDistortion
 from .look_select import JHPixelProLookSelect
 from .luminosity_node import JHPixelProLuminosityMasking
@@ -24,6 +31,7 @@ from .unwrap_face_node import JHPixelProUnwrapFace
 
 __all__ = [
     "JHPixelProColorMatcher",
+    "JHPixelProColorLab",
     "JHPixelProEdgeAwareSmoother",
     "JHPixelProFaceBeautyBlend",
     "JHPixelProFaceDetect",
@@ -36,6 +44,10 @@ __all__ = [
     "JHPixelProHueSaturationRange",
     "JHPixelProLUTExport",
     "JHPixelProLUTImport",
+    "JHPixelProLayerAdd",
+    "JHPixelProLayerFlatten",
+    "JHPixelProLayerGroup",
+    "JHPixelProLayerStackStart",
     "JHPixelProLensDistortion",
     "JHPixelProLuminosityMasking",
     "JHPixelProLookSelect",

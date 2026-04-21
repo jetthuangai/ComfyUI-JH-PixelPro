@@ -158,7 +158,10 @@ def test_hsl_lum_slider_changes_target_value() -> None:
 def test_shadow_grading_isolates_dark_region() -> None:
     image = torch.cat([_solid((0.12, 0.12, 0.12), 4), _solid((0.86, 0.86, 0.86), 4)], dim=2)
     out = apply_colorlab_pipeline(image, _params(grade_shadow_hue=200.0, grade_shadow_sat=80.0))
-    assert _mean_delta(out[:, :, :4], image[:, :, :4]) > _mean_delta(out[:, :, 4:], image[:, :, 4:]) * 2.0
+    assert (
+        _mean_delta(out[:, :, :4], image[:, :, :4])
+        > _mean_delta(out[:, :, 4:], image[:, :, 4:]) * 2.0
+    )
 
 
 def test_mid_grading_isolates_mid_region() -> None:
@@ -169,14 +172,23 @@ def test_mid_grading_isolates_mid_region() -> None:
 
 def test_highlight_grading_isolates_bright_region() -> None:
     image = torch.cat([_solid((0.15, 0.15, 0.15), 4), _solid((0.9, 0.9, 0.9), 4)], dim=2)
-    out = apply_colorlab_pipeline(image, _params(grade_highlight_hue=45.0, grade_highlight_sat=80.0))
-    assert _mean_delta(out[:, :, 4:], image[:, :, 4:]) > _mean_delta(out[:, :, :4], image[:, :, :4]) * 2.0
+    out = apply_colorlab_pipeline(
+        image, _params(grade_highlight_hue=45.0, grade_highlight_sat=80.0)
+    )
+    assert (
+        _mean_delta(out[:, :, 4:], image[:, :, 4:])
+        > _mean_delta(out[:, :, :4], image[:, :, :4]) * 2.0
+    )
 
 
 def test_grade_balance_changes_shadow_mask_strength() -> None:
     image = _solid((0.45, 0.45, 0.45))
-    left = apply_colorlab_pipeline(image, _params(grade_shadow_hue=200.0, grade_shadow_sat=80.0, grade_shadow_bal=-100.0))
-    right = apply_colorlab_pipeline(image, _params(grade_shadow_hue=200.0, grade_shadow_sat=80.0, grade_shadow_bal=100.0))
+    left = apply_colorlab_pipeline(
+        image, _params(grade_shadow_hue=200.0, grade_shadow_sat=80.0, grade_shadow_bal=-100.0)
+    )
+    right = apply_colorlab_pipeline(
+        image, _params(grade_shadow_hue=200.0, grade_shadow_sat=80.0, grade_shadow_bal=100.0)
+    )
     assert _mean_delta(left, image) != pytest.approx(_mean_delta(right, image))
 
 

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import math
 from collections.abc import Mapping
 
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as functional
 
 HUE_ANCHORS = {
     "red": 0.0,
@@ -18,6 +17,8 @@ HUE_ANCHORS = {
     "purple": 280.0,
     "magenta": 310.0,
 }
+
+GRAY_MIX_COLORS = tuple(color for color in HUE_ANCHORS if color != "magenta")
 
 BASIC_KEYS = (
     "basic_exposure",
@@ -158,7 +159,7 @@ def _local_contrast(image: torch.Tensor, amount: float, kernel_size: int) -> tor
     if not amount:
         return image
     x = image.permute(0, 3, 1, 2)
-    blur = F.avg_pool2d(x, kernel_size=kernel_size, stride=1, padding=kernel_size // 2)
+    blur = functional.avg_pool2d(x, kernel_size=kernel_size, stride=1, padding=kernel_size // 2)
     return (x + (x - blur) * amount).permute(0, 2, 3, 1)
 
 
@@ -209,7 +210,8 @@ def _apply_gray_mix(image: torch.Tensor, params: Mapping[str, object]) -> torch.
     base = _luma(image)
     total = torch.zeros_like(base)
     weighted = torch.zeros_like(base)
-    for color, center in HUE_ANCHORS.items():
+    for color in GRAY_MIX_COLORS:
+        center = HUE_ANCHORS[color]
         mask = _hue_mask(h, center)
         weight = 1.0 + _float(params, f"gray_{color}") / 100.0
         weighted = weighted + mask * weight
@@ -254,29 +256,29 @@ def hsv_to_rgb(hue: torch.Tensor, sat: torch.Tensor, val: torch.Tensor) -> torch
     x = c * (1.0 - torch.abs(torch.remainder(h, 2.0) - 1.0))
     z = torch.zeros_like(c)
 
-    r1 = torch.where((0.0 <= h) & (h < 1.0), c, z)
-    g1 = torch.where((0.0 <= h) & (h < 1.0), x, z)
+    r1 = torch.where((h >= 0.0) & (h < 1.0), c, z)
+    g1 = torch.where((h >= 0.0) & (h < 1.0), x, z)
     b1 = z.clone()
 
-    r1 = torch.where((1.0 <= h) & (h < 2.0), x, r1)
-    g1 = torch.where((1.0 <= h) & (h < 2.0), c, g1)
-    b1 = torch.where((1.0 <= h) & (h < 2.0), z, b1)
+    r1 = torch.where((h >= 1.0) & (h < 2.0), x, r1)
+    g1 = torch.where((h >= 1.0) & (h < 2.0), c, g1)
+    b1 = torch.where((h >= 1.0) & (h < 2.0), z, b1)
 
-    r1 = torch.where((2.0 <= h) & (h < 3.0), z, r1)
-    g1 = torch.where((2.0 <= h) & (h < 3.0), c, g1)
-    b1 = torch.where((2.0 <= h) & (h < 3.0), x, b1)
+    r1 = torch.where((h >= 2.0) & (h < 3.0), z, r1)
+    g1 = torch.where((h >= 2.0) & (h < 3.0), c, g1)
+    b1 = torch.where((h >= 2.0) & (h < 3.0), x, b1)
 
-    r1 = torch.where((3.0 <= h) & (h < 4.0), z, r1)
-    g1 = torch.where((3.0 <= h) & (h < 4.0), x, g1)
-    b1 = torch.where((3.0 <= h) & (h < 4.0), c, b1)
+    r1 = torch.where((h >= 3.0) & (h < 4.0), z, r1)
+    g1 = torch.where((h >= 3.0) & (h < 4.0), x, g1)
+    b1 = torch.where((h >= 3.0) & (h < 4.0), c, b1)
 
-    r1 = torch.where((4.0 <= h) & (h < 5.0), x, r1)
-    g1 = torch.where((4.0 <= h) & (h < 5.0), z, g1)
-    b1 = torch.where((4.0 <= h) & (h < 5.0), c, b1)
+    r1 = torch.where((h >= 4.0) & (h < 5.0), x, r1)
+    g1 = torch.where((h >= 4.0) & (h < 5.0), z, g1)
+    b1 = torch.where((h >= 4.0) & (h < 5.0), c, b1)
 
-    r1 = torch.where((5.0 <= h) & (h < 6.0), c, r1)
-    g1 = torch.where((5.0 <= h) & (h < 6.0), z, g1)
-    b1 = torch.where((5.0 <= h) & (h < 6.0), x, b1)
+    r1 = torch.where((h >= 5.0) & (h < 6.0), c, r1)
+    g1 = torch.where((h >= 5.0) & (h < 6.0), z, g1)
+    b1 = torch.where((h >= 5.0) & (h < 6.0), x, b1)
 
     m = val - c
     return torch.cat((r1 + m, g1 + m, b1 + m), dim=-1).clamp(0.0, 1.0)

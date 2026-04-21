@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as functional
 
 from .color_lab import hsv_to_rgb, rgb_to_hsv
 
@@ -101,7 +101,9 @@ def blend_linear_light(base: torch.Tensor, blend: torch.Tensor) -> torch.Tensor:
 
 
 def blend_pin_light(base: torch.Tensor, blend: torch.Tensor) -> torch.Tensor:
-    return torch.where(blend <= 0.5, torch.minimum(base, 2.0 * blend), torch.maximum(base, 2.0 * (blend - 0.5)))
+    return torch.where(
+        blend <= 0.5, torch.minimum(base, 2.0 * blend), torch.maximum(base, 2.0 * (blend - 0.5))
+    )
 
 
 def blend_hard_mix(base: torch.Tensor, blend: torch.Tensor) -> torch.Tensor:
@@ -199,7 +201,9 @@ def compose_stack(stack: list[dict]) -> torch.Tensor:
         layer_mask = layer.get("mask")
         mask = _resize_mask(layer_mask, result.shape[-3:-1], result.device, result.dtype)
         if layer.get("clip_to_below", False) and previous_mask is not None:
-            below_mask = _resize_mask(previous_mask, result.shape[-3:-1], result.device, result.dtype)
+            below_mask = _resize_mask(
+                previous_mask, result.shape[-3:-1], result.device, result.dtype
+            )
             mask = mask * below_mask
         blend = apply_blend(str(layer.get("blend_mode", "normal")), result, layer_image)
         strength = float(layer.get("opacity", 1.0)) * float(layer.get("fill", 1.0))
@@ -213,7 +217,7 @@ def _resize_image(image: torch.Tensor, hw: torch.Size | tuple[int, int]) -> torc
     if tuple(image.shape[-3:-1]) == tuple(hw):
         return image
     x = image.permute(0, 3, 1, 2)
-    resized = F.interpolate(x, size=tuple(hw), mode="bilinear", align_corners=False)
+    resized = functional.interpolate(x, size=tuple(hw), mode="bilinear", align_corners=False)
     return resized.permute(0, 2, 3, 1).contiguous()
 
 
@@ -230,5 +234,7 @@ def _resize_mask(
         out = out.unsqueeze(0)
     if tuple(out.shape[-2:]) == tuple(hw):
         return out.clamp(0.0, 1.0)
-    resized = F.interpolate(out.unsqueeze(1), size=tuple(hw), mode="bilinear", align_corners=False)
+    resized = functional.interpolate(
+        out.unsqueeze(1), size=tuple(hw), mode="bilinear", align_corners=False
+    )
     return resized.squeeze(1).clamp(0.0, 1.0)
