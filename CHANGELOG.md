@@ -4,8 +4,34 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.11.0] — 2026-04-21
+
 ### Added
-- Workflow screenshots for batch-8 S-19 Look Select Single and S-20 Look Select Compare 6-Up (post-v0.10.0, JH manual smoke test verified). README §N-22 JHPixelProLookSelect now render reference images for single-node dropdown UX + 6-up parametrized compare. No tag bump yet — docs-only commit post-v0.10.0; next release bundles any follow-up batch-9 work.
+
+**M7 ColorLab (ACR-level Color module):**
+
+- **N-23 `JHPixelProColorLab`** (`ComfyUI-JH-PixelPro/color`): monolithic Adobe Camera Raw-style color suite with **55 parameters** across Basic 11, HSL 24, Color Grading 12, and Gray Mix 8. Pipeline order is fixed: Basic → HSL → Color Grading → Gray Mix. Identity at all-zero plus `gray_enable=False` preserves input at `atol=1e-5`.
+
+**M8 Layer Compositing (Photoshop-style 27 blend modes):**
+
+- **N-24 `JHPixelProLayerStackStart`** introduces the custom `LAYER_STACK` pass-through type from a background `IMAGE`.
+- **N-25 `JHPixelProLayerAdd`** appends immutable stack layers with 27 fixed Photoshop-style blend modes, opacity, fill, optional mask, and `clip_to_below`.
+- **N-26 `JHPixelProLayerGroup`** eagerly flattens a sub-stack into a grouped parent layer for nested compositing.
+- **N-27 `JHPixelProLayerFlatten`** renders `LAYER_STACK` back to `IMAGE`; empty stacks raise `ValueError`.
+
+**Workflow screenshots:**
+
+- Workflow screenshots for batch-8 S-19 Look Select Single and S-20 Look Select Compare 6-Up (post-v0.10.0, JH manual smoke test verified). README §N-22 `JHPixelProLookSelect` now renders reference images for single-node dropdown UX + 6-up parametrized compare.
+
+### Changed
+
+- Pack node count: 21 → 26 (M7 ColorLab +1, M8 Layer Compositing +4).
+- Categories: 6 → 7 with new `ComfyUI-JH-PixelPro/compositing`; `/color` expands from 9 to 10 nodes.
+- Workflow scaffolds: added S-21..S-28 (5 ColorLab presets + 3 Layer Compositing demos).
+
+### Dependencies
+
+- Zero new dependency. ColorLab and all 27 blend modes are pure PyTorch / `torch.nn.functional`; existing pack dependency set is unchanged from v0.10.0.
 
 ## [0.10.0] — 2026-04-21
 
