@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.8.2** (2026-04-21) — 20 nodes live · N-21 Beauty Blend mask auto-resize + N-17 MKL covariance transfer (DaVinci Color Match compatible) · `/color` 9 + `/face` 5 subgroup · **M4-tail + M5-head ship together** under unified `ComfyUI-JH-PixelPro/*` namespace. Batch-6 ships the selective-color trio (**N-15 Hue/Saturation per Range**, **N-16 Saturation Mask Builder**, **N-17 Tone Match LUT**) and face-pipeline v2 trio (**N-19 Face Landmarks**, **N-20 Face Warp**, **N-21 Face Beauty Blend**). Face pipeline (v0.4.0) + color-grade trio (v0.5.0) + LUT round-trip (v0.6.0 / v0.7.0) + selective color + face-pipeline v2 are now all production-ready. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** 🎉 **v0.9.0** (2026-04-21) — 26 nodes live · new `/looks` category ships M6 Looks preset palette (**N-22 Cinematic Teal/Orange**, **N-23 Warm Skin Tone**, **N-24 Moody Green**, **N-25 Faded Film**, **N-26 Golden Hour**, **N-27 Desaturated Pop**) with JSON-driven configs, one-slider `intensity`, and optional `protect_skin`. Category mix: `/color` 9 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 6 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 ## Why this pack exists
 
