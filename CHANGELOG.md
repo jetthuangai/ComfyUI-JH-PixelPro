@@ -4,6 +4,11 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Fixed
+
+- **N-20 `JHPixelProFaceWarp`**: clamps Delaunay triangle bounds to the image rect before OpenCV affine slicing/compositing, preventing `cv2.warpAffine` crashes when MediaPipe landmarks land on or just outside frame edges.
+- **N-17 `JHPixelProToneMatchLUT`**: replaces the v0.8.0 identity-HALD LAB histogram-match path that could bake heavy sepia/desaturated bias into generated LUTs.
+
 ## [0.8.0] — 2026-04-21
 
 Batch-6 mega ships **6 new nodes** and closes two roadmap vectors at once: selective color tooling on `/color` (N-15 / N-16 / N-17) and face-pipeline v2 on `/face` (N-19 / N-20 / N-21). Pack now ships **20 live nodes** under the unified `ComfyUI-JH-PixelPro/*` namespace. `/color` expands to **9 nodes** and `/face` expands to **5 nodes**. Batch-6 also validates the one-time Codex full-stack execution path: core math, wrappers, workflows, docs and release bundled in a single autonomous thread.
