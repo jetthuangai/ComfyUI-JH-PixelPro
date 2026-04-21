@@ -4,9 +4,22 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-04-21
+
+Batch-7 ships the **M6 Looks preset palette**: 6 JSON-driven one-slider look nodes under the new `/looks` category. Pack now ships **26 live nodes** across 6 categories.
+
 ### Added
 
-- Workflow screenshots for batch-6 S-16 Selective Color, S-17 Tone Match LUT (MKL), and S-18 Face Pipeline v2 (post-v0.8.2, JH manual smoke test verified). README §N-15 / §N-16 / §N-17 / §N-19 / §N-20 / §N-21 now render reference images. JH purposefully expanded S-16 + S-17 workflows during smoke test, demonstrating extended node chains. No tag bump yet — docs-only commit post-v0.8.2; next release bundles any follow-up batch-7 work.
+- **N-22 `JHPixelProLookCinematicTealOrange`**, **N-23 `JHPixelProLookWarmSkinTone`**, **N-24 `JHPixelProLookMoodyGreen`**, **N-25 `JHPixelProLookFadedFilm`**, **N-26 `JHPixelProLookGoldenHour`**, and **N-27 `JHPixelProLookDesaturatedPop`**: preset wrapper nodes with `IMAGE` input, continuous `intensity` slider, optional `protect_skin`, and `IMAGE` output.
+- **JSON preset framework**: `presets/*.json` schema_version=1 plus `nodes/look_base.py` dispatch routing to existing batch-3/batch-6 primitives.
+
+### Changed
+
+- Pack category count expands from 5 to 6 with new `ComfyUI-JH-PixelPro/looks`; public node count expands from 20 to 26.
+
+### Sample workflows
+
+- Added 7 batch-7 workflow scaffolds: S-19..S-24 individual Look preset demos plus S-25 six-preset chain preview. Also bundles the post-v0.8.2 batch-6 workflow screenshots and JH smoke-test JSON expansions from the former `[Unreleased]` buffer.
 
 ## [0.8.2] — 2026-04-21
 
