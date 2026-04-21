@@ -1,0 +1,50 @@
+{
+  "last_node_id": 3,
+  "last_link_id": 2,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [80, 160],
+      "size": [315, 314],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [1], "slot_index": 0},
+        {"name": "MASK", "type": "MASK", "links": [2], "slot_index": 1}
+      ],
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["sample_binary_mask.png", "image"]
+    },
+    {
+      "id": 2,
+      "type": "JHPixelProEdgeAwareMaskRefiner",
+      "pos": [450, 160],
+      "size": [330, 170],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {"name": "mask", "type": "MASK", "link": 2},
+        {"name": "guide", "type": "IMAGE", "link": 1}
+      ],
+      "outputs": [{"name": "MASK", "type": "MASK", "links": null, "slot_index": 0}],
+      "properties": {
+        "cnr_id": "ComfyUI-JH-PixelPro",
+        "ver": "1.1.0",
+        "Node name for S&R": "JHPixelProEdgeAwareMaskRefiner"
+      },
+      "widgets_values": [8, 0.001, 0.0]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 2, 1, "IMAGE"],
+    [2, 1, 1, 2, 0, "MASK"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

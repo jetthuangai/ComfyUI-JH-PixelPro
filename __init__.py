@@ -29,6 +29,7 @@ if __package__:
     from .nodes import (
         JHPixelProColorLab,
         JHPixelProColorMatcher,
+        JHPixelProEdgeAwareMaskRefiner,
         JHPixelProEdgeAwareSmoother,
         JHPixelProFaceBeautyBlend,
         JHPixelProFaceDetect,
@@ -60,6 +61,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = JHPixelProSubPixelMaskRefiner
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = "Sub-Pixel Mask Refiner"
+
+    NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareMaskRefiner"] = JHPixelProEdgeAwareMaskRefiner
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareMaskRefiner"] = "Mask: Edge-Aware Refiner"
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"
