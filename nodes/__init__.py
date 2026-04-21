@@ -17,6 +17,9 @@ from .lut_import_node import JHPixelProLUTImport
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .looks import (
     JHPixelProLookCinematicTealOrange,
+    JHPixelProLookDesaturatedPop,
+    JHPixelProLookFadedFilm,
+    JHPixelProLookGoldenHour,
     JHPixelProLookMoodyGreen,
     JHPixelProLookWarmSkinTone,
 )
@@ -43,6 +46,9 @@ __all__ = [
     "JHPixelProLensDistortion",
     "JHPixelProLuminosityMasking",
     "JHPixelProLookCinematicTealOrange",
+    "JHPixelProLookDesaturatedPop",
+    "JHPixelProLookFadedFilm",
+    "JHPixelProLookGoldenHour",
     "JHPixelProLookMoodyGreen",
     "JHPixelProLookWarmSkinTone",
     "JHPixelProSubPixelMaskRefiner",

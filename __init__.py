@@ -23,7 +23,7 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace, Landmarks, Warp, BeautyBlend)
-#   looks      — JSON-driven one-slider look presets (Cinematic, Warm Skin, Moody)
+#   looks      — JSON-driven one-slider look presets (N-22..N-27 M6 Looks)
 if __package__:
     from .nodes import (
         JHPixelProColorMatcher,
@@ -42,6 +42,9 @@ if __package__:
         JHPixelProLUTExport,
         JHPixelProLUTImport,
         JHPixelProLookCinematicTealOrange,
+        JHPixelProLookDesaturatedPop,
+        JHPixelProLookFadedFilm,
+        JHPixelProLookGoldenHour,
         JHPixelProLookMoodyGreen,
         JHPixelProLookWarmSkinTone,
         JHPixelProSaturationMask,
@@ -119,6 +122,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProLookMoodyGreen"] = JHPixelProLookMoodyGreen
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookMoodyGreen"] = "Look: Moody Green"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLookFadedFilm"] = JHPixelProLookFadedFilm
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookFadedFilm"] = "Look: Faded Film"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLookGoldenHour"] = JHPixelProLookGoldenHour
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookGoldenHour"] = "Look: Golden Hour"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLookDesaturatedPop"] = JHPixelProLookDesaturatedPop
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookDesaturatedPop"] = "Look: Desaturated Pop"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

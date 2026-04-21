@@ -74,3 +74,21 @@ class JHPixelProLookMoodyGreen(_BaseLookPreset):
     """N-24: Crushed shadows, green cast, and muted saturation."""
 
     PRESET_ID = "moody-green"
+
+
+class JHPixelProLookFadedFilm(_BaseLookPreset):
+    """N-25: Lifted blacks, warm mids, and soft desaturation."""
+
+    PRESET_ID = "faded-film"
+
+
+class JHPixelProLookGoldenHour(_BaseLookPreset):
+    """N-26: Global warmth, boosted yellow-orange, and protected blues."""
+
+    PRESET_ID = "golden-hour"
+
+
+class JHPixelProLookDesaturatedPop(_BaseLookPreset):
+    """N-27: Muted backgrounds with protected orange-red tones."""
+
+    PRESET_ID = "desaturated-pop"
