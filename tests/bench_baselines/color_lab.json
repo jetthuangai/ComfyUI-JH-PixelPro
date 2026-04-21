@@ -1,0 +1,50 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-1024-b1-full_stack",
+    "device": "cpu",
+    "mean_ms": 880.1138,
+    "measure_iters": 10,
+    "module": "color_lab",
+    "resolution": 1024,
+    "scenario": "full_stack",
+    "stdev_ms": 14.2621,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-1024-b1-identity",
+    "device": "cpu",
+    "mean_ms": 0.0053,
+    "measure_iters": 10,
+    "module": "color_lab",
+    "resolution": 1024,
+    "scenario": "identity",
+    "stdev_ms": 0.0001,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-b1-full_stack",
+    "device": "cpu",
+    "mean_ms": 210.3917,
+    "measure_iters": 10,
+    "module": "color_lab",
+    "resolution": 512,
+    "scenario": "full_stack",
+    "stdev_ms": 1.9168,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-b1-identity",
+    "device": "cpu",
+    "mean_ms": 0.0056,
+    "measure_iters": 10,
+    "module": "color_lab",
+    "resolution": 512,
+    "scenario": "identity",
+    "stdev_ms": 0.0004,
+    "warmup_iters": 3
+  }
+]
