@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v1.0.0** (2026-04-21) — 26 nodes live · production-ready · `/color` 10 + `/compositing` 4 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** 🎉 **v1.1.0** (2026-04-21) — 32 nodes live · production-ready · `/color` 10 + `/compositing` 4 + `/filters` 2 + `/mask` 8 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 > ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
@@ -20,13 +20,14 @@ This pack packages GPU-friendly tensor nodes for retouching, color science, face
 
 | Phase | Node group | Coverage |
 |---|---|---|
-| 1 | filters + morphology | Frequency separation, mask refiner, edge-aware smoother, detail masker, luminosity masking |
+| 1 | filters + mask refinement | Frequency separation, mask refiner, alpha matting, trimap, morphology, mask combine, edge-aware smoothing, detail masker, luminosity masking |
 | 2 | geometry | Facial aligner, lens distortion corrector |
 | 3 | color | RAW-space color matcher, tone curve & color balance |
 | after v1.0 | *(TBD)* | Segmentation, tracking, depth, advanced color |
 
 ## Milestones
 
+- **v1.1.0 mask refinement expansion:** 32 live nodes, 8 mask nodes, 23 benchmark files, and six new mask workflow scaffolds for N-28..N-33.
 - **v1.0.0 production-ready baseline:** 10-batch development cycle, 26 live nodes, 7 ComfyUI categories, 17 benchmark files, and a 27-row smoke-test matrix.
 - **Core creative coverage:** ACR-style ColorLab, LUT import/export, tone matching, look presets, face workflows, mask refinement, lens correction, and Photoshop-style layer compositing.
 - **Release discipline:** 14-tag history with fix-forward release practice; v1.0.0 is the first official stable release after the v0.x prerelease series.
@@ -42,7 +43,7 @@ cd ComfyUI-JH-PixelPro
 pip install -r requirements.txt
 ```
 
-Restart ComfyUI. The nodes appear under the `image/pixelpro/<group>` menu.
+Restart ComfyUI. The nodes appear under the `ComfyUI-JH-PixelPro/<group>` menu.
 
 ## Requirements
 
@@ -50,6 +51,9 @@ Restart ComfyUI. The nodes appear under the `image/pixelpro/<group>` menu.
 - Python ≥ 3.10
 - PyTorch (installed alongside ComfyUI)
 - Kornia ≥ 0.7.0
+- MediaPipe ≥ 0.10.0
+- OpenCV ≥ 4.8.0
+- SciPy ≥ 1.10.0
 - NVIDIA GPU with ≥ 8 GB VRAM (primary target); **CPU fallback is supported** (correctness only — no speed guarantee).
 
 ## Node list *(updated per Phase progress)*
@@ -80,6 +84,12 @@ Restart ComfyUI. The nodes appear under the `image/pixelpro/<group>` menu.
 - [x] N-25 Layer Add
 - [x] N-26 Layer Group
 - [x] N-27 Layer Flatten
+- [x] N-28 Edge-Aware Mask Refiner
+- [x] N-29 Alpha Matte Extractor
+- [x] N-30 Trimap Builder
+- [x] N-31 Mask Morphology
+- [x] N-32 Mask Combine
+- [x] N-33 Mask Edge Smoother
 
 ## Engineering principles
 
@@ -902,6 +912,29 @@ Photoshop-style layer stack compositing with a custom `LAYER_STACK` pass-through
 
 - **Layer styles are out of scope.** Bevel, glow, drop shadow and smart-object behavior are not implemented.
 - **Masks and layer images auto-resize to the base stack size.** Resizing uses bilinear interpolation for stable graph wiring.
+
+## N-28..N-33 Mask Refinement Pack
+
+Classical mask finishing tools for cutout, alpha matting, compositing, and post-segmentation cleanup. These nodes operate on ComfyUI `MASK` tensors and are designed to sit after SAM / YOLO / rembg / face-mask generators before downstream compositing or inpaint.
+
+**Nodes:**
+
+| Node | Purpose |
+|---|---|
+| `JHPixelProEdgeAwareMaskRefiner` | Refines a MASK against an IMAGE guide so alpha edges follow image detail. |
+| `JHPixelProAlphaMatteExtractor` | Solves soft alpha from a 3-value trimap and RGB guide image. |
+| `JHPixelProTrimapBuilder` | Builds trimaps encoded as `0.0` background, `0.5` unknown, `1.0` foreground. |
+| `JHPixelProMaskMorphology` | Dilate, erode, open, close, gradient, tophat, and blackhat with elliptical kernels. |
+| `JHPixelProMaskCombine` | Add, subtract, intersect, union, difference, xor, and multiply masks with hard or soft-feather mode. |
+| `JHPixelProMaskEdgeSmoother` | Smooths mask edges with bilateral filtering; uses OpenCV contrib joint-bilateral filtering when available. |
+
+**Sample workflows:** [N-28 edge-aware refiner](workflows/N-28-edge-aware-mask-refiner.json), [N-29 alpha matte](workflows/N-29-alpha-matte-extractor.json), [N-30 trimap builder](workflows/N-30-trimap-builder.json), [N-31 morphology](workflows/N-31-mask-morphology.json), [N-32 combine](workflows/N-32-mask-combine.json), [N-33 edge smoother](workflows/N-33-mask-edge-smoother.json).
+
+### Caveats
+
+- **Trimap convention is strict.** N-29 expects `0.0` background, `0.5` unknown, and `1.0` foreground with ±0.05 tolerance; use N-30 upstream when in doubt.
+- **N-29 is CPU sparse-solver based.** It is intended for quality mask finishing, not realtime preview at large resolutions.
+- **N-33 degrades gracefully.** If `cv2.ximgproc.jointBilateralFilter` is unavailable, guided smoothing falls back to plain bilateral filtering.
 
 ## License
 
