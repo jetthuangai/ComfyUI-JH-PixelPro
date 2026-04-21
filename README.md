@@ -2,9 +2,9 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.10.0** (2026-04-21) — 21 nodes live · `/looks` category now ships one M6 dropdown node (**N-22 `JHPixelProLookSelect`**) with 6 JSON-driven presets, `intensity`, and `protect_skin`. Category mix: `/color` 9 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** 🎉 **v0.11.0** (2026-04-21) — 26 nodes live · Batch-9 adds **N-23 `JHPixelProColorLab`** (ACR-style 55-param color suite) plus **N-24..N-27 Layer Compositing** with a `LAYER_STACK` type and 27 Photoshop-style blend modes. Category mix: `/color` 10 + `/compositing` 4 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
-> ⚠️ **v0.10.0 BREAKING**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
+> ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
 ## Why this pack exists
 
@@ -14,7 +14,7 @@ ComfyUI is strong at generative pipelines but lacks the professional retouching 
 - Hard, chipped mask edges (halo) from SAM / YOLO.
 - Skin tone drift after image generation.
 
-This pack packages 9 Kornia-powered nodes for Phases 1–3, then expands into other CV tasks (segmentation, tracking, 3D, color science).
+This pack packages GPU-friendly tensor nodes for retouching, color science, face workflows, looks, and Photoshop-style compositing inside ComfyUI.
 
 ## Scope
 
@@ -54,9 +54,26 @@ Restart ComfyUI. The nodes appear under the `image/pixelpro/<group>` menu.
 - [x] N-04 High-Frequency Detail Masker
 - [x] N-05 Luminosity Masking
 - [x] N-06 Landmark Facial Aligner
-- [ ] N-07 Lens Distortion Corrector
-- [ ] N-08 RAW-Space Color Matcher
-- [ ] N-09 GPU Tone Curve & Color Balance
+- [x] N-07 Lens Distortion Corrector
+- [x] N-08 RAW-Space Color Matcher
+- [x] N-09 GPU Tone Curve & Color Balance
+- [x] N-10 Face Detect
+- [x] N-11 Unwrap Face
+- [x] N-12 HALD Identity
+- [x] N-13 LUT Export
+- [x] N-14 LUT Import
+- [x] N-15 Hue/Saturation per Range
+- [x] N-16 Saturation Mask
+- [x] N-17 Tone Match LUT
+- [x] N-19 Face Landmarks
+- [x] N-20 Face Warp
+- [x] N-21 Face Beauty Blend
+- [x] N-22 Look Select
+- [x] N-23 ColorLab
+- [x] N-24 Layer Stack Start
+- [x] N-25 Layer Add
+- [x] N-26 Layer Group
+- [x] N-27 Layer Flatten
 
 ## Engineering principles
 
@@ -837,6 +854,48 @@ Mask-aware beauty blend between a base plate and a retouched plate. This is the 
 - **Mask quality controls result quality.** This node does not invent a face mask; it only composites with the mask you supply.
 - **Feather is spatial blur, not semantic edge awareness.** Use a better upstream mask if you need pixel-accurate skin boundaries.
 - **Base and retouched must match shape exactly.** Mismatched images raise `ValueError`.
+
+## N-23 ColorLab (ACR)
+
+Monolithic Adobe Camera Raw-style color node for professional grading in one ComfyUI node. It runs a deterministic Basic → HSL → Color Grading → Gray Mix pipeline with 55 user parameters grouped by naming convention (`basic_*`, `hsl_*`, `grade_*`, `gray_*`). All controls default to neutral, and all-zero with `gray_enable=False` is identity.
+
+**Panels:**
+
+| Panel | Controls | Description |
+|---|---:|---|
+| Basic | 11 | Exposure, contrast, highlights, shadows, whites, blacks, texture, clarity, dehaze, vibrance, saturation. |
+| HSL | 24 | 8 hue anchors × hue/saturation/luminance: red, orange, yellow, green, aqua, blue, purple, magenta. |
+| Color Grading | 12 | Shadow/mid/highlight hue, saturation, luminance and balance controls. |
+| Gray Mix | 8 | `gray_enable` plus 7 B&W mix weights; skipped entirely when disabled. |
+
+**Sample workflows:** [S-21 Basic](workflows/S-21-colorlab-basic-only.json), [S-22 HSL teal-orange](workflows/S-22-colorlab-hsl-teal-orange.json), [S-23 Color Grading](workflows/S-23-colorlab-color-grading-cinematic.json), [S-24 Gray Mix](workflows/S-24-colorlab-gray-mix-bw.json), [S-25 Full ACR preset](workflows/S-25-colorlab-full-acr-preset.json).
+
+### Caveats
+
+- **ACR-compatible approximation, not Adobe code.** The math uses pure PyTorch approximations for tone masks, HSL hue falloff and grading masks.
+- **No custom ComfyUI tab widget.** The 55 controls are scrollable in one node body; names intentionally group the panels.
+
+## N-24..N-27 Layer Compositing
+
+Photoshop-style layer stack compositing with a custom `LAYER_STACK` pass-through type. The stack is immutable: each add/group node returns a new stack, and `JHPixelProLayerFlatten` renders the final `IMAGE`.
+
+**Nodes:**
+
+| Node | Purpose |
+|---|---|
+| `JHPixelProLayerStackStart` | Starts a `LAYER_STACK` from a background `IMAGE`. |
+| `JHPixelProLayerAdd` | Adds an image layer with blend mode, opacity, fill, optional mask and `clip_to_below`. |
+| `JHPixelProLayerGroup` | Flattens a sub-stack into one grouped parent layer. |
+| `JHPixelProLayerFlatten` | Renders a stack back to `IMAGE`; empty stacks raise `ValueError`. |
+
+**Blend modes:** normal, dissolve, darken, multiply, color_burn, linear_burn, darker_color, lighten, screen, color_dodge, linear_dodge, lighter_color, overlay, soft_light, hard_light, vivid_light, linear_light, pin_light, hard_mix, difference, exclusion, subtract, divide, hue, saturation, color, luminosity.
+
+**Sample workflows:** [S-26 2-layer overlay](workflows/S-26-layer-compositing-2layer-overlay.json), [S-27 5-layer cinematic](workflows/S-27-layer-compositing-5layer-cinematic.json), [S-28 group + clipping](workflows/S-28-layer-compositing-group-clipping.json).
+
+### Caveats
+
+- **Layer styles are out of scope.** Bevel, glow, drop shadow and smart-object behavior are not implemented.
+- **Masks and layer images auto-resize to the base stack size.** Resizing uses bilinear interpolation for stable graph wiring.
 
 ## License
 
