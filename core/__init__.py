@@ -12,6 +12,7 @@ from .lut import export_cube, identity_hald
 from .mask_alpha_matte import alpha_matte_extract
 from .mask_edge_refine import edge_aware_refine
 from .mask_refiner import subpixel_mask_refine
+from .mask_trimap import build_trimap, validate_trimap
 from .selective_color import apply_hue_sat_shift, hue_range_mask, saturation_range_mask
 from .smoother import edge_aware_smooth
 from .tone_curve import tone_curve
@@ -23,6 +24,8 @@ __all__ = [
     "subpixel_mask_refine",
     "alpha_matte_extract",
     "edge_aware_refine",
+    "build_trimap",
+    "validate_trimap",
     "edge_aware_smooth",
     "high_freq_detail_mask",
     "color_matcher",

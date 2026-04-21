@@ -9,6 +9,8 @@ import torch
 from scipy import sparse
 from scipy.sparse import linalg as sparse_linalg
 
+from .mask_trimap import validate_trimap
+
 
 def _validate_image(guide: torch.Tensor) -> torch.Tensor:
     if not isinstance(guide, torch.Tensor):
@@ -18,22 +20,6 @@ def _validate_image(guide: torch.Tensor) -> torch.Tensor:
     if not torch.is_floating_point(guide):
         raise ValueError(f"guide must be floating point, got {guide.dtype}.")
     return guide.to(dtype=torch.float32).clamp(0.0, 1.0)
-
-
-def _validate_trimap_tensor(trimap: torch.Tensor) -> torch.Tensor:
-    if not isinstance(trimap, torch.Tensor):
-        raise TypeError("trimap must be a torch.Tensor.")
-    if trimap.ndim != 3:
-        raise ValueError(f"trimap must have shape (B,H,W), got {tuple(trimap.shape)}.")
-    if not torch.is_floating_point(trimap) and trimap.dtype is not torch.bool:
-        raise ValueError(f"trimap must be float or bool, got {trimap.dtype}.")
-    prepared = trimap.to(dtype=torch.float32).clamp(0.0, 1.0)
-    bg = (prepared - 0.0).abs() <= 0.05
-    unknown = (prepared - 0.5).abs() <= 0.05
-    fg = (prepared - 1.0).abs() <= 0.05
-    if not (bg | unknown | fg).all():
-        raise ValueError("trimap must use 0.0 BG / 0.5 Unknown / 1.0 FG values.")
-    return prepared
 
 
 def _validate_int(name: str, value: int, *, lower: int, upper: int) -> int:
@@ -136,7 +122,7 @@ def alpha_matte_extract(
         ValueError: If shapes, trimap encoding, or parameters are invalid.
     """
 
-    trimap_prepared = _validate_trimap_tensor(trimap)
+    trimap_prepared = validate_trimap(trimap, tolerance=0.05)
     guide_prepared = _validate_image(guide)
     if guide_prepared.shape[0] not in (1, trimap_prepared.shape[0]):
         raise ValueError(f"guide batch must be 1 or {trimap_prepared.shape[0]}.")
