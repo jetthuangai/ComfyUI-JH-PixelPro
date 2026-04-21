@@ -8,6 +8,36 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.1.0] — 2026-04-21
+
+### Added
+
+- **M10 Mask Refinement Pack:** six new mask nodes under `ComfyUI-JH-PixelPro/mask`, expanding mask coverage from 2 to 8 nodes and pack count from 26 to 32 live nodes.
+- **N-28 `JHPixelProEdgeAwareMaskRefiner`:** guided-filter style mask refinement that aligns alpha edges to IMAGE detail with optional feathering.
+- **N-29 `JHPixelProAlphaMatteExtractor`:** sparse classical alpha-matte extraction from the pack's 3-value trimap convention.
+- **N-30 `JHPixelProTrimapBuilder`:** converts binary or soft masks into explicit `0.0` background / `0.5` unknown / `1.0` foreground trimaps, with exported `validate_trimap`.
+- **N-31 `JHPixelProMaskMorphology`:** dilate, erode, open, close, gradient, tophat, and blackhat operations with elliptical kernels.
+- **N-32 `JHPixelProMaskCombine`:** add, subtract, intersect, union, difference, xor, and multiply mask composition with hard or soft-feather mode.
+- **N-33 `JHPixelProMaskEdgeSmoother`:** bilateral mask edge smoothing with optional guide IMAGE and OpenCV contrib joint-bilateral path when available.
+- **Benchmark coverage:** six new CPU benchmark files and baselines for N-28..N-33.
+- **Workflow scaffolds:** six new sample workflows for N-28..N-33.
+
+### Changed
+
+- Pack node count: 26 → 32.
+- `/mask` category expands from 2 → 8 nodes.
+- README status, node inventory, requirements, and pyproject metadata now reflect v1.1.0.
+
+### Dependencies
+
+- Added `scipy>=1.10.0` for sparse alpha matte solving.
+- Added `opencv-python-headless>=4.8.0` for trimap, morphology, and bilateral mask smoothing helpers.
+- Added optional `opencv-contrib-python>=4.8.0` extra for environments that want `cv2.ximgproc` joint-bilateral filtering in N-33.
+
+### Migration
+
+- v1.0.0 → v1.1.0 has no breaking changes. Existing v1.0.0 workflows remain valid.
+
 ## [1.0.0] — 2026-04-21
 
 ### Added

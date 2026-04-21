@@ -1,5 +1,11 @@
 # Runtime deps — PyTorch is provided by ComfyUI.
 kornia>=0.7.0
+mediapipe>=0.10.0
+opencv-python-headless>=4.8.0
+scipy>=1.10.0
+
+# Optional: install opencv-contrib-python>=4.8.0 instead of opencv-python-headless
+# when you want cv2.ximgproc joint-bilateral acceleration for N-33.
 
 # Dev / test (install via: pip install -r requirements-dev.txt)
 # pytest>=8.0
