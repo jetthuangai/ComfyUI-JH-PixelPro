@@ -1,0 +1,63 @@
+{
+  "last_node_id": 3,
+  "last_link_id": 2,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [80, 120],
+      "size": [315, 314],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": null, "slot_index": 0},
+        {"name": "MASK", "type": "MASK", "links": [1], "slot_index": 1}
+      ],
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["mask_a.png", "image"]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [80, 480],
+      "size": [315, 314],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": null, "slot_index": 0},
+        {"name": "MASK", "type": "MASK", "links": [2], "slot_index": 1}
+      ],
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["mask_b.png", "image"]
+    },
+    {
+      "id": 3,
+      "type": "JHPixelProMaskCombine",
+      "pos": [470, 260],
+      "size": [350, 190],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "mask_a", "type": "MASK", "link": 1},
+        {"name": "mask_b", "type": "MASK", "link": 2}
+      ],
+      "outputs": [{"name": "MASK", "type": "MASK", "links": null, "slot_index": 0}],
+      "properties": {
+        "cnr_id": "ComfyUI-JH-PixelPro",
+        "ver": "1.1.0",
+        "Node name for S&R": "JHPixelProMaskCombine"
+      },
+      "widgets_values": ["union", "soft_feather", 1.0, 1.25]
+    }
+  ],
+  "links": [[1, 1, 1, 3, 0, "MASK"], [2, 2, 1, 3, 1, "MASK"]],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

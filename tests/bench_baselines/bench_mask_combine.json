@@ -1,0 +1,26 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-1024-b1-union-soft_feather",
+    "device": "cpu",
+    "mean_ms": 28.3407,
+    "measure_iters": 10,
+    "module": "mask_combine",
+    "resolution": 1024,
+    "scenario": "union_soft_feather",
+    "stdev_ms": 3.0057,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-b1-union-hard",
+    "device": "cpu",
+    "mean_ms": 0.1467,
+    "measure_iters": 10,
+    "module": "mask_combine",
+    "resolution": 512,
+    "scenario": "union_hard",
+    "stdev_ms": 0.0062,
+    "warmup_iters": 3
+  }
+]
