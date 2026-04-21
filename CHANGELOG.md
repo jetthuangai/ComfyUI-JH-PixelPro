@@ -4,6 +4,9 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Added
+- Workflow screenshots for batch-8 S-19 Look Select Single and S-20 Look Select Compare 6-Up (post-v0.10.0, JH manual smoke test verified). README §N-22 JHPixelProLookSelect now render reference images for single-node dropdown UX + 6-up parametrized compare. No tag bump yet — docs-only commit post-v0.10.0; next release bundles any follow-up batch-9 work.
+
 ## [0.10.0] — 2026-04-21
 
 ### ⚠️ BREAKING CHANGES
