@@ -2,7 +2,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.11.0** (2026-04-21) — 26 nodes live · Batch-9 adds **N-23 `JHPixelProColorLab`** (ACR-style 55-param color suite) plus **N-24..N-27 Layer Compositing** with a `LAYER_STACK` type and 27 Photoshop-style blend modes. Category mix: `/color` 10 + `/compositing` 4 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** 🎉 **v1.0.0** (2026-04-21) — 26 nodes live · production-ready · `/color` 10 + `/compositing` 4 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 > ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
@@ -24,6 +24,12 @@ This pack packages GPU-friendly tensor nodes for retouching, color science, face
 | 2 | geometry | Facial aligner, lens distortion corrector |
 | 3 | color | RAW-space color matcher, tone curve & color balance |
 | after v1.0 | *(TBD)* | Segmentation, tracking, depth, advanced color |
+
+## Milestones
+
+- **v1.0.0 production-ready baseline:** 10-batch development cycle, 26 live nodes, 7 ComfyUI categories, 17 benchmark files, and a 27-row smoke-test matrix.
+- **Core creative coverage:** ACR-style ColorLab, LUT import/export, tone matching, look presets, face workflows, mask refinement, lens correction, and Photoshop-style layer compositing.
+- **Release discipline:** 14-tag history with fix-forward release practice; v1.0.0 is the first official stable release after the v0.x prerelease series.
 
 ## Install
 
