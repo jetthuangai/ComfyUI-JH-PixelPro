@@ -12,6 +12,7 @@ from .lut import export_cube, identity_hald
 from .mask_alpha_matte import alpha_matte_extract
 from .mask_combine import combine_masks
 from .mask_edge_refine import edge_aware_refine
+from .mask_edge_smooth import mask_edge_smooth
 from .mask_morphology import mask_morphology
 from .mask_refiner import subpixel_mask_refine
 from .mask_trimap import build_trimap, validate_trimap
@@ -27,6 +28,7 @@ __all__ = [
     "alpha_matte_extract",
     "combine_masks",
     "edge_aware_refine",
+    "mask_edge_smooth",
     "build_trimap",
     "validate_trimap",
     "mask_morphology",
