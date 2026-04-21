@@ -1,0 +1,26 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-1024-b1-trimap",
+    "device": "cpu",
+    "mean_ms": 4.9868,
+    "measure_iters": 10,
+    "module": "mask_trimap",
+    "resolution": 1024,
+    "scenario": "dilate_erode_trimap",
+    "stdev_ms": 0.0506,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-b1-trimap",
+    "device": "cpu",
+    "mean_ms": 1.0607,
+    "measure_iters": 10,
+    "module": "mask_trimap",
+    "resolution": 512,
+    "scenario": "dilate_erode_trimap",
+    "stdev_ms": 0.0126,
+    "warmup_iters": 3
+  }
+]

@@ -54,6 +54,7 @@ if __package__:
         JHPixelProSubPixelMaskRefiner,
         JHPixelProToneCurve,
         JHPixelProToneMatchLUT,
+        JHPixelProTrimapBuilder,
         JHPixelProUnwrapFace,
     )
 
@@ -68,6 +69,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProAlphaMatteExtractor"] = JHPixelProAlphaMatteExtractor
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProAlphaMatteExtractor"] = "Mask: Alpha Matte"
+
+    NODE_CLASS_MAPPINGS["JHPixelProTrimapBuilder"] = JHPixelProTrimapBuilder
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProTrimapBuilder"] = "Mask: Trimap Builder"
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"
