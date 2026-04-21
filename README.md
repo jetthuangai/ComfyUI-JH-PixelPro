@@ -2,7 +2,9 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** 🎉 **v0.9.0** (2026-04-21) — 26 nodes live · new `/looks` category ships M6 Looks preset palette (**N-22 Cinematic Teal/Orange**, **N-23 Warm Skin Tone**, **N-24 Moody Green**, **N-25 Faded Film**, **N-26 Golden Hour**, **N-27 Desaturated Pop**) with JSON-driven configs, one-slider `intensity`, and optional `protect_skin`. Category mix: `/color` 9 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 6 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** 🎉 **v0.10.0** (2026-04-21) — 21 nodes live · `/looks` category now ships one M6 dropdown node (**N-22 `JHPixelProLookSelect`**) with 6 JSON-driven presets, `intensity`, and `protect_skin`. Category mix: `/color` 9 + `/filters` 2 + `/mask` 2 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+
+> ⚠️ **v0.10.0 BREAKING**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
 ## Why this pack exists
 
