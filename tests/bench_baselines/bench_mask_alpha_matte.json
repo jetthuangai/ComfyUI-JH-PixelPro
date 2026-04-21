@@ -1,0 +1,14 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-128-b1-sparse_unknown_band",
+    "device": "cpu",
+    "mean_ms": 35.4474,
+    "measure_iters": 3,
+    "module": "mask_alpha_matte",
+    "resolution": 128,
+    "scenario": "sparse_alpha_matte",
+    "stdev_ms": 1.5121,
+    "warmup_iters": 1
+  }
+]
