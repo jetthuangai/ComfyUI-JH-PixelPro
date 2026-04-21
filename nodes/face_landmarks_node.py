@@ -36,13 +36,15 @@ def _draw_overlay(image: torch.Tensor, landmarks: torch.Tensor) -> torch.Tensor:
 
 
 class JHPixelProFaceLandmarks:
+    """Extract dense 468-point face landmarks and an optional overlay preview."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/face"
     RETURN_TYPES = ("LANDMARKS", "IMAGE")
     RETURN_NAMES = ("landmarks", "overlay")
     FUNCTION = "extract"
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802
         return {
             "required": {
                 "image": ("IMAGE",),

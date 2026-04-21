@@ -56,7 +56,7 @@ def _validate_confidence(name: str, value: float) -> float:
     return confidence
 
 
-def _import_face_landmarker():
+def _import_face_landmarker() -> object:
     try:
         mp, _, _, _, _ = _import_mediapipe()
     except RuntimeError as exc:
@@ -67,7 +67,7 @@ def _import_face_landmarker():
     return mp
 
 
-def _import_cv2_scipy():
+def _import_cv2_scipy() -> tuple[object, object]:
     try:
         import cv2
     except ImportError as exc:

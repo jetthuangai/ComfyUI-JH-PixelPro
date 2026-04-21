@@ -8,13 +8,15 @@ from ..core.face_pipeline import beauty_blend
 
 
 class JHPixelProFaceBeautyBlend:
+    """Blend a retouched face layer over a base image using a soft mask."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/face"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("blended",)
     FUNCTION = "blend"
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802
         return {
             "required": {
                 "base": ("IMAGE",),

@@ -93,7 +93,7 @@ def _resolve_model_path() -> Path:
     return _resolve_model_dir() / _FACE_MODEL_NAME
 
 
-def _import_mediapipe():
+def _import_mediapipe() -> tuple[object, object, object, object, object]:
     try:
         import mediapipe as mp
         from mediapipe.tasks.python import BaseOptions
@@ -122,7 +122,7 @@ def _ensure_model_file() -> Path:
     return model_path
 
 
-def _get_landmarker(model_path: str, confidence_threshold: float, num_faces: int):
+def _get_landmarker(model_path: str, confidence_threshold: float, num_faces: int) -> object:
     cache_key = (model_path, confidence_threshold, num_faces)
     if cache_key in _LANDMARKER_CACHE:
         return _LANDMARKER_CACHE[cache_key]

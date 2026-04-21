@@ -8,13 +8,15 @@ from ..core.selective_color import apply_hue_sat_shift, hue_range_mask
 
 
 class JHPixelProHueSaturationRange:
+    """Adjust hue and saturation inside a selected hue band."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/color"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("image",)
     FUNCTION = "apply"
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802
         return {
             "required": {
                 "image": ("IMAGE",),
