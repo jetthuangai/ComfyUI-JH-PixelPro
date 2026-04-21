@@ -126,6 +126,34 @@ def test_face_warp_delaunay_changes_image_for_shifted_landmarks() -> None:
     assert torch.mean(torch.abs(warped - image)).item() > 1e-3
 
 
+def test_face_warp_delaunay_handles_out_of_bounds_landmarks() -> None:
+    image = _gradient_image()
+    src = _grid_landmarks()
+    dst = src.clone()
+    src[..., 0] = src[..., 0] - 0.35
+    dst[..., 1] = dst[..., 1] + 0.35
+
+    warped = face_warp_delaunay(image, src, dst)
+
+    assert warped.shape == image.shape
+    assert warped.dtype == image.dtype
+    assert torch.isfinite(warped).all()
+
+
+def test_face_warp_delaunay_handles_landmarks_on_frame_edges() -> None:
+    image = _gradient_image()
+    src = _grid_landmarks()
+    dst = src.clone()
+    src[..., 0] = torch.linspace(0.0, 1.0, src.shape[1], dtype=src.dtype).view(1, -1)
+    dst[..., 1] = torch.linspace(1.0, 0.0, dst.shape[1], dtype=dst.dtype).view(1, -1)
+
+    warped = face_warp_delaunay(image, src, dst)
+
+    assert warped.shape == image.shape
+    assert warped.dtype == image.dtype
+    assert torch.isfinite(warped).all()
+
+
 def test_face_warp_delaunay_import_error_when_cv2_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         "core.face_pipeline._import_cv2_scipy",
