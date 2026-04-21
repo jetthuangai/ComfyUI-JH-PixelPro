@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "golden-hour",
+  "display_name": "Golden Hour",
+  "description": "Warm late-day cast with boosted orange/yellow saturation and protected blues.",
+  "compose_ops": [
+    {
+      "op": "lab_color_shift",
+      "primitive": "N-08",
+      "params": {
+        "global_shift": {"a_shift": 3.0, "b_shift": 10.0}
+      }
+    },
+    {
+      "op": "hue_sat_per_range",
+      "primitive": "N-15",
+      "params": {"hue_center": 43.0, "band_width": 38.0, "hue_shift": -2.0, "sat_mult": 1.2, "sat_add": 0.02}
+    },
+    {
+      "op": "hue_sat_per_range",
+      "primitive": "N-15",
+      "params": {"hue_center": 220.0, "band_width": 42.0, "hue_shift": 0.0, "sat_mult": 0.92, "sat_add": 0.0}
+    }
+  ],
+  "default_intensity": 1.0,
+  "protect_skin_default": false
+}

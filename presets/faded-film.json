@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "faded-film",
+  "display_name": "Faded Film",
+  "description": "Lifted blacks, warm mids, and gentle global desaturation for a soft film print look.",
+  "compose_ops": [
+    {
+      "op": "tone_curve_s",
+      "primitive": "N-09",
+      "params": {
+        "curve_points": [[0.0, 0.08], [0.14, 0.18], [0.28, 0.31], [0.42, 0.44], [0.56, 0.57], [0.7, 0.7], [0.86, 0.84], [1.0, 0.96]]
+      }
+    },
+    {
+      "op": "lab_color_shift",
+      "primitive": "N-08",
+      "params": {
+        "midtone_shift": {"L_center": 0.5, "width": 0.35, "a_shift": 2.0, "b_shift": 6.0}
+      }
+    },
+    {
+      "op": "saturation_mask",
+      "primitive": "N-16",
+      "params": {"sat_mult": 0.85, "sat_min": 0.0, "sat_max": 1.0, "feather": 0.1}
+    }
+  ],
+  "default_intensity": 1.0,
+  "protect_skin_default": false
+}

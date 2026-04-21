@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "warm-skin-tone",
+  "display_name": "Warm Skin Tone",
+  "description": "Portrait-safe warmth: orange band lift, green desaturation, and gentle highlight protection.",
+  "compose_ops": [
+    {
+      "op": "hue_sat_per_range",
+      "primitive": "N-15",
+      "params": {"hue_center": 28.0, "band_width": 34.0, "hue_shift": 3.0, "sat_mult": 1.1, "sat_add": 0.02}
+    },
+    {
+      "op": "hue_sat_per_range",
+      "primitive": "N-15",
+      "params": {"hue_center": 120.0, "band_width": 45.0, "hue_shift": 0.0, "sat_mult": 0.82, "sat_add": 0.0}
+    },
+    {
+      "op": "tone_curve_s",
+      "primitive": "N-09",
+      "params": {
+        "curve_points": [[0.0, 0.0], [0.14, 0.14], [0.28, 0.29], [0.42, 0.44], [0.56, 0.58], [0.7, 0.72], [0.86, 0.85], [1.0, 0.98]]
+      }
+    }
+  ],
+  "default_intensity": 1.0,
+  "protect_skin_default": true
+}

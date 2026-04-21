@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "desaturated-pop",
+  "display_name": "Desaturated Pop",
+  "description": "Muted background color while keeping orange-red skin tones lively.",
+  "compose_ops": [
+    {
+      "op": "saturation_mask",
+      "primitive": "N-16",
+      "params": {"sat_mult": 0.7, "sat_min": 0.0, "sat_max": 1.0, "feather": 0.08, "exclude_skin": true}
+    },
+    {
+      "op": "hue_sat_per_range",
+      "primitive": "N-15",
+      "params": {"hue_center": 24.0, "band_width": 32.0, "hue_shift": 0.0, "sat_mult": 1.06, "sat_add": 0.01}
+    }
+  ],
+  "default_intensity": 1.0,
+  "protect_skin_default": true
+}
