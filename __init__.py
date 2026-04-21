@@ -50,6 +50,7 @@ if __package__:
         JHPixelProLuminosityMasking,
         JHPixelProLUTExport,
         JHPixelProLUTImport,
+        JHPixelProMaskMorphology,
         JHPixelProSaturationMask,
         JHPixelProSubPixelMaskRefiner,
         JHPixelProToneCurve,
@@ -72,6 +73,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProTrimapBuilder"] = JHPixelProTrimapBuilder
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProTrimapBuilder"] = "Mask: Trimap Builder"
+
+    NODE_CLASS_MAPPINGS["JHPixelProMaskMorphology"] = JHPixelProMaskMorphology
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMaskMorphology"] = "Mask: Morphology"
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"

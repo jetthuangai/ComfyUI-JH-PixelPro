@@ -11,6 +11,7 @@ from .luminosity import luminosity_masks
 from .lut import export_cube, identity_hald
 from .mask_alpha_matte import alpha_matte_extract
 from .mask_edge_refine import edge_aware_refine
+from .mask_morphology import mask_morphology
 from .mask_refiner import subpixel_mask_refine
 from .mask_trimap import build_trimap, validate_trimap
 from .selective_color import apply_hue_sat_shift, hue_range_mask, saturation_range_mask
@@ -26,6 +27,7 @@ __all__ = [
     "edge_aware_refine",
     "build_trimap",
     "validate_trimap",
+    "mask_morphology",
     "edge_aware_smooth",
     "high_freq_detail_mask",
     "color_matcher",

@@ -24,6 +24,7 @@ from .lut_export_node import JHPixelProLUTExport
 from .lut_import_node import JHPixelProLUTImport
 from .mask_alpha_matte_node import JHPixelProAlphaMatteExtractor
 from .mask_edge_refine_node import JHPixelProEdgeAwareMaskRefiner
+from .mask_morphology_node import JHPixelProMaskMorphology
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .mask_trimap_node import JHPixelProTrimapBuilder
 from .saturation_mask_node import JHPixelProSaturationMask
@@ -56,6 +57,7 @@ __all__ = [
     "JHPixelProLookSelect",
     "JHPixelProAlphaMatteExtractor",
     "JHPixelProEdgeAwareMaskRefiner",
+    "JHPixelProMaskMorphology",
     "JHPixelProSubPixelMaskRefiner",
     "JHPixelProSaturationMask",
     "JHPixelProToneCurve",
