@@ -4,6 +4,10 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Added
+
+- Workflow screenshots for batch-9 S-21 ColorLab Basic + S-26/S-27/S-28 Layer Compositing 2-layer/5-layer/group-clipping (post-v0.11.0, JH manual smoke test verified). README §N-23 `JHPixelProColorLab` + §N-24..N-27 Layer Compositing now render reference images; compositing demo scaffolds S-26/S-27/S-28 expanded with JH purposeful demo richness during smoke. No tag bump — docs-only commit post-v0.11.0; next release bundles any follow-up batch-10 work.
+
 ## [0.11.0] — 2026-04-21
 
 ### Added
