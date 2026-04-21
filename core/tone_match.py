@@ -1,4 +1,4 @@
-"""Tone-match helpers: LAB statistics transfer + LUT export composition."""
+"""Tone-match helpers: LAB covariance transfer + LUT export composition."""
 
 from __future__ import annotations
 
@@ -9,6 +9,9 @@ import torch
 from kornia.color import lab_to_rgb, rgb_to_lab
 
 from .lut import export_cube, identity_hald
+
+_LAB_MIN = torch.tensor([0.0, -128.0, -128.0], dtype=torch.float32)
+_LAB_MAX = torch.tensor([100.0, 127.0, 127.0], dtype=torch.float32)
 
 
 def _prepare_image(name: str, image: torch.Tensor, *, device: str | torch.device) -> torch.Tensor:
@@ -83,6 +86,80 @@ def _match_histogram_channel(
     )
 
 
+def _flatten_lab_samples(lab_bchw: torch.Tensor) -> torch.Tensor:
+    return lab_bchw.permute(0, 2, 3, 1).reshape(-1, 3)
+
+
+def _covariance(samples: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    mean = samples.mean(dim=0)
+    centered = samples - mean
+    denom = max(samples.shape[0] - 1, 1)
+    covariance = centered.transpose(0, 1).matmul(centered) / denom
+    return mean, covariance
+
+
+def _mkl_transform_matrix(
+    source_samples: torch.Tensor,
+    reference_samples: torch.Tensor,
+    *,
+    eps: float = 1e-5,
+    condition_limit: float = 1e6,
+) -> torch.Tensor | None:
+    """Compute the 3x3 MKL covariance transform matrix, or ``None`` if unstable."""
+
+    _, source_cov = _covariance(source_samples)
+    _, reference_cov = _covariance(reference_samples)
+    source_cond = torch.linalg.cond(source_cov)
+    reference_cond = torch.linalg.cond(reference_cov)
+    if (
+        not torch.isfinite(source_cond)
+        or not torch.isfinite(reference_cond)
+        or source_cond > condition_limit
+        or reference_cond > condition_limit
+    ):
+        return None
+
+    eye = torch.eye(3, dtype=source_cov.dtype, device=source_cov.device)
+    try:
+        source_cholesky = torch.linalg.cholesky(source_cov + eye * eps)
+        reference_cholesky = torch.linalg.cholesky(reference_cov + eye * eps)
+        matrix = reference_cholesky @ torch.linalg.inv(source_cholesky)
+    except RuntimeError:
+        return None
+
+    if not torch.isfinite(matrix).all():
+        return None
+    return matrix
+
+
+def _apply_mkl_covariance_transfer(
+    source_lab: torch.Tensor,
+    reference_lab: torch.Tensor,
+) -> torch.Tensor:
+    reference_samples = _flatten_lab_samples(reference_lab)
+    reference_mean, _ = _covariance(reference_samples)
+    matched_batches: list[torch.Tensor] = []
+
+    for batch_index in range(source_lab.shape[0]):
+        batch_lab = source_lab[batch_index : batch_index + 1]
+        source_samples = _flatten_lab_samples(batch_lab)
+        source_mean, _ = _covariance(source_samples)
+        transform = _mkl_transform_matrix(source_samples, reference_samples)
+        centered = source_samples - source_mean
+        if transform is None:
+            matched_samples = centered + reference_mean
+        else:
+            matched_samples = centered.matmul(transform.transpose(0, 1)) + reference_mean
+        matched_batches.append(
+            matched_samples.reshape_as(batch_lab.permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
+        )
+
+    matched_lab = torch.cat(matched_batches, dim=0)
+    lab_min = _LAB_MIN.to(device=matched_lab.device, dtype=matched_lab.dtype).view(1, 3, 1, 1)
+    lab_max = _LAB_MAX.to(device=matched_lab.device, dtype=matched_lab.dtype).view(1, 3, 1, 1)
+    return matched_lab.clamp(min=lab_min, max=lab_max)
+
+
 def compute_lab_histogram_match(
     reference: torch.Tensor,
     source: torch.Tensor,
@@ -90,11 +167,12 @@ def compute_lab_histogram_match(
     n_bins: int = 256,
     device: str | torch.device = "cpu",
 ) -> torch.Tensor:
-    """Transfer reference LAB mean/std statistics to ``source``.
+    """Transfer reference LAB covariance statistics to ``source``.
 
     The function name is retained for N-17 API compatibility. Batch-6 v0.8.1
     switched away from per-channel histogram matching because identity HALDs are
-    uniform in sRGB but not in LAB, which can bake severe color-cast bias.
+    uniform in sRGB but not in LAB. Batch-6 v0.8.2 upgrades the transfer to an
+    MKL 3x3 covariance mapping so cross-channel color correlations are preserved.
     """
 
     if isinstance(n_bins, bool) or not isinstance(n_bins, Integral) or int(n_bins) < 8:
@@ -111,25 +189,7 @@ def compute_lab_histogram_match(
     if reference_rgb_std < 1e-4 and reference_chroma < 1.0:
         return source_prepared.to(dtype=source.dtype)
 
-    reference_mean = reference_lab.mean(dim=(0, 2, 3), keepdim=True)
-    reference_std = reference_lab.std(dim=(0, 2, 3), keepdim=True, unbiased=False)
-    source_mean = source_lab.mean(dim=(2, 3), keepdim=True)
-    source_std = source_lab.std(dim=(2, 3), keepdim=True, unbiased=False).clamp_min(1e-6)
-
-    std_scale = torch.where(
-        reference_std > 1e-4,
-        reference_std / source_std,
-        torch.ones_like(reference_std),
-    )
-    matched_lab = (source_lab - source_mean) * std_scale + reference_mean
-    matched_lab = torch.stack(
-        [
-            matched_lab[:, 0].clamp(0.0, 100.0),
-            matched_lab[:, 1].clamp(-128.0, 127.0),
-            matched_lab[:, 2].clamp(-128.0, 127.0),
-        ],
-        dim=1,
-    )
+    matched_lab = _apply_mkl_covariance_transfer(source_lab, reference_lab)
     matched_rgb = lab_to_rgb(matched_lab).clamp(0.0, 1.0)
     return matched_rgb.permute(0, 2, 3, 1).to(dtype=source.dtype)
 
@@ -142,7 +202,7 @@ def tone_match_lut(
     *,
     device: str | torch.device = "cpu",
 ) -> str:
-    """Generate an auto tone-match LUT by grading an identity HALD via LAB statistics transfer."""
+    """Generate an auto tone-match LUT by grading an identity HALD via LAB covariance transfer."""
 
     if isinstance(level, bool) or not isinstance(level, Integral):
         raise ValueError("level must be an integer in [2, 16].")

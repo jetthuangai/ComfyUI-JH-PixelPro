@@ -3,9 +3,15 @@ from __future__ import annotations
 from pathlib import Path
 
 import torch
+from kornia.color import rgb_to_lab
 
 from core.lut import apply_lut_3d, identity_hald, parse_cube
-from core.tone_match import compute_lab_histogram_match, tone_match_lut
+from core.tone_match import (
+    _flatten_lab_samples,
+    _mkl_transform_matrix,
+    compute_lab_histogram_match,
+    tone_match_lut,
+)
 
 
 def _gradient_image(batch: int, size: int) -> torch.Tensor:
@@ -52,6 +58,60 @@ def test_compute_lab_histogram_match_transfers_reference_hue_direction() -> None
     source_red_bias = (source[..., 0] - (source[..., 1] + source[..., 2]) * 0.5).mean()
     matched_red_bias = (matched[..., 0] - (matched[..., 1] + matched[..., 2]) * 0.5).mean()
     assert matched_red_bias > source_red_bias + 0.05
+
+
+def test_tone_match_mkl_covariance_captures_cross_channel_shift() -> None:
+    source = _gradient_image(1, 48)
+    luma = source[..., :1]
+    shadow = (1.0 - luma).clamp(0.0, 1.0)
+    highlight = luma.clamp(0.0, 1.0)
+    reference = torch.cat(
+        [
+            (source[..., 0:1] * 0.55 + highlight * 0.55).clamp(0.0, 1.0),
+            (source[..., 1:2] * 0.55 + shadow * 0.35 + highlight * 0.16).clamp(0.0, 1.0),
+            (source[..., 2:3] * 0.55 + shadow * 0.40).clamp(0.0, 1.0),
+        ],
+        dim=-1,
+    )
+
+    matched = compute_lab_histogram_match(reference, source)
+    dark = source[..., 0] < 0.25
+    bright = source[..., 0] > 0.75
+    source_dark_teal = (source[..., 1][dark] + source[..., 2][dark]).mean() * 0.5
+    matched_dark_teal = (matched[..., 1][dark] + matched[..., 2][dark]).mean() * 0.5
+    source_bright_orange = (source[..., 0][bright] - source[..., 2][bright]).mean()
+    matched_bright_orange = (matched[..., 0][bright] - matched[..., 2][bright]).mean()
+
+    assert matched_dark_teal > source_dark_teal + 0.05
+    assert matched_bright_orange > source_bright_orange + 0.05
+
+
+def test_tone_match_mkl_covariance_singular_cov_fallback() -> None:
+    reference = torch.full((1, 32, 32, 3), 0.18, dtype=torch.float32)
+    source = _gradient_image(1, 32)
+
+    matched = compute_lab_histogram_match(reference, source)
+
+    assert torch.isfinite(matched).all()
+    assert torch.mean(torch.abs(matched - source)).item() < 0.05
+
+
+def test_tone_match_mkl_covariance_matrix_determinant_positive() -> None:
+    source = identity_hald(4)
+    generator = torch.Generator().manual_seed(1234)
+    reference = torch.rand((1, 32, 32, 3), generator=generator, dtype=torch.float32) * 0.8 + 0.1
+    source_lab = rgb_to_lab(source.permute(0, 3, 1, 2))
+    reference_lab = rgb_to_lab(reference.permute(0, 3, 1, 2))
+
+    matrix = _mkl_transform_matrix(
+        _flatten_lab_samples(source_lab),
+        _flatten_lab_samples(reference_lab),
+    )
+
+    assert matrix is not None
+    determinant = torch.linalg.det(matrix)
+    assert torch.isfinite(determinant)
+    assert determinant.item() > 0.0
 
 
 def test_tone_match_lut_writes_cube_with_required_headers(tmp_path: Path) -> None:
