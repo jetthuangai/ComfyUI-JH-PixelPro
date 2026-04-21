@@ -10,6 +10,7 @@ from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .lut import export_cube, identity_hald
 from .mask_alpha_matte import alpha_matte_extract
+from .mask_combine import combine_masks
 from .mask_edge_refine import edge_aware_refine
 from .mask_morphology import mask_morphology
 from .mask_refiner import subpixel_mask_refine
@@ -24,6 +25,7 @@ __all__ = [
     "frequency_separation",
     "subpixel_mask_refine",
     "alpha_matte_extract",
+    "combine_masks",
     "edge_aware_refine",
     "build_trimap",
     "validate_trimap",
