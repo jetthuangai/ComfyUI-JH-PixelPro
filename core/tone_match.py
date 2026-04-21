@@ -1,4 +1,4 @@
-"""Tone-match helpers: LAB histogram matching + LUT export composition."""
+"""Tone-match helpers: LAB statistics transfer + LUT export composition."""
 
 from __future__ import annotations
 
@@ -90,11 +90,15 @@ def compute_lab_histogram_match(
     n_bins: int = 256,
     device: str | torch.device = "cpu",
 ) -> torch.Tensor:
-    """Histogram-match LAB channels of ``source`` to ``reference``."""
+    """Transfer reference LAB mean/std statistics to ``source``.
+
+    The function name is retained for N-17 API compatibility. Batch-6 v0.8.1
+    switched away from per-channel histogram matching because identity HALDs are
+    uniform in sRGB but not in LAB, which can bake severe color-cast bias.
+    """
 
     if isinstance(n_bins, bool) or not isinstance(n_bins, Integral) or int(n_bins) < 8:
         raise ValueError("n_bins must be an integer >= 8.")
-    n_bins = int(n_bins)
 
     reference_prepared = _prepare_image("reference", reference, device=device)
     source_prepared = _prepare_image("source", source, device=device)
@@ -102,28 +106,30 @@ def compute_lab_histogram_match(
     reference_lab = rgb_to_lab(reference_prepared.permute(0, 3, 1, 2))
     source_lab = rgb_to_lab(source_prepared.permute(0, 3, 1, 2))
 
-    reference_channels = [
-        reference_lab[:, 0].reshape(-1),
-        reference_lab[:, 1].reshape(-1),
-        reference_lab[:, 2].reshape(-1),
-    ]
-    channel_ranges = ((0.0, 100.0), (-128.0, 127.0), (-128.0, 127.0))
+    reference_rgb_std = reference_prepared.std(unbiased=False)
+    reference_chroma = reference_lab[:, 1:].abs().mean()
+    if reference_rgb_std < 1e-4 and reference_chroma < 1.0:
+        return source_prepared.to(dtype=source.dtype)
 
-    matched_channels: list[torch.Tensor] = []
-    for channel_index, (vmin, vmax) in enumerate(channel_ranges):
-        ref_channel = reference_channels[channel_index]
-        source_channel = source_lab[:, channel_index]
-        matched_channels.append(
-            _match_histogram_channel(
-                source_channel,
-                ref_channel,
-                n_bins=n_bins,
-                vmin=vmin,
-                vmax=vmax,
-            )
-        )
+    reference_mean = reference_lab.mean(dim=(0, 2, 3), keepdim=True)
+    reference_std = reference_lab.std(dim=(0, 2, 3), keepdim=True, unbiased=False)
+    source_mean = source_lab.mean(dim=(2, 3), keepdim=True)
+    source_std = source_lab.std(dim=(2, 3), keepdim=True, unbiased=False).clamp_min(1e-6)
 
-    matched_lab = torch.stack(matched_channels, dim=1)
+    std_scale = torch.where(
+        reference_std > 1e-4,
+        reference_std / source_std,
+        torch.ones_like(reference_std),
+    )
+    matched_lab = (source_lab - source_mean) * std_scale + reference_mean
+    matched_lab = torch.stack(
+        [
+            matched_lab[:, 0].clamp(0.0, 100.0),
+            matched_lab[:, 1].clamp(-128.0, 127.0),
+            matched_lab[:, 2].clamp(-128.0, 127.0),
+        ],
+        dim=1,
+    )
     matched_rgb = lab_to_rgb(matched_lab).clamp(0.0, 1.0)
     return matched_rgb.permute(0, 2, 3, 1).to(dtype=source.dtype)
 
@@ -136,7 +142,7 @@ def tone_match_lut(
     *,
     device: str | torch.device = "cpu",
 ) -> str:
-    """Generate an auto tone-match LUT by grading an identity HALD via LAB histogram match."""
+    """Generate an auto tone-match LUT by grading an identity HALD via LAB statistics transfer."""
 
     if isinstance(level, bool) or not isinstance(level, Integral):
         raise ValueError("level must be an integer in [2, 16].")

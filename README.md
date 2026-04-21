@@ -692,7 +692,7 @@ Build a MASK from the HLS saturation channel. This is the quickest way to isolat
 
 ## N-17 Tone Match LUT (auto-gen .cube)
 
-Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. The node histogram-matches an identity HALD in LAB space, then exports the graded HALD as a `.cube` file. It turns a single hero frame into a reusable look that can be reapplied with N-14 LUT Import or shipped outside ComfyUI.
+Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. The node applies a Reinhard-style LAB mean/std color transfer to an identity HALD, then exports the graded HALD as a `.cube` file. It turns a single hero frame into a reusable look that can be reapplied with N-14 LUT Import or shipped outside ComfyUI.
 
 **Inputs:**
 
@@ -713,6 +713,10 @@ Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. T
 
 **Screenshot:** `workflows/S-17-tone-match-lut-screenshot.png` *(placeholder; JH post-smoke test)*.
 
+### Algorithm
+
+N-17 computes the reference image's LAB channel mean and standard deviation, applies those statistics to the identity HALD, clamps the LAB result to valid ranges, and writes the transformed HALD as an Adobe Cube 1.0 LUT. Flat neutral-gray references are treated as a no-look signal and produce a near-identity LUT instead of collapsing the cube to gray.
+
 ### Use cases
 
 - **Capture a finished grade** from one hero image and reuse it across a sequence.
@@ -721,7 +725,7 @@ Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. T
 
 ### Caveats
 
-- **Histogram matching is per-channel LAB.** It transfers tonal statistics, not semantic scene understanding.
+- **LAB mean/std transfer is statistical.** It transfers the reference's global cast and contrast direction, not semantic scene understanding or localized grading.
 - **Output is LUT-only.** The node does not apply the look itself; use N-14 LUT Import downstream.
 - **Garbage in, garbage out.** Extreme reference images yield extreme LUTs. Curate the hero frame before exporting.
 
