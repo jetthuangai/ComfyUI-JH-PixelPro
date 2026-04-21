@@ -6,7 +6,43 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ### Added
 
-- Workflow screenshots for batch-9 S-21 ColorLab Basic + S-26/S-27/S-28 Layer Compositing 2-layer/5-layer/group-clipping (post-v0.11.0, JH manual smoke test verified). README §N-23 `JHPixelProColorLab` + §N-24..N-27 Layer Compositing now render reference images; compositing demo scaffolds S-26/S-27/S-28 expanded with JH purposeful demo richness during smoke. No tag bump — docs-only commit post-v0.11.0; next release bundles any follow-up batch-10 work.
+- Nothing yet.
+
+## [1.0.0] — 2026-04-21
+
+### Added
+
+- **Pre-v1.0 benchmark retrofit:** 5 CPU-only benchmark files for `selective_color`, `tone_match`, `face_pipeline`, `color_lab`, and `blend_modes`, closing bench coverage across N-15/N-16/N-17/N-18/N-20/N-21/N-23/N-24/N-25/N-26/N-27.
+- **Benchmark baselines:** committed `tests/bench_baselines/*.json` per-case snapshots with device, shape, mean, and stdev fields generated from the Batch-10 CPU runner.
+- **Benchmark guardrail marker:** registered `@pytest.mark.bench_guardrail` plus a 10% threshold constant for future CI enforcement wiring.
+- **Smoke-test matrix:** new `docs/smoke-test-matrix.md` 27-row tracker for workflow scaffold, JH smoke status, screenshot coverage, and batch origin.
+- **Workflow screenshots:** migrated the post-v0.11.0 batch-9 screenshot update into this release: S-21 ColorLab Basic plus S-26/S-27/S-28 Layer Compositing 2-layer/5-layer/group-clipping, all JH manual smoke-test verified.
+
+### Changed
+
+- **API consistency audit:** completed type annotations for all remaining `core/*.py` and `nodes/*.py` function signatures and added missing `JHPixelPro*` class docstrings.
+- **v1.0 release documentation:** README status and pyproject metadata now identify the pack as the first production-ready stable release.
+- **CHANGELOG structure:** reset `[Unreleased]` after bundling post-v0.11.0 documentation into the v1.0.0 milestone.
+
+### Fixed
+
+- None. Batch-10 audit surfaced style and coverage gaps only.
+
+### Deprecated
+
+- None.
+
+### Removed
+
+- None.
+
+### Dependencies
+
+- Unchanged from v0.11.0.
+
+### Migration
+
+- v0.11.0 → v1.0.0 has no breaking changes. Existing v0.11.0 workflows remain valid.
 
 ## [0.11.0] — 2026-04-21
 
