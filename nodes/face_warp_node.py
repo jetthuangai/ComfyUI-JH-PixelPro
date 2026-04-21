@@ -18,13 +18,15 @@ def _first_face(points: torch.Tensor) -> torch.Tensor:
 
 
 class JHPixelProFaceWarp:
+    """Warp a face image from source landmarks to destination landmarks."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/face"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("warped",)
     FUNCTION = "warp"
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802
         return {
             "required": {
                 "image": ("IMAGE",),

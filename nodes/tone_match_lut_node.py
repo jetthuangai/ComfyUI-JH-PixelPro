@@ -10,6 +10,8 @@ _LEVEL_CHOICES = ["4", "6", "8", "10", "12"]
 
 
 class JHPixelProToneMatchLUT:
+    """Generate a .cube LUT by matching a HALD to a reference image."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/color"
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("lut_path",)
@@ -17,7 +19,7 @@ class JHPixelProToneMatchLUT:
     OUTPUT_NODE = True
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802
         return {
             "required": {
                 "reference": ("IMAGE",),

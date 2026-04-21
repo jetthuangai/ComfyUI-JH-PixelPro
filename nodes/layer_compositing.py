@@ -38,15 +38,17 @@ def _base_hw(stack: list[dict]) -> tuple[int, int]:
 
 
 class JHPixelProLayerStackStart:
+    """Start a LAYER_STACK from a background image."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/compositing"
     RETURN_TYPES = ("LAYER_STACK",)
     FUNCTION = "apply"
 
     @classmethod
-    def INPUT_TYPES(cls):  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict[str, object]:  # noqa: N802
         return {"required": {"background": ("IMAGE",)}}
 
-    def apply(self, background):
+    def apply(self, background: torch.Tensor) -> tuple[list[dict[str, object]]]:
         layer = {
             "image": background,
             "mask": None,
@@ -61,12 +63,14 @@ class JHPixelProLayerStackStart:
 
 
 class JHPixelProLayerAdd:
+    """Append an image layer with blend, opacity, mask, and clipping controls."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/compositing"
     RETURN_TYPES = ("LAYER_STACK",)
     FUNCTION = "apply"
 
     @classmethod
-    def INPUT_TYPES(cls):  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict[str, object]:  # noqa: N802
         return {
             "required": {
                 "stack": ("LAYER_STACK",),
@@ -79,7 +83,16 @@ class JHPixelProLayerAdd:
             "optional": {"layer_mask": ("MASK",)},
         }
 
-    def apply(self, stack, layer_image, blend_mode, opacity, fill, clip_to_below, layer_mask=None):
+    def apply(
+        self,
+        stack: list[dict[str, object]],
+        layer_image: torch.Tensor,
+        blend_mode: str,
+        opacity: float,
+        fill: float,
+        clip_to_below: bool,
+        layer_mask: torch.Tensor | None = None,
+    ) -> tuple[list[dict[str, object]]]:
         hw = _base_hw(stack)
         layer = {
             "image": _resize_image(layer_image, hw),
@@ -95,12 +108,14 @@ class JHPixelProLayerAdd:
 
 
 class JHPixelProLayerGroup:
+    """Flatten a sub-stack into a grouped compositing layer."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/compositing"
     RETURN_TYPES = ("LAYER_STACK",)
     FUNCTION = "apply"
 
     @classmethod
-    def INPUT_TYPES(cls):  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict[str, object]:  # noqa: N802
         return {
             "required": {
                 "parent_stack": ("LAYER_STACK",),
@@ -111,7 +126,14 @@ class JHPixelProLayerGroup:
             "optional": {"group_mask": ("MASK",)},
         }
 
-    def apply(self, parent_stack, sub_stack, group_blend_mode, group_opacity, group_mask=None):
+    def apply(
+        self,
+        parent_stack: list[dict[str, object]],
+        sub_stack: list[dict[str, object]],
+        group_blend_mode: str,
+        group_opacity: float,
+        group_mask: torch.Tensor | None = None,
+    ) -> tuple[list[dict[str, object]]]:
         hw = _base_hw(parent_stack)
         flattened = _resize_image(compose_stack(sub_stack), hw)
         layer = {
@@ -128,13 +150,15 @@ class JHPixelProLayerGroup:
 
 
 class JHPixelProLayerFlatten:
+    """Render a LAYER_STACK into a final ComfyUI IMAGE."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/compositing"
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "apply"
 
     @classmethod
-    def INPUT_TYPES(cls):  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict[str, object]:  # noqa: N802
         return {"required": {"stack": ("LAYER_STACK",)}}
 
-    def apply(self, stack):
+    def apply(self, stack: list[dict[str, object]]) -> tuple[torch.Tensor]:
         return (compose_stack(stack),)

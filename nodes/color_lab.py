@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import torch
+
 from ..core.color_lab import GRAY_MIX_COLORS, HUE_ANCHORS, apply_colorlab_pipeline
 
 
@@ -12,13 +14,15 @@ def _float_meta(
 
 
 class JHPixelProColorLab:
+    """Apply the full ACR-style ColorLab stack to a ComfyUI IMAGE."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/color"
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("image",)
     FUNCTION = "apply"
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802
         required = {
             "image": ("IMAGE",),
             "basic_exposure": _float_meta(0.0, -5.0, 5.0, 0.01),
@@ -47,5 +51,5 @@ class JHPixelProColorLab:
             required[f"gray_{color}"] = _float_meta(0.0, -200.0, 300.0, 1.0)
         return {"required": required}
 
-    def apply(self, image, **params):
+    def apply(self, image: torch.Tensor, **params: object) -> tuple[torch.Tensor]:
         return (apply_colorlab_pipeline(image, params),)

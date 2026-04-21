@@ -8,13 +8,15 @@ from ..core.selective_color import saturation_range_mask
 
 
 class JHPixelProSaturationMask:
+    """Build a soft mask for pixels inside a saturation range."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/color"
     RETURN_TYPES = ("MASK",)
     RETURN_NAMES = ("mask",)
     FUNCTION = "build"
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802
         return {
             "required": {
                 "image": ("IMAGE",),

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import torch
+
 from .look_base import apply_preset
 
 PRESET_OPTIONS = [
@@ -15,10 +17,12 @@ PRESET_OPTIONS = [
 
 
 class JHPixelProLookSelect:
+    """Apply one photographer-oriented look preset selected from a dropdown."""
+
     CATEGORY = "ComfyUI-JH-PixelPro/looks"
 
     @classmethod
-    def INPUT_TYPES(cls):  # noqa: N802
+    def INPUT_TYPES(cls: type) -> dict[str, object]:  # noqa: N802
         return {
             "required": {
                 "image": ("IMAGE",),
@@ -31,6 +35,12 @@ class JHPixelProLookSelect:
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "apply"
 
-    def apply(self, image, preset, intensity, protect_skin):
+    def apply(
+        self,
+        image: torch.Tensor,
+        preset: str,
+        intensity: float,
+        protect_skin: bool,
+    ) -> tuple[torch.Tensor]:
         output = apply_preset(image, preset, intensity, protect_skin)
         return (output,)

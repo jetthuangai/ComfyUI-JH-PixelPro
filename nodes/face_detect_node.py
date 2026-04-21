@@ -20,7 +20,7 @@ class JHPixelProFaceDetect:
     FUNCTION = "run"
 
     @classmethod
-    def INPUT_TYPES(cls) -> dict:  # noqa: N802 — ComfyUI node contract mandates UPPER_CASE.
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802 — ComfyUI node contract mandates UPPER_CASE.
         return {
             "required": {
                 "image": ("IMAGE",),
