@@ -11,14 +11,7 @@ from .frequency_node import JHPixelProFrequencySeparation
 from .hald_identity_node import JHPixelProHALDIdentity
 from .hue_saturation_range_node import JHPixelProHueSaturationRange
 from .lens_distortion_node import JHPixelProLensDistortion
-from .looks import (
-    JHPixelProLookCinematicTealOrange,
-    JHPixelProLookDesaturatedPop,
-    JHPixelProLookFadedFilm,
-    JHPixelProLookGoldenHour,
-    JHPixelProLookMoodyGreen,
-    JHPixelProLookWarmSkinTone,
-)
+from .look_select import JHPixelProLookSelect
 from .luminosity_node import JHPixelProLuminosityMasking
 from .lut_export_node import JHPixelProLUTExport
 from .lut_import_node import JHPixelProLUTImport
@@ -45,12 +38,7 @@ __all__ = [
     "JHPixelProLUTImport",
     "JHPixelProLensDistortion",
     "JHPixelProLuminosityMasking",
-    "JHPixelProLookCinematicTealOrange",
-    "JHPixelProLookDesaturatedPop",
-    "JHPixelProLookFadedFilm",
-    "JHPixelProLookGoldenHour",
-    "JHPixelProLookMoodyGreen",
-    "JHPixelProLookWarmSkinTone",
+    "JHPixelProLookSelect",
     "JHPixelProSubPixelMaskRefiner",
     "JHPixelProSaturationMask",
     "JHPixelProToneCurve",
