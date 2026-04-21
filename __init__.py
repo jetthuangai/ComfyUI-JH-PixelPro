@@ -27,6 +27,7 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 #   looks      — JSON-driven dropdown look presets (N-22 M6 Looks)
 if __package__:
     from .nodes import (
+        JHPixelProAlphaMatteExtractor,
         JHPixelProColorLab,
         JHPixelProColorMatcher,
         JHPixelProEdgeAwareMaskRefiner,
@@ -64,6 +65,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareMaskRefiner"] = JHPixelProEdgeAwareMaskRefiner
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareMaskRefiner"] = "Mask: Edge-Aware Refiner"
+
+    NODE_CLASS_MAPPINGS["JHPixelProAlphaMatteExtractor"] = JHPixelProAlphaMatteExtractor
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProAlphaMatteExtractor"] = "Mask: Alpha Matte"
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"
