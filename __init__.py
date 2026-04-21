@@ -19,13 +19,15 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # Category groups exposed to ComfyUI Add Node menu (under root "ComfyUI-JH-PixelPro/"):
 #   filters    — pixel-domain filters (FS, ES)
 #   color      — color-grade layer (Lum, ColorMatcher, ToneCurve, HALDIdentity,
-#                 LUTExport, LUTImport, HueSatRange, SatMask, ToneMatchLUT)
+#                 LUTExport, LUTImport, HueSatRange, SatMask, ToneMatchLUT, ColorLab)
+#   compositing — Photoshop-style layer stack and blend modes
 #   mask       — mask creation / refinement (MR, HFDM)
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace, Landmarks, Warp, BeautyBlend)
 #   looks      — JSON-driven dropdown look presets (N-22 M6 Looks)
 if __package__:
     from .nodes import (
+        JHPixelProColorLab,
         JHPixelProColorMatcher,
         JHPixelProEdgeAwareSmoother,
         JHPixelProFaceBeautyBlend,
@@ -37,6 +39,10 @@ if __package__:
         JHPixelProHALDIdentity,
         JHPixelProHighFreqDetailMasker,
         JHPixelProHueSaturationRange,
+        JHPixelProLayerAdd,
+        JHPixelProLayerFlatten,
+        JHPixelProLayerGroup,
+        JHPixelProLayerStackStart,
         JHPixelProLensDistortion,
         JHPixelProLookSelect,
         JHPixelProLuminosityMasking,
@@ -111,6 +117,21 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProLookSelect"] = JHPixelProLookSelect
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLookSelect"] = "Look: Select Preset"
+
+    NODE_CLASS_MAPPINGS["JHPixelProColorLab"] = JHPixelProColorLab
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorLab"] = "Color: ColorLab (ACR)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLayerStackStart"] = JHPixelProLayerStackStart
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLayerStackStart"] = "Compositing: Layer Stack Start"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLayerAdd"] = JHPixelProLayerAdd
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLayerAdd"] = "Compositing: Layer Add"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLayerGroup"] = JHPixelProLayerGroup
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLayerGroup"] = "Compositing: Layer Group (nest)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLayerFlatten"] = JHPixelProLayerFlatten
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLayerFlatten"] = "Compositing: Layer Flatten"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"
