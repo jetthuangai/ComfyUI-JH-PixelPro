@@ -4,6 +4,10 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.8.2] — 2026-04-21
+
+Batch-6 follow-up smoke-test patch for S-18 mask-shape robustness and higher-fidelity N-17 tone-match LUT generation.
+
 ### Fixed
 
 - **N-21 `JHPixelProFaceBeautyBlend`**: auto-resizes masks to image height/width instead of raising `ValueError` on spatial shape mismatch, resolving the S-18 crash when placeholder masks are `64×64`.
@@ -12,9 +16,9 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - **N-17 `JHPixelProToneMatchLUT`**: upgrades generated LUTs from Reinhard LAB mean/std transfer to MKL (Monge-Kantorovich Linear) covariance transfer, capturing cross-channel color correlations with a mean-only fallback for singular covariance references.
 
-### Sample workflows
+### Dependencies
 
-- **S-18 Face Pipeline v2**: rewires the scaffold mask path to core `ImageToMask` from the loaded image red channel instead of `LoadImage.MASK`, keeping the demo self-contained with image-sized masks.
+**Unchanged from v0.8.1 — zero new pinned dependency.** The patch uses existing PyTorch linear algebra plus the existing Kornia, MediaPipe, SciPy and OpenCV runtime stack.
 
 ## [0.8.1] — 2026-04-21
 
