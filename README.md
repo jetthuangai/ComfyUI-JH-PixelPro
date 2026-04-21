@@ -692,7 +692,7 @@ Build a MASK from the HLS saturation channel. This is the quickest way to isolat
 
 ## N-17 Tone Match LUT (auto-gen .cube)
 
-Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. The node applies a Reinhard-style LAB mean/std color transfer to an identity HALD, then exports the graded HALD as a `.cube` file. It turns a single hero frame into a reusable look that can be reapplied with N-14 LUT Import or shipped outside ComfyUI.
+Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. The node applies an MKL covariance transfer in LAB space to an identity HALD, then exports the graded HALD as a `.cube` file. It turns a single hero frame into a reusable look that can be reapplied with N-14 LUT Import or shipped outside ComfyUI.
 
 **Inputs:**
 
@@ -715,7 +715,7 @@ Generate a portable Adobe Cube 1.0 LUT directly from a graded reference image. T
 
 ### Algorithm
 
-N-17 computes the reference image's LAB channel mean and standard deviation, applies those statistics to the identity HALD, clamps the LAB result to valid ranges, and writes the transformed HALD as an Adobe Cube 1.0 LUT. Flat neutral-gray references are treated as a no-look signal and produce a near-identity LUT instead of collapsing the cube to gray.
+N-17 uses MKL (Monge-Kantorovich Linear) covariance transfer in LAB color space. It computes a 3×3 transform matrix `T = L_t · L_s^(-1)` from Cholesky factors of the reference/source covariance matrices, then applies `y = T(x - μ_s) + μ_t` to each identity-HALD sample. This captures cross-channel color correlations, such as teal-orange looks, that per-channel mean/std transfer misses. Flat neutral-gray references remain near-identity, and singular covariance references fall back to a mean-only shift.
 
 ### Use cases
 
@@ -725,7 +725,7 @@ N-17 computes the reference image's LAB channel mean and standard deviation, app
 
 ### Caveats
 
-- **LAB mean/std transfer is statistical.** It transfers the reference's global cast and contrast direction, not semantic scene understanding or localized grading.
+- **MKL covariance transfer is statistical.** It transfers the reference's global cast and cross-channel correlation direction, not semantic scene understanding or localized grading.
 - **Output is LUT-only.** The node does not apply the look itself; use N-14 LUT Import downstream.
 - **Garbage in, garbage out.** Extreme reference images yield extreme LUTs. Curate the hero frame before exporting.
 
