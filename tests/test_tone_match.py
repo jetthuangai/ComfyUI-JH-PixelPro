@@ -40,6 +40,20 @@ def test_compute_lab_histogram_match_identity_when_reference_equals_source() -> 
     assert torch.mean(torch.abs(matched - source)).item() < 5e-3
 
 
+def test_compute_lab_histogram_match_transfers_reference_hue_direction() -> None:
+    source = _gradient_image(1, 32)
+    reference = source.clone()
+    reference[..., 0] = (reference[..., 0] + 0.35).clamp(0.0, 1.0)
+    reference[..., 1] = reference[..., 1] * 0.45
+    reference[..., 2] = reference[..., 2] * 0.45
+
+    matched = compute_lab_histogram_match(reference, source)
+
+    source_red_bias = (source[..., 0] - (source[..., 1] + source[..., 2]) * 0.5).mean()
+    matched_red_bias = (matched[..., 0] - (matched[..., 1] + matched[..., 2]) * 0.5).mean()
+    assert matched_red_bias > source_red_bias + 0.05
+
+
 def test_tone_match_lut_writes_cube_with_required_headers(tmp_path: Path) -> None:
     reference = _gradient_image(1, 32)
 
@@ -63,3 +77,15 @@ def test_tone_match_lut_identity_reference_stays_near_identity(tmp_path: Path) -
     applied = apply_lut_3d(image, parsed["lut"])
 
     assert torch.mean(torch.abs(applied - image)).item() < 1e-2
+
+
+def test_tone_match_lut_neutral_gray_reference_stays_near_identity(tmp_path: Path) -> None:
+    level = 4
+    reference = torch.full((1, 32, 32, 3), 0.18, dtype=torch.float32)
+
+    lut_path = tone_match_lut(reference, level, str(tmp_path / "neutral_match.cube"))
+    parsed = parse_cube(lut_path)
+    image = _gradient_image(1, 32)
+    applied = apply_lut_3d(image, parsed["lut"])
+
+    assert torch.mean(torch.abs(applied - image)).item() < 0.05
