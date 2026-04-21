@@ -1,0 +1,26 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-1024-b1-gradient",
+    "device": "cpu",
+    "mean_ms": 3.5963,
+    "measure_iters": 10,
+    "module": "mask_morphology",
+    "resolution": 1024,
+    "scenario": "gradient_ellipse_r3",
+    "stdev_ms": 0.0996,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-b1-close",
+    "device": "cpu",
+    "mean_ms": 0.8422,
+    "measure_iters": 10,
+    "module": "mask_morphology",
+    "resolution": 512,
+    "scenario": "close_ellipse_r3",
+    "stdev_ms": 0.0379,
+    "warmup_iters": 3
+  }
+]
