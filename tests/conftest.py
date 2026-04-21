@@ -5,6 +5,16 @@ from __future__ import annotations
 import pytest
 import torch
 
+BENCH_GUARDRAIL_THRESHOLD = 0.10
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Register project-local markers used by benchmark smoke tests."""
+    config.addinivalue_line(
+        "markers",
+        "bench_guardrail: CPU benchmark guardrail smoke test (10% threshold baseline)",
+    )
+
 
 @pytest.fixture(scope="session")
 def device() -> torch.device:

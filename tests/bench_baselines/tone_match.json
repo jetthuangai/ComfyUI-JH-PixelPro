@@ -1,0 +1,26 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-1024-b1-mkl",
+    "device": "cpu",
+    "mean_ms": 116.8895,
+    "measure_iters": 10,
+    "module": "tone_match",
+    "resolution": 1024,
+    "scenario": "lab_mkl_covariance",
+    "stdev_ms": 9.7772,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-b1-mkl",
+    "device": "cpu",
+    "mean_ms": 25.761,
+    "measure_iters": 10,
+    "module": "tone_match",
+    "resolution": 512,
+    "scenario": "lab_mkl_covariance",
+    "stdev_ms": 1.5773,
+    "warmup_iters": 3
+  }
+]

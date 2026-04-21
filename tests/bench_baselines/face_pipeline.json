@@ -1,0 +1,54 @@
+[
+  {
+    "batch": 1,
+    "case": "cpu-1024-mask1024-b1-beauty_blend",
+    "device": "cpu",
+    "mask_dim": 1024,
+    "mean_ms": 31.0973,
+    "measure_iters": 10,
+    "module": "face_pipeline",
+    "resolution": 1024,
+    "scenario": "beauty_blend_mask_resize",
+    "stdev_ms": 2.6987,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-1024-mask64-b1-beauty_blend",
+    "device": "cpu",
+    "mask_dim": 64,
+    "mean_ms": 36.0479,
+    "measure_iters": 10,
+    "module": "face_pipeline",
+    "resolution": 1024,
+    "scenario": "beauty_blend_mask_resize",
+    "stdev_ms": 5.0114,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-mask512-b1-beauty_blend",
+    "device": "cpu",
+    "mask_dim": 512,
+    "mean_ms": 5.5545,
+    "measure_iters": 10,
+    "module": "face_pipeline",
+    "resolution": 512,
+    "scenario": "beauty_blend_mask_resize",
+    "stdev_ms": 0.4092,
+    "warmup_iters": 3
+  },
+  {
+    "batch": 1,
+    "case": "cpu-512-mask64-b1-beauty_blend",
+    "device": "cpu",
+    "mask_dim": 64,
+    "mean_ms": 6.8798,
+    "measure_iters": 10,
+    "module": "face_pipeline",
+    "resolution": 512,
+    "scenario": "beauty_blend_mask_resize",
+    "stdev_ms": 0.9155,
+    "warmup_iters": 3
+  }
+]
