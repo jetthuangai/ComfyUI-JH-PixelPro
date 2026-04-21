@@ -4,6 +4,10 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+### Added
+
+- Workflow screenshots for batch-6 S-16 Selective Color, S-17 Tone Match LUT (MKL), and S-18 Face Pipeline v2 (post-v0.8.2, JH manual smoke test verified). README §N-15 / §N-16 / §N-17 / §N-19 / §N-20 / §N-21 now render reference images. JH purposefully expanded S-16 + S-17 workflows during smoke test, demonstrating extended node chains. No tag bump yet — docs-only commit post-v0.8.2; next release bundles any follow-up batch-7 work.
+
 ## [0.8.2] — 2026-04-21
 
 Batch-6 follow-up smoke-test patch for S-18 mask-shape robustness and higher-fidelity N-17 tone-match LUT generation.
