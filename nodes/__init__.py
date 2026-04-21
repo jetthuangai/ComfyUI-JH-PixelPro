@@ -15,6 +15,11 @@ from .luminosity_node import JHPixelProLuminosityMasking
 from .lut_export_node import JHPixelProLUTExport
 from .lut_import_node import JHPixelProLUTImport
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
+from .looks import (
+    JHPixelProLookCinematicTealOrange,
+    JHPixelProLookMoodyGreen,
+    JHPixelProLookWarmSkinTone,
+)
 from .saturation_mask_node import JHPixelProSaturationMask
 from .smoother_node import JHPixelProEdgeAwareSmoother
 from .tone_curve_node import JHPixelProToneCurve
@@ -37,6 +42,9 @@ __all__ = [
     "JHPixelProLUTImport",
     "JHPixelProLensDistortion",
     "JHPixelProLuminosityMasking",
+    "JHPixelProLookCinematicTealOrange",
+    "JHPixelProLookMoodyGreen",
+    "JHPixelProLookWarmSkinTone",
     "JHPixelProSubPixelMaskRefiner",
     "JHPixelProSaturationMask",
     "JHPixelProToneCurve",
