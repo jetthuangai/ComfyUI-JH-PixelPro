@@ -4,10 +4,22 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ## [Unreleased]
 
+## [0.8.1] — 2026-04-21
+
+Batch-6 smoke-test patch release for two issues found by JH in real ComfyUI runs after v0.8.0: N-20 Face Warp edge-landmark crashes and N-17 Tone Match LUT wrong-color bias.
+
 ### Fixed
 
 - **N-20 `JHPixelProFaceWarp`**: clamps Delaunay triangle bounds to the image rect before OpenCV affine slicing/compositing, preventing `cv2.warpAffine` crashes when MediaPipe landmarks land on or just outside frame edges.
-- **N-17 `JHPixelProToneMatchLUT`**: replaces the v0.8.0 identity-HALD LAB histogram-match path that could bake heavy sepia/desaturated bias into generated LUTs.
+- **N-17 `JHPixelProToneMatchLUT`**: fixes the v0.8.0 identity-HALD LAB histogram-match path that could bake heavy sepia/desaturated bias into generated LUTs.
+
+### Changed
+
+- **N-17 algorithm**: switches generated LUTs to Reinhard-style LAB mean/std transfer with a neutral-gray near-identity guard, producing a more predictable reference cast direction for natural images.
+
+### Dependencies
+
+**Unchanged from v0.8.0 — zero new pinned dependency.** The patch reuses the existing Kornia, MediaPipe, SciPy and OpenCV runtime stack.
 
 ## [0.8.0] — 2026-04-21
 
