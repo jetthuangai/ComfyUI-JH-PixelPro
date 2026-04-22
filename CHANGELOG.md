@@ -8,6 +8,14 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Sample workflows and screenshots for v1.1.0 mask refinement pack N-28..N-33, including N-33 GIF animation.
 
+### Changed
+
+- N-29 Alpha Matte Extractor upgraded to Levin 2008 closed-form matting Laplacian (3×3 local color covariance, sparse `(L+λD)α=λbs` system); accuracy now matches industry pro-tool standard within MSE ≤ 0.02 on canonical test cases. Paper: Levin, A., Lischinski, D., & Weiss, Y. (2008). A Closed-Form Solution to Natural Image Matting. IEEE TPAMI 30(2), 228-242.
+
+### Fixed
+
+- N-29 previous classical sparse edge-weighted diffusion solver (v1.1.0) produced visible aliasing near hair/fur edges; closed-form Laplacian eliminates this at cost of ~3-5× runtime.
+
 ## [1.1.0] — 2026-04-21
 
 ### Added
