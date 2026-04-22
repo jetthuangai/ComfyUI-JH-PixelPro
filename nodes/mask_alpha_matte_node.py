@@ -38,6 +38,7 @@ class JHPixelProAlphaMatteExtractor:
                     "FLOAT",
                     {"default": 100.0, "min": 1.0, "max": 10000.0, "step": 1.0},
                 ),
+                "compute_device": (["auto", "cuda", "cpu"], {"default": "auto"}),
             },
         }
 
@@ -48,6 +49,7 @@ class JHPixelProAlphaMatteExtractor:
         epsilon: float,
         window_radius: int,
         lambda_constraint: float = 100.0,
+        compute_device: str = "auto",
     ) -> tuple[torch.Tensor]:
         with torch.no_grad():
             alpha = alpha_matte_extract(
@@ -56,5 +58,6 @@ class JHPixelProAlphaMatteExtractor:
                 epsilon=epsilon,
                 window_radius=window_radius,
                 lambda_constraint=lambda_constraint,
+                compute_device=compute_device,
             )
         return (alpha,)

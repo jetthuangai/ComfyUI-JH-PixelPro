@@ -5,6 +5,13 @@ import torch
 
 from core.mask_alpha_matte import alpha_matte_extract
 
+DEVICE_CASES = (
+    "cpu",
+    pytest.param(
+        "cuda", marks=pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA unavailable")
+    ),
+)
+
 
 def _trimap(size: int = 24) -> torch.Tensor:
     trimap = torch.zeros((1, size, size), dtype=torch.float32)
@@ -35,6 +42,12 @@ def _alpha_gradient_norm(alpha: torch.Tensor) -> float:
     dx = alpha[:, :, 1:] - alpha[:, :, :-1]
     dy = alpha[:, 1:, :] - alpha[:, :-1, :]
     return float(torch.sqrt((dx.square().mean() + dy.square().mean()).clamp_min(0.0)))
+
+
+def _to_case_device(tensor: torch.Tensor, compute_device: str) -> torch.Tensor:
+    if compute_device == "cuda":
+        return tensor.to("cuda")
+    return tensor
 
 
 def test_alpha_matte_preserves_shape_and_range() -> None:
@@ -81,16 +94,30 @@ def test_alpha_matte_rejects_bad_lambda_constraint() -> None:
         alpha_matte_extract(_trimap(), _guide(), lambda_constraint=0.5)
 
 
-def test_levin_synthetic_circle_mse() -> None:
+def test_alpha_matte_rejects_bad_compute_device() -> None:
+    with pytest.raises(ValueError, match="compute_device"):
+        alpha_matte_extract(_trimap(), _guide(), compute_device="invalid")
+
+
+@pytest.mark.parametrize("compute_device", DEVICE_CASES)
+def test_levin_synthetic_circle_mse(compute_device: str) -> None:
     trimap, guide, target = _circle_case()
+    trimap = _to_case_device(trimap, compute_device)
+    guide = _to_case_device(guide, compute_device)
     alpha = alpha_matte_extract(
-        trimap, guide, epsilon=1e-7, window_radius=1, lambda_constraint=100.0
+        trimap,
+        guide,
+        epsilon=1e-7,
+        window_radius=1,
+        lambda_constraint=100.0,
+        compute_device=compute_device,
     )
-    mse = torch.mean((alpha - target).square()).item()
+    mse = torch.mean((alpha.cpu() - target).square()).item()
     assert mse <= 0.02
 
 
-def test_levin_linear_gradient_bg_is_color_aware() -> None:
+@pytest.mark.parametrize("compute_device", DEVICE_CASES)
+def test_levin_linear_gradient_bg_is_color_aware(compute_device: str) -> None:
     size = 64
     x = torch.linspace(0.0, 0.5, size).view(1, 1, size, 1).expand(1, size, size, 1)
     guide = torch.cat((x, x, x), dim=-1).clone()
@@ -99,15 +126,25 @@ def test_levin_linear_gradient_bg_is_color_aware() -> None:
     trimap[:, 18:46, 18:46] = 0.5
     trimap[:, 24:40, 24:40] = 1.0
     unknown = trimap == 0.5
+    trimap = _to_case_device(trimap, compute_device)
+    guide = _to_case_device(guide, compute_device)
     alpha = alpha_matte_extract(
-        trimap, guide, epsilon=1e-7, window_radius=1, lambda_constraint=100.0
-    )
+        trimap,
+        guide,
+        epsilon=1e-7,
+        window_radius=1,
+        lambda_constraint=100.0,
+        compute_device=compute_device,
+    ).cpu()
     assert alpha[unknown].std().item() > 0.05
     assert alpha[unknown].max().item() - alpha[unknown].min().item() > 0.3
 
 
-def test_epsilon_regularization_monotonic() -> None:
+@pytest.mark.parametrize("compute_device", DEVICE_CASES)
+def test_epsilon_regularization_monotonic(compute_device: str) -> None:
     trimap, guide, _target = _circle_case()
+    trimap = _to_case_device(trimap, compute_device)
+    guide = _to_case_device(guide, compute_device)
     norms = [
         _alpha_gradient_norm(
             alpha_matte_extract(
@@ -116,9 +153,53 @@ def test_epsilon_regularization_monotonic() -> None:
                 epsilon=epsilon,
                 window_radius=1,
                 lambda_constraint=100.0,
+                compute_device=compute_device,
             )
+            .detach()
+            .cpu()
         )
         for epsilon in (1e-8, 1e-6, 1e-4)
     ]
     assert norms[0] >= norms[1] - 1e-5
     assert norms[1] >= norms[2] - 1e-5
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA unavailable")
+def test_cpu_gpu_alpha_parity() -> None:
+    circle_trimap, circle_guide, _target = _circle_case()
+    gradient_size = 64
+    x = torch.linspace(0.0, 0.5, gradient_size).view(1, 1, gradient_size, 1)
+    gradient_guide = torch.cat(
+        (
+            x.expand(1, gradient_size, gradient_size, 1),
+            x.expand(1, gradient_size, gradient_size, 1),
+            x.expand(1, gradient_size, gradient_size, 1),
+        ),
+        dim=-1,
+    ).clone()
+    gradient_guide[:, 22:42, 22:42] = 1.0
+    gradient_trimap = torch.zeros((1, gradient_size, gradient_size), dtype=torch.float32)
+    gradient_trimap[:, 18:46, 18:46] = 0.5
+    gradient_trimap[:, 24:40, 24:40] = 1.0
+
+    for trimap, guide in (
+        (circle_trimap, circle_guide),
+        (gradient_trimap, gradient_guide),
+    ):
+        cpu_alpha = alpha_matte_extract(
+            trimap,
+            guide,
+            epsilon=1e-7,
+            window_radius=1,
+            lambda_constraint=100.0,
+            compute_device="cpu",
+        )
+        gpu_alpha = alpha_matte_extract(
+            trimap.to("cuda"),
+            guide.to("cuda"),
+            epsilon=1e-7,
+            window_radius=1,
+            lambda_constraint=100.0,
+            compute_device="cuda",
+        ).cpu()
+        assert torch.mean((cpu_alpha - gpu_alpha).square()).item() <= 1e-5
