@@ -6,10 +6,12 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ### Added
 
+- N-29 Alpha Matte Extractor `compute_device` parameter (`"auto" | "cuda" | "cpu"`) exposing explicit GPU/CPU execution pin.
 - Sample workflows and screenshots for v1.1.0 mask refinement pack N-28..N-33, including N-33 GIF animation.
 
 ### Changed
 
+- N-29 Alpha Matte Extractor Levin matting Laplacian solver now supports GPU acceleration via `torch.sparse_csr_tensor` + Jacobi-preconditioned CG, targeting ≥5× speedup at 512² and 1024² on NVIDIA GPU. Zero new dependency. CPU fallback preserved for users without CUDA.
 - N-29 Alpha Matte Extractor upgraded to Levin 2008 closed-form matting Laplacian (3×3 local color covariance, sparse `(L+λD)α=λbs` system); accuracy now matches industry pro-tool standard within MSE ≤ 0.02 on canonical test cases. Paper: Levin, A., Lischinski, D., & Weiss, Y. (2008). A Closed-Form Solution to Natural Image Matting. IEEE TPAMI 30(2), 228-242.
 
 ### Fixed

@@ -922,7 +922,7 @@ Classical mask finishing tools for cutout, alpha matting, compositing, and post-
 | Node | Purpose |
 |---|---|
 | `JHPixelProEdgeAwareMaskRefiner` | Refines a MASK against an IMAGE guide so alpha edges follow image detail. |
-| `JHPixelProAlphaMatteExtractor` | Levin 2008 closed-form matting Laplacian alpha matte from trimap + guide RGB. Sparse solver w/ 3×3 local color covariance. Paper: Levin et al. 2008 TPAMI. |
+| `JHPixelProAlphaMatteExtractor` | GPU accelerated on CUDA with zero-dep PyTorch-native sparse CG, CPU fallback, and Levin 2008 closed-form matting Laplacian alpha matte from trimap + guide RGB. Paper: Levin et al. 2008 TPAMI. |
 | `JHPixelProTrimapBuilder` | Builds trimaps encoded as `0.0` background, `0.5` unknown, `1.0` foreground. |
 | `JHPixelProMaskMorphology` | Dilate, erode, open, close, gradient, tophat, and blackhat with elliptical kernels. |
 | `JHPixelProMaskCombine` | Add, subtract, intersect, union, difference, xor, and multiply masks with hard or soft-feather mode. |
@@ -933,7 +933,7 @@ Classical mask finishing tools for cutout, alpha matting, compositing, and post-
 ### Caveats
 
 - **Trimap convention is strict.** N-29 expects `0.0` background, `0.5` unknown, and `1.0` foreground with ±0.05 tolerance; use N-30 upstream when in doubt.
-- **N-29 is CPU sparse-solver based.** It is intended for quality mask finishing, not realtime preview at large resolutions.
+- **N-29 is quality-first Levin matting.** Use `compute_device="cuda"` for large portraits when CUDA is available; CPU fallback remains available and exact but slower.
 - **N-33 degrades gracefully.** If `cv2.ximgproc.jointBilateralFilter` is unavailable, guided smoothing falls back to plain bilateral filtering.
 
 ## License
