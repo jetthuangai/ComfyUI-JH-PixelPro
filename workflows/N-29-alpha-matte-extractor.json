@@ -150,8 +150,9 @@
         "Node name for S&R": "JHPixelProAlphaMatteExtractor"
       },
       "widgets_values": [
-        0.01,
-        3
+        0.0000001,
+        1,
+        100.0
       ]
     },
     {

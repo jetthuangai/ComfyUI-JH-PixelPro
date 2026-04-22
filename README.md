@@ -922,7 +922,7 @@ Classical mask finishing tools for cutout, alpha matting, compositing, and post-
 | Node | Purpose |
 |---|---|
 | `JHPixelProEdgeAwareMaskRefiner` | Refines a MASK against an IMAGE guide so alpha edges follow image detail. |
-| `JHPixelProAlphaMatteExtractor` | Solves soft alpha from a 3-value trimap and RGB guide image. |
+| `JHPixelProAlphaMatteExtractor` | Levin 2008 closed-form matting Laplacian alpha matte from trimap + guide RGB. Sparse solver w/ 3×3 local color covariance. Paper: Levin et al. 2008 TPAMI. |
 | `JHPixelProTrimapBuilder` | Builds trimaps encoded as `0.0` background, `0.5` unknown, `1.0` foreground. |
 | `JHPixelProMaskMorphology` | Dilate, erode, open, close, gradient, tophat, and blackhat with elliptical kernels. |
 | `JHPixelProMaskCombine` | Add, subtract, intersect, union, difference, xor, and multiply masks with hard or soft-feather mode. |
