@@ -6,7 +6,7 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ### Added
 
-- Nothing yet.
+- Sample workflows and screenshots for v1.1.0 mask refinement pack N-28..N-33, including N-33 GIF animation.
 
 ## [1.1.0] — 2026-04-21
 
