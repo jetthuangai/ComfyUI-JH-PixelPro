@@ -33,8 +33,16 @@ class BenchCase:
     def name(self) -> str:
         return f"cpu-{self.resolution}-b{self.batch}-levin_laplacian"
 
+    @property
+    def measure_iters(self) -> int:
+        return 1 if self.resolution >= 512 else MEASURE_ITERS
 
-CASES = (BenchCase(64), BenchCase(128))
+    @property
+    def warmup_iters(self) -> int:
+        return 0 if self.resolution >= 512 else WARMUP_ITERS
+
+
+CASES = (BenchCase(64), BenchCase(128), BenchCase(512))
 
 
 def _case_payload(case: BenchCase) -> tuple[torch.Tensor, torch.Tensor]:
@@ -76,16 +84,35 @@ def _run_case(case: BenchCase) -> dict[str, float | int | str]:
             epsilon=1e-7,
             window_radius=1,
             lambda_constraint=100.0,
+            compute_device="cpu",
         )
 
     with torch.inference_mode():
-        for _ in range(WARMUP_ITERS):
+        for _ in range(case.warmup_iters):
             run_once()
         samples = []
-        for _ in range(MEASURE_ITERS):
+        for _ in range(case.measure_iters):
             started = time.perf_counter()
             run_once()
             samples.append((time.perf_counter() - started) * 1000.0)
+        if torch.cuda.is_available():
+            cuda_trimap = trimap.to("cuda")
+            cuda_guide = guide.to("cuda")
+            torch.cuda.synchronize()
+            started = time.perf_counter()
+            alpha_matte_extract(
+                cuda_trimap,
+                cuda_guide,
+                epsilon=1e-7,
+                window_radius=1,
+                lambda_constraint=100.0,
+                compute_device="cuda",
+            )
+            torch.cuda.synchronize()
+            print(
+                f"[GPU bench] size={case.resolution} bs={case.batch} "
+                f"elapsed={(time.perf_counter() - started):.4f}s"
+            )
     return {
         "case": case.name,
         "module": "mask_alpha_matte",
@@ -93,10 +120,10 @@ def _run_case(case: BenchCase) -> dict[str, float | int | str]:
         "device": "cpu",
         "resolution": case.resolution,
         "batch": case.batch,
-        "warmup_iters": WARMUP_ITERS,
-        "measure_iters": MEASURE_ITERS,
+        "warmup_iters": case.warmup_iters,
+        "measure_iters": case.measure_iters,
         "mean_ms": round(statistics.mean(samples), 4),
-        "stdev_ms": round(statistics.stdev(samples), 4),
+        "stdev_ms": round(statistics.stdev(samples), 4) if len(samples) > 1 else 0.0,
     }
 
 
