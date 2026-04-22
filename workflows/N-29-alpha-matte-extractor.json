@@ -1,50 +1,456 @@
 {
-  "last_node_id": 3,
-  "last_link_id": 2,
+  "id": "d3d3fd18-609d-4c72-a842-f59b5d433ed7",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 10,
   "nodes": [
+    {
+      "id": 3,
+      "type": "APersonMaskGenerator",
+      "pos": [
+        275.0799835522684,
+        155.69743689981263
+      ],
+      "size": [
+        270,
+        202
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-workflow-encrypt",
+        "ver": "1.0.0",
+        "Node name for S&R": "APersonMaskGenerator",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.6.2"
+        }
+      },
+      "widgets_values": [
+        true,
+        false,
+        true,
+        true,
+        false,
+        0.4,
+        true
+      ]
+    },
+    {
+      "id": 2,
+      "type": "JHPixelProTrimapBuilder",
+      "pos": [
+        563.0890678497319,
+        155.69743689981263
+      ],
+      "size": [
+        210,
+        106
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "trimap",
+          "type": "MASK",
+          "slot_index": 0,
+          "links": [
+            4,
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-JH-PixelPro",
+        "ver": "1.1.0",
+        "Node name for S&R": "JHPixelProTrimapBuilder",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        1,
+        64,
+        1.3
+      ]
+    },
+    {
+      "id": 5,
+      "type": "JHPixelProAlphaMatteExtractor",
+      "pos": [
+        565.6497929621512,
+        309.6084992112988
+      ],
+      "size": [
+        210,
+        102
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "trimap",
+          "type": "MASK",
+          "link": 5
+        },
+        {
+          "name": "guide",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "alpha",
+          "type": "MASK",
+          "slot_index": 0,
+          "links": [
+            7,
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "ComfyUI-JH-PixelPro",
+        "ver": "1.1.0",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        },
+        "Node name for S&R": "JHPixelProAlphaMatteExtractor"
+      },
+      "widgets_values": [
+        0.01,
+        3
+      ]
+    },
+    {
+      "id": 7,
+      "type": "LayerUtility: ImageRemoveAlpha",
+      "pos": [
+        817.1717846464838,
+        458.4329007781472
+      ],
+      "size": [
+        313.3931640625,
+        102
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "RGBA_image",
+          "type": "IMAGE",
+          "link": 9
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "RGB_image",
+          "type": "IMAGE",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui_layerstyle",
+        "ver": "2.0.38",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "Node name for S&R": "LayerUtility: ImageRemoveAlpha"
+      },
+      "widgets_values": [
+        true,
+        "#000000"
+      ],
+      "color": "rgba(38, 73, 116, 0.7)"
+    },
     {
       "id": 1,
       "type": "LoadImage",
-      "pos": [80, 160],
-      "size": [315, 314],
+      "pos": [
+        -62.276771075818914,
+        155.69743689981263
+      ],
+      "size": [
+        315,
+        314
+      ],
       "flags": {},
       "order": 0,
       "mode": 0,
       "inputs": [],
       "outputs": [
-        {"name": "IMAGE", "type": "IMAGE", "links": [1], "slot_index": 0},
-        {"name": "MASK", "type": "MASK", "links": [2], "slot_index": 1}
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            2,
+            6,
+            9
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 1,
+          "links": []
+        }
       ],
-      "properties": {"Node name for S&R": "LoadImage"},
-      "widgets_values": ["sample_binary_mask.png", "image"]
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.0",
+        "Node name for S&R": "LoadImage",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        },
+        "#sdppp_variant": "default",
+        "#sdppp_simple_content": "canvas",
+        "#sdppp_simple_mask": "canvas",
+        "#sdppp_simple_boundary": "canvas",
+        "#sdppp_label": ""
+      },
+      "widgets_values": [
+        "73927abf94a0a498655b57eeebb03a0a.jpg",
+        "image"
+      ]
     },
     {
-      "id": 2,
-      "type": "JHPixelProAlphaMatteExtractor",
-      "pos": [450, 160],
-      "size": [330, 150],
+      "id": 4,
+      "type": "MaskPreview+",
+      "pos": [
+        792.3664111620599,
+        161.50949585719036
+      ],
+      "size": [
+        155.071875,
+        246
+      ],
       "flags": {},
-      "order": 1,
+      "order": 3,
       "mode": 0,
       "inputs": [
-        {"name": "trimap", "type": "MASK", "link": 2},
-        {"name": "guide", "type": "IMAGE", "link": 1}
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 4
+        }
       ],
-      "outputs": [{"name": "MASK", "type": "MASK", "links": null, "slot_index": 0}],
+      "outputs": [],
       "properties": {
-        "cnr_id": "ComfyUI-JH-PixelPro",
+        "cnr_id": "comfyui_essentials",
         "ver": "1.1.0",
-        "Node name for S&R": "JHPixelProAlphaMatteExtractor"
+        "Node name for S&R": "MaskPreview+",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.6.2"
+        }
       },
-      "widgets_values": [0.0001, 1]
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "MaskPreview+",
+      "pos": [
+        973.3273727419869,
+        155.69743689981263
+      ],
+      "size": [
+        155.071875,
+        246
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfyui_essentials",
+        "ver": "1.1.0",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.6.2"
+        },
+        "Node name for S&R": "MaskPreview+"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        1153.5233771009594,
+        155.69743689981263
+      ],
+      "size": [
+        212.9061928834567,
+        353.9888609587375
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 10
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.0",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
     }
   ],
   "links": [
-    [1, 1, 0, 2, 1, "IMAGE"],
-    [2, 1, 1, 2, 0, "MASK"]
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      2,
+      0,
+      "MASK"
+    ],
+    [
+      4,
+      2,
+      0,
+      4,
+      0,
+      "MASK"
+    ],
+    [
+      5,
+      2,
+      0,
+      5,
+      0,
+      "MASK"
+    ],
+    [
+      6,
+      1,
+      0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      7,
+      5,
+      0,
+      6,
+      0,
+      "MASK"
+    ],
+    [
+      8,
+      5,
+      0,
+      7,
+      1,
+      "MASK"
+    ],
+    [
+      9,
+      1,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ]
   ],
   "groups": [],
   "config": {},
-  "extra": {},
+  "extra": {
+    "ue_links": [],
+    "links_added_by_ue": [],
+    "ds": {
+      "scale": 0.9229599817706438,
+      "offset": [
+        388.72584221194415,
+        417.35076560829026
+      ]
+    },
+    "frontendVersion": "1.42.10",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
   "version": 0.4
 }
