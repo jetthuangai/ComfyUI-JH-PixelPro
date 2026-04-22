@@ -1,14 +1,26 @@
 [
   {
     "batch": 1,
-    "case": "cpu-128-b1-sparse_unknown_band",
+    "case": "cpu-128-b1-levin_laplacian",
     "device": "cpu",
-    "mean_ms": 35.4474,
+    "mean_ms": 1038.7022,
     "measure_iters": 3,
     "module": "mask_alpha_matte",
     "resolution": 128,
-    "scenario": "sparse_alpha_matte",
-    "stdev_ms": 1.5121,
+    "scenario": "levin_closed_form_laplacian",
+    "stdev_ms": 94.0897,
+    "warmup_iters": 1
+  },
+  {
+    "batch": 1,
+    "case": "cpu-64-b1-levin_laplacian",
+    "device": "cpu",
+    "mean_ms": 179.4404,
+    "measure_iters": 3,
+    "module": "mask_alpha_matte",
+    "resolution": 64,
+    "scenario": "levin_closed_form_laplacian",
+    "stdev_ms": 4.4688,
     "warmup_iters": 1
   }
 ]
