@@ -18,8 +18,8 @@ from .mask_morphology import mask_morphology
 from .mask_refiner import subpixel_mask_refine
 from .mask_trimap import build_trimap, validate_trimap
 from .selective_color import apply_hue_sat_shift, hue_range_mask, saturation_range_mask
-from .smoother import edge_aware_smooth
 from .skin_tone_region import skin_tone_tri_region
+from .smoother import edge_aware_smooth
 from .tone_curve import tone_curve
 from .tone_match import compute_lab_histogram_match, tone_match_lut
 from .unwrap_face import unwrap_face

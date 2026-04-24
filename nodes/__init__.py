@@ -31,8 +31,8 @@ from .mask_morphology_node import JHPixelProMaskMorphology
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .mask_trimap_node import JHPixelProTrimapBuilder
 from .saturation_mask_node import JHPixelProSaturationMask
-from .smoother_node import JHPixelProEdgeAwareSmoother
 from .skin_tone_region_node import JHPixelProSkinToneTriRegion
+from .smoother_node import JHPixelProEdgeAwareSmoother
 from .tone_curve_node import JHPixelProToneCurve
 from .tone_match_lut_node import JHPixelProToneMatchLUT
 from .unwrap_face_node import JHPixelProUnwrapFace
