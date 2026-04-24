@@ -9,6 +9,7 @@ from .frequency import frequency_separation
 from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .lut import export_cube, identity_hald
+from .lut_preset import list_presets, load_preset
 from .mask_alpha_matte import alpha_matte_extract
 from .mask_combine import combine_masks
 from .mask_edge_refine import edge_aware_refine
@@ -18,6 +19,7 @@ from .mask_refiner import subpixel_mask_refine
 from .mask_trimap import build_trimap, validate_trimap
 from .selective_color import apply_hue_sat_shift, hue_range_mask, saturation_range_mask
 from .smoother import edge_aware_smooth
+from .skin_tone_region import skin_tone_tri_region
 from .tone_curve import tone_curve
 from .tone_match import compute_lab_histogram_match, tone_match_lut
 from .unwrap_face import unwrap_face
@@ -51,4 +53,7 @@ __all__ = [
     "unwrap_face",
     "identity_hald",
     "export_cube",
+    "list_presets",
+    "load_preset",
+    "skin_tone_tri_region",
 ]

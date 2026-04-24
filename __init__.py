@@ -50,11 +50,13 @@ if __package__:
         JHPixelProLuminosityMasking,
         JHPixelProLUTExport,
         JHPixelProLUTImport,
+        JHPixelProLUTPreset,
         JHPixelProMaskCombine,
         JHPixelProMaskEdgeSmoother,
         JHPixelProMaskMorphology,
         JHPixelProSaturationMask,
         JHPixelProSubPixelMaskRefiner,
+        JHPixelProSkinToneTriRegion,
         JHPixelProToneCurve,
         JHPixelProToneMatchLUT,
         JHPixelProTrimapBuilder,
@@ -130,6 +132,9 @@ if __package__:
     NODE_CLASS_MAPPINGS["JHPixelProLUTImport"] = JHPixelProLUTImport
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLUTImport"] = "LUT Import (.cube)"
 
+    NODE_CLASS_MAPPINGS["JHPixelProLUTPreset"] = JHPixelProLUTPreset
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLUTPreset"] = "Color: LUT Preset"
+
     NODE_CLASS_MAPPINGS["JHPixelProHueSaturationRange"] = JHPixelProHueSaturationRange
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProHueSaturationRange"] = "Hue/Saturation per Range"
 
@@ -144,6 +149,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProColorLab"] = JHPixelProColorLab
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorLab"] = "Color: ColorLab (ACR)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProSkinToneTriRegion"] = JHPixelProSkinToneTriRegion
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSkinToneTriRegion"] = "Face: Skin Tone Tri-Region"
 
     NODE_CLASS_MAPPINGS["JHPixelProLayerStackStart"] = JHPixelProLayerStackStart
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLayerStackStart"] = "Compositing: Layer Stack Start"

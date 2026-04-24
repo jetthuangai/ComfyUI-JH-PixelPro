@@ -22,6 +22,7 @@ from .look_select import JHPixelProLookSelect
 from .luminosity_node import JHPixelProLuminosityMasking
 from .lut_export_node import JHPixelProLUTExport
 from .lut_import_node import JHPixelProLUTImport
+from .lut_preset_node import JHPixelProLUTPreset
 from .mask_alpha_matte_node import JHPixelProAlphaMatteExtractor
 from .mask_combine_node import JHPixelProMaskCombine
 from .mask_edge_refine_node import JHPixelProEdgeAwareMaskRefiner
@@ -31,6 +32,7 @@ from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .mask_trimap_node import JHPixelProTrimapBuilder
 from .saturation_mask_node import JHPixelProSaturationMask
 from .smoother_node import JHPixelProEdgeAwareSmoother
+from .skin_tone_region_node import JHPixelProSkinToneTriRegion
 from .tone_curve_node import JHPixelProToneCurve
 from .tone_match_lut_node import JHPixelProToneMatchLUT
 from .unwrap_face_node import JHPixelProUnwrapFace
@@ -50,6 +52,7 @@ __all__ = [
     "JHPixelProHueSaturationRange",
     "JHPixelProLUTExport",
     "JHPixelProLUTImport",
+    "JHPixelProLUTPreset",
     "JHPixelProLayerAdd",
     "JHPixelProLayerFlatten",
     "JHPixelProLayerGroup",
@@ -63,6 +66,7 @@ __all__ = [
     "JHPixelProMaskEdgeSmoother",
     "JHPixelProMaskMorphology",
     "JHPixelProSubPixelMaskRefiner",
+    "JHPixelProSkinToneTriRegion",
     "JHPixelProSaturationMask",
     "JHPixelProToneCurve",
     "JHPixelProToneMatchLUT",
