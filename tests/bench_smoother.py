@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import gc
+import json
 import logging
 import os
-import statistics
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 
 import kornia
+import pytest
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -17,9 +18,17 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from core import edge_aware_smooth  # noqa: E402
+from tests.conftest import (  # noqa: E402
+    BENCH_N_RUNS,
+    assert_bench_within_threshold,
+    build_multi_snapshot_fields,
+    stabilize_bench_payload,
+)
 
 SEED = 20260418
 SKIP_REASON_CUDA = "NOT EVALUATED: CUDA not available on this runner"
+BASELINE_PATH = Path(__file__).with_name("bench_baselines") / "bench_smoother.json"
+WRITE_BASELINES = os.environ.get("JH_PIXELPRO_WRITE_BENCH_BASELINES") == "1"
 
 
 @dataclass(slots=True)
@@ -47,6 +56,12 @@ class BenchResult:
     median_ms: float | None
     mean_ms: float | None
     peak_memory_mb: float | None
+    stdev_ms: float | None = None
+    n_samples: int | None = None
+    n_runs: int | None = None
+    measure_iters: int | None = None
+    warmup_iters: int | None = None
+    policy: str | None = None
 
 
 CASES = [
@@ -57,7 +72,7 @@ CASES = [
         sigma_space=6.0,
         tile_mode=False,
         warmup_iters=1,
-        measure_iters=3,
+        measure_iters=10,
     ),
     BenchCase(
         name="gpu-2k-sigma6-nontile",
@@ -76,7 +91,7 @@ CASES = [
         sigma_space=6.0,
         tile_mode=True,
         warmup_iters=1,
-        measure_iters=3,
+        measure_iters=10,
     ),
     BenchCase(
         name="gpu-2k-sigma8-tile",
@@ -85,7 +100,7 @@ CASES = [
         sigma_space=8.0,
         tile_mode=True,
         warmup_iters=1,
-        measure_iters=3,
+        measure_iters=10,
     ),
     BenchCase(
         name="cpu-4k-sigma6-tile",
@@ -140,10 +155,6 @@ def _make_image(resolution: int, device: torch.device, seed: int) -> torch.Tenso
     return image.to(device=device)
 
 
-def _stats(samples_ms: list[float]) -> tuple[float, float, float]:
-    return min(samples_ms), statistics.median(samples_ms), statistics.mean(samples_ms)
-
-
 def _run_case(case: BenchCase) -> BenchResult:
     if case.device == "cuda" and not torch.cuda.is_available():
         return BenchResult(
@@ -196,16 +207,18 @@ def _run_case(case: BenchCase) -> BenchResult:
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats(device)
 
+    samples_ms: list[float] = []
     with torch.inference_mode():
-        for _ in range(case.warmup_iters):
-            run_once()
-
-        samples_ms = [measure_once(run_once) for _ in range(case.measure_iters)]
+        for _run in range(BENCH_N_RUNS):
+            for _ in range(case.warmup_iters):
+                run_once()
+            for _ in range(case.measure_iters):
+                samples_ms.append(measure_once(run_once))
 
     if device.type == "cuda":
         peak_memory_mb = torch.cuda.max_memory_allocated(device) / (1024**2)
 
-    stats = _stats(samples_ms)
+    multi = build_multi_snapshot_fields(samples_ms, measure_iters=case.measure_iters)
     del image
     if device.type == "cuda":
         torch.cuda.empty_cache()
@@ -218,10 +231,33 @@ def _run_case(case: BenchCase) -> BenchResult:
         tile_mode=case.tile_mode,
         status="EXECUTED",
         reason="",
-        min_ms=stats[0],
-        median_ms=stats[1],
-        mean_ms=stats[2],
+        min_ms=min(samples_ms) if samples_ms else None,
+        median_ms=multi["median_ms"],
+        mean_ms=multi["mean_ms"],
         peak_memory_mb=peak_memory_mb,
+        stdev_ms=multi["stdev_ms"],
+        n_samples=multi["n_samples"],
+        n_runs=multi["n_runs"],
+        measure_iters=multi["measure_iters"],
+        warmup_iters=case.warmup_iters,
+        policy=multi["policy"],
+    )
+
+
+def _load_baselines() -> list[dict[str, object]]:
+    if not BASELINE_PATH.exists():
+        return []
+    return json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
+
+
+def _write_baseline(payload: dict[str, object]) -> None:
+    BASELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    rows = {str(row["case"]): row for row in _load_baselines()}
+    rows[str(payload["case"])] = payload
+    ordered = [rows[key] for key in sorted(rows)]
+    BASELINE_PATH.write_text(
+        json.dumps(ordered, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
     )
 
 
@@ -296,6 +332,45 @@ def render_markdown(hardware: dict[str, str], results: list[BenchResult]) -> str
         )
 
     return "\n".join(lines)
+
+
+def _payload_from_result(result: object) -> dict[str, object]:
+    payload = asdict(result) if is_dataclass(result) else dict(result)
+    if "case" not in payload and "name" in payload:
+        payload["case"] = payload["name"]
+    if payload.get("mean_ms") is None and payload.get("median_ms") is not None:
+        payload["mean_ms"] = payload["median_ms"]
+    payload.setdefault("module", Path(__file__).stem.removeprefix("bench_"))
+    payload.setdefault("device", "cpu")
+    return payload
+
+
+def _assert_bench_guardrail(payload: dict[str, object]) -> None:
+    if WRITE_BASELINES:
+        _write_baseline(stabilize_bench_payload(payload))
+        return
+
+    baseline_rows = _load_baselines()
+    baseline_row = next(
+        (row for row in baseline_rows if row["case"] == payload["case"]),
+        None,
+    )
+    assert baseline_row is not None, f"baseline missing for {payload['case']}"
+    stabilized = stabilize_bench_payload(payload, baseline_row)
+    assert_bench_within_threshold(stabilized, baseline_row)
+
+
+def _assert_baseline_present(payload: dict[str, object]) -> None:
+    _assert_bench_guardrail(payload)
+
+
+@pytest.mark.bench_guardrail
+@pytest.mark.parametrize("case", CASES, ids=[case.name for case in CASES])
+def test_bench_smoother(case: BenchCase, capsys: pytest.CaptureFixture[str]) -> None:
+    payload = _payload_from_result(_run_case(case))
+    _assert_bench_guardrail(payload)
+    with capsys.disabled():
+        print(json.dumps(payload, sort_keys=True))
 
 
 def main() -> int:

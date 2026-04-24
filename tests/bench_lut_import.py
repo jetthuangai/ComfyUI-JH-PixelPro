@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import gc
+import json
 import os
 import statistics
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 
+import pytest
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -15,9 +17,21 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from core.lut import apply_lut_3d  # noqa: E402
+from tests.conftest import (  # noqa: E402
+    BENCH_N_RUNS,
+    assert_bench_within_threshold,
+    build_multi_snapshot_fields,
+    stabilize_bench_payload,
+)
 
 SEED = 20260420
 SKIP_REASON_CUDA = "GPU NOT EVALUATED — Codex runner CPU-only per bench_color_matcher precedent"
+BASELINE_PATH = Path(__file__).with_name("bench_baselines") / "bench_lut_import.json"
+WRITE_BASELINES = os.environ.get("JH_PIXELPRO_WRITE_BENCH_BASELINES") == "1"
+
+
+MEASURE_ITERS = 3
+WARMUP_ITERS = 1
 
 
 @dataclass(slots=True)
@@ -28,6 +42,13 @@ class CpuBenchResult:
     median_ms: float | None
     p95_ms: float | None
     notes: str
+    mean_ms: float | None = None
+    stdev_ms: float | None = None
+    n_samples: int | None = None
+    n_runs: int | None = None
+    measure_iters: int | None = None
+    warmup_iters: int | None = None
+    policy: str | None = None
 
 
 def _latency_runner(device: torch.device):
@@ -85,10 +106,14 @@ def _run_cpu_case(resolution: int, lut_size: int) -> CpuBenchResult:
     ) -> torch.Tensor:
         return apply_lut_3d(image_bhwc, lut_grid)
 
+    samples_ms: list[float] = []
     try:
         with torch.inference_mode():
-            run_once()
-            samples_ms = [measure_once(run_once) for _ in range(3)]
+            for _run in range(BENCH_N_RUNS):
+                for _ in range(WARMUP_ITERS):
+                    run_once()
+                for _ in range(MEASURE_ITERS):
+                    samples_ms.append(measure_once(run_once))
     except RuntimeError as exc:
         message = str(exc).lower()
         if (
@@ -109,13 +134,21 @@ def _run_cpu_case(resolution: int, lut_size: int) -> CpuBenchResult:
         del image, lut
         gc.collect()
 
+    multi = build_multi_snapshot_fields(samples_ms, measure_iters=MEASURE_ITERS)
     return CpuBenchResult(
         resolution=resolution,
         lut_size=lut_size,
         status="EXECUTED",
-        median_ms=statistics.median(samples_ms),
+        median_ms=multi["median_ms"],
         p95_ms=_p95(samples_ms),
         notes="identity LUT apply",
+        mean_ms=multi["mean_ms"],
+        stdev_ms=multi["stdev_ms"],
+        n_samples=multi["n_samples"],
+        n_runs=multi["n_runs"],
+        measure_iters=multi["measure_iters"],
+        warmup_iters=WARMUP_ITERS,
+        policy=multi["policy"],
     )
 
 
@@ -131,6 +164,23 @@ def _gpu_parity_markdown() -> tuple[str, str]:
     actual = apply_lut_3d(image_cpu.to(cuda_device), lut_cpu.to(cuda_device)).cpu()
     max_diff = torch.max(torch.abs(actual - expected)).item()
     return "EXECUTED", f"1024x1024 LUT=33 max_abs_diff={max_diff:.6f}"
+
+
+def _load_baselines() -> list[dict[str, object]]:
+    if not BASELINE_PATH.exists():
+        return []
+    return json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
+
+
+def _write_baseline(payload: dict[str, object]) -> None:
+    BASELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    rows = {str(row["case"]): row for row in _load_baselines()}
+    rows[str(payload["case"])] = payload
+    ordered = [rows[key] for key in sorted(rows)]
+    BASELINE_PATH.write_text(
+        json.dumps(ordered, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _hardware_info() -> dict[str, str]:
@@ -204,6 +254,61 @@ def render_markdown(hardware: dict[str, str], cpu_results: list[CpuBenchResult])
         ]
     )
     return "\n".join(lines)
+
+
+def _payload_from_result(result: object) -> dict[str, object]:
+    payload = asdict(result) if is_dataclass(result) else dict(result)
+    if "case" not in payload and "name" in payload:
+        payload["case"] = payload["name"]
+    if payload.get("mean_ms") is None and payload.get("median_ms") is not None:
+        payload["mean_ms"] = payload["median_ms"]
+    payload.setdefault("module", Path(__file__).stem.removeprefix("bench_"))
+    payload.setdefault("device", "cpu")
+    return payload
+
+
+def _assert_bench_guardrail(payload: dict[str, object]) -> None:
+    if WRITE_BASELINES:
+        _write_baseline(stabilize_bench_payload(payload))
+        return
+
+    baseline_rows = _load_baselines()
+    baseline_row = next(
+        (row for row in baseline_rows if row["case"] == payload["case"]),
+        None,
+    )
+    assert baseline_row is not None, f"baseline missing for {payload['case']}"
+    stabilized = stabilize_bench_payload(payload, baseline_row)
+    assert_bench_within_threshold(stabilized, baseline_row)
+
+
+def _assert_baseline_present(payload: dict[str, object]) -> None:
+    _assert_bench_guardrail(payload)
+
+
+def _payload_from_lut_import_result(result: CpuBenchResult) -> dict[str, object]:
+    payload = _payload_from_result(result)
+    payload["case"] = f"cpu-{result.resolution}-lut{result.lut_size}"
+    payload["module"] = "lut_import"
+    payload["scenario"] = "identity_lut_apply"
+    payload["device"] = "cpu"
+    return payload
+
+
+@pytest.mark.bench_guardrail
+@pytest.mark.parametrize(
+    ("resolution", "lut_size"),
+    [(resolution, lut_size) for resolution in (512, 1024, 2048) for lut_size in (17, 33, 65)],
+)
+def test_bench_lut_import(
+    resolution: int,
+    lut_size: int,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    payload = _payload_from_lut_import_result(_run_cpu_case(resolution, lut_size))
+    _assert_bench_guardrail(payload)
+    with capsys.disabled():
+        print(json.dumps(payload, sort_keys=True))
 
 
 def main() -> int:

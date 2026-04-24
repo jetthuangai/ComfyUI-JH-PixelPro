@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import gc
+import json
 import logging
 import os
-import statistics
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 
 import kornia
+import pytest
 import torch
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -17,7 +18,15 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from core import frequency_separation  # noqa: E402
+from tests.conftest import (  # noqa: E402
+    BENCH_N_RUNS,
+    assert_bench_within_threshold,
+    build_multi_snapshot_fields,
+    stabilize_bench_payload,
+)
 
+BASELINE_PATH = Path(__file__).with_name("bench_baselines") / "bench_frequency.json"
+WRITE_BASELINES = os.environ.get("JH_PIXELPRO_WRITE_BENCH_BASELINES") == "1"
 RADIUS = 8
 WARMUP_ITERS = 3
 MEASURE_ITERS = 10
@@ -34,6 +43,12 @@ class BenchCell:
     batch: int
     precision: str
     median_ms: float
+    mean_ms: float = 0.0
+    stdev_ms: float = 0.0
+    n_samples: int = 0
+    n_runs: int = 0
+    measure_iters: int = 0
+    policy: str = ""
 
 
 def _torch_dtype(precision: str) -> torch.dtype:
@@ -94,29 +109,38 @@ def _run_grid(device: torch.device) -> list[BenchCell]:
                 generator.manual_seed(20260417)
                 image = _make_input(batch, resolution, precision, device, generator)
 
+                def run_once(
+                    image_tensor: torch.Tensor = image,
+                    selected_precision: str = precision,
+                ) -> None:
+                    frequency_separation(
+                        image_tensor,
+                        radius=RADIUS,
+                        precision=selected_precision,
+                    )
+
+                samples_ms: list[float] = []
                 with torch.inference_mode():
-                    for _ in range(WARMUP_ITERS):
-                        frequency_separation(image, radius=RADIUS, precision=precision)
+                    for _run in range(BENCH_N_RUNS):
+                        for _ in range(WARMUP_ITERS):
+                            frequency_separation(image, radius=RADIUS, precision=precision)
+                        for _ in range(MEASURE_ITERS):
+                            samples_ms.append(measure_once(run_once))
 
-                    def run_once(
-                        image_tensor: torch.Tensor = image,
-                        selected_precision: str = precision,
-                    ) -> None:
-                        frequency_separation(
-                            image_tensor,
-                            radius=RADIUS,
-                            precision=selected_precision,
-                        )
-
-                    samples_ms = [measure_once(run_once) for _ in range(MEASURE_ITERS)]
-
+                multi = build_multi_snapshot_fields(samples_ms, measure_iters=MEASURE_ITERS)
                 results.append(
                     BenchCell(
                         device=device.type,
                         resolution=resolution,
                         batch=batch,
                         precision=precision,
-                        median_ms=statistics.median(samples_ms),
+                        median_ms=multi["median_ms"],
+                        mean_ms=multi["mean_ms"],
+                        stdev_ms=multi["stdev_ms"],
+                        n_samples=multi["n_samples"],
+                        n_runs=multi["n_runs"],
+                        measure_iters=multi["measure_iters"],
+                        policy=multi["policy"],
                     )
                 )
 
@@ -174,6 +198,23 @@ def _stress_test(device: torch.device) -> dict[str, float | int | str | bool | N
         "delta_percent": delta_percent,
         "passed": delta_percent < 5.0,
     }
+
+
+def _load_baselines() -> list[dict[str, object]]:
+    if not BASELINE_PATH.exists():
+        return []
+    return json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
+
+
+def _write_baseline(payload: dict[str, object]) -> None:
+    BASELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    rows = {str(row["case"]): row for row in _load_baselines()}
+    rows[str(payload["case"])] = payload
+    ordered = [rows[key] for key in sorted(rows)]
+    BASELINE_PATH.write_text(
+        json.dumps(ordered, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _hardware_info(device: torch.device) -> dict[str, str]:
@@ -252,6 +293,66 @@ def render_markdown(
         )
 
     return "\n".join(lines)
+
+
+def _payload_from_result(result: object) -> dict[str, object]:
+    payload = asdict(result) if is_dataclass(result) else dict(result)
+    if "case" not in payload and "name" in payload:
+        payload["case"] = payload["name"]
+    if payload.get("mean_ms") is None and payload.get("median_ms") is not None:
+        payload["mean_ms"] = payload["median_ms"]
+    payload.setdefault("module", Path(__file__).stem.removeprefix("bench_"))
+    payload.setdefault("device", "cpu")
+    return payload
+
+
+def _assert_bench_guardrail(payload: dict[str, object]) -> None:
+    if WRITE_BASELINES:
+        _write_baseline(stabilize_bench_payload(payload))
+        return
+
+    baseline_rows = _load_baselines()
+    baseline_row = next(
+        (row for row in baseline_rows if row["case"] == payload["case"]),
+        None,
+    )
+    assert baseline_row is not None, f"baseline missing for {payload['case']}"
+    stabilized = stabilize_bench_payload(payload, baseline_row)
+    assert_bench_within_threshold(stabilized, baseline_row)
+
+
+def _assert_baseline_present(payload: dict[str, object]) -> None:
+    _assert_bench_guardrail(payload)
+
+
+def _payload_from_frequency_cell(cell: BenchCell) -> dict[str, object]:
+    return {
+        "case": f"{cell.device}-{cell.resolution}-b{cell.batch}-{cell.precision}",
+        "module": "frequency",
+        "scenario": "frequency_separation",
+        "device": cell.device,
+        "resolution": cell.resolution,
+        "batch": cell.batch,
+        "precision": cell.precision,
+        "mean_ms": round(cell.mean_ms, 4),
+        "median_ms": round(cell.median_ms, 4),
+        "stdev_ms": round(cell.stdev_ms, 4),
+        "n_samples": cell.n_samples,
+        "n_runs": cell.n_runs,
+        "measure_iters": cell.measure_iters,
+        "warmup_iters": WARMUP_ITERS,
+        "policy": cell.policy,
+    }
+
+
+@pytest.mark.bench_guardrail
+def test_bench_frequency(capsys: pytest.CaptureFixture[str]) -> None:
+    device = _device_for_run()
+    payloads = [_payload_from_frequency_cell(cell) for cell in _run_grid(device)]
+    for payload in payloads:
+        _assert_bench_guardrail(payload)
+    with capsys.disabled():
+        print(json.dumps(payloads, sort_keys=True))
 
 
 def main() -> int:
