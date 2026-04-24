@@ -45,7 +45,20 @@ jobs:
       # env:
       #   JH_PIXELPRO_BENCH_STRICT_GATE: "1"
       - name: Run expanded bench suite (report-only, multi-snapshot v1)
-        run: pytest tests/bench_*.py -v --ignore=tests/bench_mask_refiner.py
+        run: |
+          pytest \
+            tests/bench_blend_modes.py tests/bench_color_lab.py \
+            tests/bench_color_matcher.py tests/bench_detail_masker.py \
+            tests/bench_face_detect.py tests/bench_face_pipeline.py \
+            tests/bench_facial_aligner.py tests/bench_frequency.py \
+            tests/bench_lens_distortion.py tests/bench_luminosity.py \
+            tests/bench_lut_import.py tests/bench_mask_alpha_matte.py \
+            tests/bench_mask_combine.py tests/bench_mask_edge_refine.py \
+            tests/bench_mask_edge_smooth.py tests/bench_mask_morphology.py \
+            tests/bench_mask_trimap.py tests/bench_selective_color.py \
+            tests/bench_smoother.py tests/bench_tone_curve.py \
+            tests/bench_tone_match.py tests/bench_unwrap_face.py \
+            -v
 
       - name: Upload bench artifact
         if: always()
