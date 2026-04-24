@@ -45,6 +45,7 @@ jobs:
       # env:
       #   JH_PIXELPRO_BENCH_STRICT_GATE: "1"
       - name: Run expanded bench suite (report-only, multi-snapshot v1)
+        continue-on-error: true
         run: pytest tests/bench_*.py -v
 
       - name: Upload bench artifact
