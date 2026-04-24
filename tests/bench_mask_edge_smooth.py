@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import json
 import os
-import statistics
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 
 import pytest
@@ -16,6 +15,12 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from core.mask_edge_smooth import mask_edge_smooth  # noqa: E402
+from tests.conftest import (  # noqa: E402
+    BENCH_N_RUNS,
+    assert_bench_within_threshold,
+    build_multi_snapshot_fields,
+    stabilize_bench_payload,
+)
 
 SEED = 20260421
 WARMUP_ITERS = 3
@@ -82,14 +87,15 @@ def _run_case(case: BenchCase) -> dict[str, float | int | str | bool]:
             iterations=1,
         )
 
+    samples: list[float] = []
     with torch.inference_mode():
-        for _ in range(WARMUP_ITERS):
-            run_once()
-        samples = []
-        for _ in range(MEASURE_ITERS):
-            started = time.perf_counter()
-            run_once()
-            samples.append((time.perf_counter() - started) * 1000.0)
+        for _run in range(BENCH_N_RUNS):
+            for _ in range(WARMUP_ITERS):
+                run_once()
+            for _ in range(MEASURE_ITERS):
+                started = time.perf_counter()
+                run_once()
+                samples.append((time.perf_counter() - started) * 1000.0)
     return {
         "case": case.name,
         "module": "mask_edge_smooth",
@@ -99,20 +105,45 @@ def _run_case(case: BenchCase) -> dict[str, float | int | str | bool]:
         "batch": case.batch,
         "guided": case.guided,
         "warmup_iters": WARMUP_ITERS,
-        "measure_iters": MEASURE_ITERS,
-        "mean_ms": round(statistics.mean(samples), 4),
-        "stdev_ms": round(statistics.stdev(samples), 4),
+        **build_multi_snapshot_fields(samples, measure_iters=MEASURE_ITERS),
     }
+
+
+def _payload_from_result(result: object) -> dict[str, object]:
+    payload = asdict(result) if is_dataclass(result) else dict(result)
+    if "case" not in payload and "name" in payload:
+        payload["case"] = payload["name"]
+    if payload.get("mean_ms") is None and payload.get("median_ms") is not None:
+        payload["mean_ms"] = payload["median_ms"]
+    payload.setdefault("module", Path(__file__).stem.removeprefix("bench_"))
+    payload.setdefault("device", "cpu")
+    return payload
+
+
+def _assert_bench_guardrail(payload: dict[str, object]) -> None:
+    if WRITE_BASELINES:
+        _write_baseline(stabilize_bench_payload(payload))
+        return
+
+    baseline_rows = _load_baselines()
+    baseline_row = next(
+        (row for row in baseline_rows if row["case"] == payload["case"]),
+        None,
+    )
+    assert baseline_row is not None, f"baseline missing for {payload['case']}"
+    stabilized = stabilize_bench_payload(payload, baseline_row)
+    assert_bench_within_threshold(stabilized, baseline_row)
+
+
+def _assert_baseline_present(payload: dict[str, object]) -> None:
+    _assert_bench_guardrail(payload)
 
 
 @pytest.mark.bench_guardrail
 @pytest.mark.parametrize("case", CASES, ids=[case.name for case in CASES])
 def test_bench_mask_edge_smooth(case: BenchCase, capsys: pytest.CaptureFixture[str]) -> None:
     payload = _run_case(case)
-    if WRITE_BASELINES:
-        _write_baseline(payload)
-    else:
-        assert any(row.get("case") == payload["case"] for row in _load_baselines())
+    _assert_bench_guardrail(payload)
     with capsys.disabled():
         print(json.dumps(payload, sort_keys=True))
 

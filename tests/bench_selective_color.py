@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import json
 import os
-import statistics
 import sys
 import time
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
 
 import pytest
@@ -20,6 +19,12 @@ from core.selective_color import (  # noqa: E402
     apply_hue_sat_shift,
     hue_range_mask,
     saturation_range_mask,
+)
+from tests.conftest import (  # noqa: E402
+    BENCH_N_RUNS,
+    assert_bench_within_threshold,
+    build_multi_snapshot_fields,
+    stabilize_bench_payload,
 )
 
 SEED = 20260421
@@ -56,17 +61,17 @@ def _make_image(case: BenchCase) -> torch.Tensor:
     return torch.rand((case.batch, case.resolution, case.resolution, 3), generator=generator)
 
 
-def _measure(fn: Callable[[], torch.Tensor]) -> tuple[float, float]:
+def _measure(fn: Callable[[], torch.Tensor]) -> list[float]:
+    samples: list[float] = []
     with torch.inference_mode():
-        for _ in range(WARMUP_ITERS):
-            fn()
-
-        samples: list[float] = []
-        for _ in range(MEASURE_ITERS):
-            started = time.perf_counter()
-            fn()
-            samples.append((time.perf_counter() - started) * 1000.0)
-    return statistics.mean(samples), statistics.stdev(samples)
+        for _run in range(BENCH_N_RUNS):
+            for _ in range(WARMUP_ITERS):
+                fn()
+            for _ in range(MEASURE_ITERS):
+                started = time.perf_counter()
+                fn()
+                samples.append((time.perf_counter() - started) * 1000.0)
+    return samples
 
 
 def _run_case(case: BenchCase) -> dict[str, float | int | str]:
@@ -99,7 +104,7 @@ def _run_case(case: BenchCase) -> dict[str, float | int | str]:
     else:
         raise ValueError(f"unknown scenario: {case.scenario}")
 
-    mean_ms, stdev_ms = _measure(fn)
+    samples = _measure(fn)
     return {
         "case": case.name,
         "module": "selective_color",
@@ -108,9 +113,7 @@ def _run_case(case: BenchCase) -> dict[str, float | int | str]:
         "resolution": case.resolution,
         "batch": case.batch,
         "warmup_iters": WARMUP_ITERS,
-        "measure_iters": MEASURE_ITERS,
-        "mean_ms": round(mean_ms, 4),
-        "stdev_ms": round(stdev_ms, 4),
+        **build_multi_snapshot_fields(samples, measure_iters=MEASURE_ITERS),
     }
 
 
@@ -134,6 +137,36 @@ def _assert_baseline_present(payload: dict[str, object]) -> None:
         return
     baselines = _load_baselines()
     assert any(row.get("case") == payload["case"] for row in baselines)
+
+
+def _payload_from_result(result: object) -> dict[str, object]:
+    payload = asdict(result) if is_dataclass(result) else dict(result)
+    if "case" not in payload and "name" in payload:
+        payload["case"] = payload["name"]
+    if payload.get("mean_ms") is None and payload.get("median_ms") is not None:
+        payload["mean_ms"] = payload["median_ms"]
+    payload.setdefault("module", Path(__file__).stem.removeprefix("bench_"))
+    payload.setdefault("device", "cpu")
+    return payload
+
+
+def _assert_bench_guardrail(payload: dict[str, object]) -> None:
+    if WRITE_BASELINES:
+        _write_baseline(stabilize_bench_payload(payload))
+        return
+
+    baseline_rows = _load_baselines()
+    baseline_row = next(
+        (row for row in baseline_rows if row["case"] == payload["case"]),
+        None,
+    )
+    assert baseline_row is not None, f"baseline missing for {payload['case']}"
+    stabilized = stabilize_bench_payload(payload, baseline_row)
+    assert_bench_within_threshold(stabilized, baseline_row)
+
+
+def _assert_baseline_present(payload: dict[str, object]) -> None:
+    _assert_bench_guardrail(payload)
 
 
 @pytest.mark.bench_guardrail

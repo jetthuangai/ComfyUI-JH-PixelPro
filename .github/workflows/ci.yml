@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-test-bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package + dev deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" || (pip install -e . && pip install pytest ruff)
+
+      - name: Ruff lint
+        run: ruff check .
+
+      - name: Ruff format check
+        run: ruff format --check .
+
+      - name: Pytest unit tests (exclude bench)
+        run: pytest tests/ -v --ignore-glob='tests/bench_*.py' -q
+
+      # Batch-13.1: uncomment after GHA-calibration establishes ubuntu-latest baselines
+      # env:
+      #   JH_PIXELPRO_BENCH_STRICT_GATE: "1"
+      - name: Run expanded bench suite (report-only, multi-snapshot v1)
+        run: pytest tests/bench_*.py -v
+
+      - name: Upload bench artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-log
+          path: tests/bench_baselines/
