@@ -120,9 +120,9 @@ def skin_tone_tri_region(
     luminance = 0.299 * image[:, 0] + 0.587 * image[:, 1] + 0.114 * image[:, 2]
     shadow = (luminance < shadow_cutoff).to(image.dtype) * skin
     highlight = (luminance > highlight_cutoff).to(image.dtype) * skin
-    midtone = (
-        ((luminance >= shadow_cutoff) & (luminance <= highlight_cutoff)).to(image.dtype) * skin
-    )
+    midtone = ((luminance >= shadow_cutoff) & (luminance <= highlight_cutoff)).to(
+        image.dtype
+    ) * skin
 
     regions = torch.stack([shadow, midtone, highlight], dim=1)
     regions = _blur_masks(regions, float(soft_sigma)).clamp_min(0.0)
