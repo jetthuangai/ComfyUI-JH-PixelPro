@@ -6,22 +6,46 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ### Added
 
-- CI bench guardrail workflow (`.github/workflows/ci.yml`) running Gate 6.0 3-command (pytest + ruff check + ruff format --check) plus expanded bench suite on every pull request to `main` and push to `main`. Bench guardrail ships in **report-only mode** for v1: each run collects multi-snapshot variance data (N=3 outer runs × measure_iters inner iterations per case, `policy: "multi_snapshot_v1"` baseline schema with `median_ms + stdev_ms + n_samples + n_runs`) and prints per-case comparison lines (`[bench-report] <case>: OK|OVER current=…ms threshold=max(median×1.10, median+2σ)=…ms`). CONTRIBUTING.md baseline regen procedure documented.
-- Full 32-node public documentation coverage: 29 additional node reference pages, expanded category cross-links, and complete mkdocs navigation for every live pack node.
-- mkdocs-material documentation site scaffold with 3 flagship node pages (N-29 Alpha Matte Extractor, N-33 Mask Edge Smoother, N-10 Face Detect), 7 category stub pages, and `.github/workflows/docs.yml` auto-deploy to GitHub Pages on every push to `main`. Remaining node pages are deferred to a later category rollout batch.
-- N-29 Alpha Matte Extractor `compute_device` parameter (`"auto" | "cuda" | "cpu"`) exposing explicit GPU/CPU execution pin.
-- Sample workflows and screenshots for v1.1.0 mask refinement pack N-28..N-33, including N-33 GIF animation.
+- Nothing yet.
 
 ### Changed
 
-- CI workflow refactored: `.github/workflows/ci.yml` now runs lint + unit tests only on every pull request and push to `main` (fast hosted-runner feasible). Expanded bench suite (23-file multi-snapshot v1) moved to new `.github/workflows/bench.yml` triggered by `workflow_dispatch` (manual) and `push: tags ["v*"]` (release automation), with `timeout-minutes: 180` for heavy pro-resolution cases. Rationale: hosted GHA ubuntu-latest runner budget incompatible with pack's 4K frequency + iterative-solver bench cases (observed cancellation on `bench_mask_refiner` + `bench_smoother[cpu-4k-sigma6-tile]`); split preserves full bench coverage while unblocking main CI GREEN for PR workflow. Batch-13.1 GHA-calibration task will trigger `bench.yml` manually for ubuntu-latest baseline snapshot.
-- All 23 bench files (`tests/bench_*.py`) retrofitted with multi-snapshot collector emitting `policy: "multi_snapshot_v1"` schema. Baseline policy landed on `tests/conftest.py` framework (`collect_multi_snapshot_samples`, `assert_bench_within_threshold`, etc.) preserving `BENCH_GUARDRAIL_THRESHOLD = 0.10` canonical floor + `BENCH_LOW_MS_MEDIAN_THRESHOLD_MS = 15.0` low-ms median rule + `BENCH_N_RUNS = 3` + `BENCH_GUARDRAIL_SIGMA_K = 2.0`. Threshold gate is **report-only** under env flag `JH_PIXELPRO_BENCH_STRICT_GATE` (default `"0"`). Strict gate (`raise AssertionError` on threshold breach) is deferred to **Batch-13.1** follow-up micro-task (T-20260424-41) which will capture fresh baselines on the actual GHA ubuntu-latest CI runner (addressing baseline-runner ≠ enforce-runner incompatibility observed during Batch-13 E-2 → E-6 → E-7 → E-8 escalation chain) and flip `JH_PIXELPRO_BENCH_STRICT_GATE: "1"` in the workflow env.
-- N-29 Alpha Matte Extractor Levin matting Laplacian solver now supports GPU acceleration via `torch.sparse_csr_tensor` + Jacobi-preconditioned CG, targeting ≥5× speedup at 512² and 1024² on NVIDIA GPU. Zero new dependency. CPU fallback preserved for users without CUDA.
-- N-29 Alpha Matte Extractor upgraded to Levin 2008 closed-form matting Laplacian (3×3 local color covariance, sparse `(L+λD)α=λbs` system); accuracy now matches industry pro-tool standard within MSE ≤ 0.02 on canonical test cases. Paper: Levin, A., Lischinski, D., & Weiss, Y. (2008). A Closed-Form Solution to Natural Image Matting. IEEE TPAMI 30(2), 228-242.
+- Nothing yet.
 
 ### Fixed
 
-- N-29 previous classical sparse edge-weighted diffusion solver (v1.1.0) produced visible aliasing near hair/fur edges; closed-form Laplacian eliminates this at cost of ~3-5× runtime.
+- Nothing yet.
+
+## [1.3.0] — 2026-04-24
+
+### Added
+
+- **N-34 `JHPixelProLUTPreset`** (`ComfyUI-JH-PixelPro/color`): dropdown-based bundled Adobe Cube LUT preset node with six generic 17-cube presets (`neutral-identity`, `warm-portrait`, `cool-portrait`, `cinematic-teal-orange`, `soft-pastel`, `high-contrast`) and an `intensity` blend slider. Reuses the existing N-14 trilinear LUT engine with zero new runtime dependency.
+- **N-35 `JHPixelProSkinToneTriRegion`** (`ComfyUI-JH-PixelPro/face`): Rec.601 luminance split that outputs `shadow_mask`, `midtone_mask`, and `highlight_mask`, with optional `skin_mask` gating and Gaussian-soft normalized boundaries preserving the selected region.
+- Two new workflow scaffolds (`workflows/N-34-lut-preset.json`, `workflows/N-35-skin-tone-tri-region.json`) plus unit, node-wrapper, bench, and multi-snapshot baseline coverage for both new nodes.
+- Full 34-node public documentation coverage on the mkdocs-material site, including the Batch-14 scaffold, Batch-15 29-node rollout, and the new N-34 / N-35 reference pages.
+- CI bench guardrail framework with `multi_snapshot_v1` baseline schema and report-only hosted-runner policy, preserving the Batch-13 L-19 runner-match clause while keeping main CI feasible.
+
+### Changed
+
+- Pack node count expands from 32 to 34. `/color` expands from 10 to 11 nodes, and `/face` expands from 5 to 6 nodes.
+- CI architecture is split: `.github/workflows/ci.yml` runs lint + unit tests on main/PR, while `.github/workflows/bench.yml` runs the expanded bench suite on manual dispatch and release tags.
+- N-29 Alpha Matte Extractor now exposes `compute_device` and uses the Levin 2008 closed-form matting Laplacian with GPU acceleration support via sparse PyTorch operations.
+- README and project metadata now identify `v1.3.0` as the feature-complete 34-node milestone.
+
+### Fixed
+
+- GitHub Actions MediaPipe runtime dependencies are installed in CI (`libgl1`, `libglib2.0-0`, `libgles2`, `libegl1`) so face detection tests can load the TFLite backend on hosted Ubuntu runners.
+- Hosted-runner bench cancellations on heavy 4K / iterative-solver cases are no longer main-CI blockers because the expanded bench suite moved to the dedicated non-blocking bench workflow.
+- N-29 hair/fur matte aliasing from the older edge-weighted diffusion solver is replaced by the closed-form matting solver.
+
+### Dependencies
+
+- No new runtime dependencies for N-34 or N-35. The release reuses the existing Torch/Kornia/MediaPipe/OpenCV/SciPy stack.
+
+### Migration
+
+- v1.2.1 -> v1.3.0 has no breaking changes. Existing v1.x workflows remain valid.
 
 ## [1.1.0] — 2026-04-21
 
@@ -386,7 +410,8 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.0
 [0.3.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.3.0
 [0.2.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.1.0

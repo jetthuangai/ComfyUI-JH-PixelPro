@@ -41,6 +41,7 @@ nav:
           - N-16 Saturation Mask: nodes/saturation-mask.md
           - N-17 Tone Match LUT: nodes/tone-match-lut.md
           - N-23 ColorLab: nodes/color-lab.md
+          - N-34 Preset Pack LUT: nodes/lut-preset.md
       - Compositing:
           - Overview: categories/compositing.md
           - N-24 Layer Stack Start: nodes/layer-stack-start.md
@@ -72,6 +73,7 @@ nav:
           - N-19 Face Landmarks: nodes/face-landmarks.md
           - N-20 Face Warp: nodes/face-warp.md
           - N-21 Face Beauty Blend: nodes/face-beauty-blend.md
+          - N-35 Skin Tone Tri-Region: nodes/skin-tone-tri-region.md
       - Looks:
           - Overview: categories/looks.md
           - N-22 Look Select: nodes/look-select.md

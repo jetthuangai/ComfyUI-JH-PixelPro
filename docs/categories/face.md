@@ -8,5 +8,6 @@ The face category provides the pack's portrait workflow spine: detect, align, ed
 - [**N-19 Face Landmarks**](../nodes/face-landmarks.md) — Extracts dense 468-point face landmarks for downstream geometry work.
 - [**N-20 Face Warp**](../nodes/face-warp.md) — Performs Delaunay-based per-triangle face warping.
 - [**N-21 Face Beauty Blend**](../nodes/face-beauty-blend.md) — Blends a retouched face plate back onto the original image with mask-aware feathering.
+- [**N-35 Skin Tone Tri-Region**](../nodes/skin-tone-tri-region.md) — Splits portrait skin tones into shadow, midtone, and highlight masks.
 
 Flagship face page: [N-10 Face Detect](../nodes/n10-face-detect.md).
