@@ -113,6 +113,23 @@ Tunable constants live in `tests/conftest.py`:
 - `BENCH_N_RUNS = 3` — outer repetition count.
 - `BENCH_LOW_MS_MEDIAN_THRESHOLD_MS = 15.0` — swap mean for median on short-duration kernels.
 
+## Documentation
+
+For local docs preview:
+
+```bash
+pip install -e ".[docs]"
+mkdocs serve
+```
+
+Before pushing doc changes, run a strict build:
+
+```bash
+mkdocs build --strict
+```
+
+The production deploy path lives in `.github/workflows/docs.yml`, which publishes the site to GitHub Pages on every push to `main`.
+
 ## Architecture and ownership
 
 Pack authorship is split across three agents (Cowork architect, Codex core math, Claude Code integration). The detailed ownership matrix lives in the agent hub at `.agent-hub/00_charter/agent-coordination.md` (repo-local, not shipped).

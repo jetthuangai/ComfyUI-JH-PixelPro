@@ -1,6 +1,7 @@
 # ComfyUI-JH-PixelPro
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-latest-blue)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
