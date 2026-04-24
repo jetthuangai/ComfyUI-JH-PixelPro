@@ -29,12 +29,51 @@ nav:
       - N-33 Mask Edge Smoother: nodes/n33-mask-edge-smoother.md
       - N-10 Face Detect: nodes/n10-face-detect.md
   - Categories:
-      - Color: categories/color.md
-      - Compositing: categories/compositing.md
-      - Filters: categories/filters.md
-      - Mask: categories/mask.md
-      - Geometry: categories/geometry.md
-      - Face: categories/face.md
-      - Looks: categories/looks.md
+      - Color:
+          - Overview: categories/color.md
+          - N-05 Luminosity Masking: nodes/luminosity-masking.md
+          - N-08 Color Matcher: nodes/color-matcher.md
+          - N-09 Tone Curve: nodes/tone-curve.md
+          - N-12 HALD Identity: nodes/hald-identity.md
+          - N-13 LUT Export: nodes/lut-export.md
+          - N-14 LUT Import: nodes/lut-import.md
+          - N-15 Hue/Saturation Range: nodes/hue-saturation-range.md
+          - N-16 Saturation Mask: nodes/saturation-mask.md
+          - N-17 Tone Match LUT: nodes/tone-match-lut.md
+          - N-23 ColorLab: nodes/color-lab.md
+      - Compositing:
+          - Overview: categories/compositing.md
+          - N-24 Layer Stack Start: nodes/layer-stack-start.md
+          - N-25 Layer Add: nodes/layer-add.md
+          - N-26 Layer Group: nodes/layer-group.md
+          - N-27 Layer Flatten: nodes/layer-flatten.md
+      - Filters:
+          - Overview: categories/filters.md
+          - N-01 Frequency Separation: nodes/frequency-separation.md
+          - N-03 Edge-Aware Smoother: nodes/edge-aware-smoother.md
+          - N-04 High-Frequency Detail Masker: nodes/high-freq-detail-masker.md
+      - Mask:
+          - Overview: categories/mask.md
+          - N-02 Sub-Pixel Mask Refiner: nodes/sub-pixel-mask-refiner.md
+          - N-28 Edge-Aware Mask Refiner: nodes/edge-aware-mask-refiner.md
+          - N-29 Alpha Matte Extractor: nodes/n29-alpha-matte-extractor.md
+          - N-30 Trimap Builder: nodes/trimap-builder.md
+          - N-31 Mask Morphology: nodes/mask-morphology.md
+          - N-32 Mask Combine: nodes/mask-combine.md
+          - N-33 Mask Edge Smoother: nodes/n33-mask-edge-smoother.md
+      - Geometry:
+          - Overview: categories/geometry.md
+          - N-06 Facial Aligner: nodes/facial-aligner.md
+          - N-07 Lens Distortion: nodes/lens-distortion.md
+      - Face:
+          - Overview: categories/face.md
+          - N-10 Face Detect: nodes/n10-face-detect.md
+          - N-11 Unwrap Face: nodes/unwrap-face.md
+          - N-19 Face Landmarks: nodes/face-landmarks.md
+          - N-20 Face Warp: nodes/face-warp.md
+          - N-21 Face Beauty Blend: nodes/face-beauty-blend.md
+      - Looks:
+          - Overview: categories/looks.md
+          - N-22 Look Select: nodes/look-select.md
   - Reference:
       - Smoke Test Matrix: smoke-test-matrix.md

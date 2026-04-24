@@ -7,6 +7,7 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 ### Added
 
 - CI bench guardrail workflow (`.github/workflows/ci.yml`) running Gate 6.0 3-command (pytest + ruff check + ruff format --check) plus expanded bench suite on every pull request to `main` and push to `main`. Bench guardrail ships in **report-only mode** for v1: each run collects multi-snapshot variance data (N=3 outer runs × measure_iters inner iterations per case, `policy: "multi_snapshot_v1"` baseline schema with `median_ms + stdev_ms + n_samples + n_runs`) and prints per-case comparison lines (`[bench-report] <case>: OK|OVER current=…ms threshold=max(median×1.10, median+2σ)=…ms`). CONTRIBUTING.md baseline regen procedure documented.
+- Full 32-node public documentation coverage: 29 additional node reference pages, expanded category cross-links, and complete mkdocs navigation for every live pack node.
 - mkdocs-material documentation site scaffold with 3 flagship node pages (N-29 Alpha Matte Extractor, N-33 Mask Edge Smoother, N-10 Face Detect), 7 category stub pages, and `.github/workflows/docs.yml` auto-deploy to GitHub Pages on every push to `main`. Remaining node pages are deferred to a later category rollout batch.
 - N-29 Alpha Matte Extractor `compute_device` parameter (`"auto" | "cuda" | "cpu"`) exposing explicit GPU/CPU execution pin.
 - Sample workflows and screenshots for v1.1.0 mask refinement pack N-28..N-33, including N-33 GIF animation.
