@@ -1,5 +1,7 @@
 # ComfyUI-JH-PixelPro
 
+[![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
+
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
 **Status:** 🎉 **v1.1.0** (2026-04-21) — 32 nodes live · production-ready · `/color` 10 + `/compositing` 4 + `/filters` 2 + `/mask` 8 + `/geometry` 2 + `/face` 5 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
