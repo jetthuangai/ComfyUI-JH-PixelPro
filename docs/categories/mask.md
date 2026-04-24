@@ -11,5 +11,6 @@ The mask category is the pack's largest finishing domain. It starts with mask cl
 - [**N-31 Mask Morphology**](../nodes/mask-morphology.md) — Runs elliptical-kernel dilate, erode, open, close, and related morphology ops.
 - [**N-32 Mask Combine**](../nodes/mask-combine.md) — Performs add, subtract, union, intersect, xor, difference, and multiply blends.
 - [**N-33 Mask Edge Smoother**](../nodes/n33-mask-edge-smoother.md) — Smooths mask edges with bilateral filtering and optional image guidance.
+- [**N-35 Skin Tone Tri-Region**](../nodes/skin-tone-tri-region.md) — Cross-category face node that outputs three tonal masks for portrait retouching.
 
 Flagship mask pages: [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md) and [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md).

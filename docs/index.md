@@ -1,6 +1,6 @@
 # ComfyUI-JH-PixelPro
 
-GPU-powered pro-grade image suite for ComfyUI. The pack ships 32 production-ready nodes across seven categories for retouch, color science, mask finishing, face workflows, and Photoshop-style compositing without leaving the tensor pipeline.
+GPU-powered pro-grade image suite for ComfyUI. The pack ships 34 production-ready nodes across seven categories for retouch, color science, mask finishing, face workflows, and Photoshop-style compositing without leaving the tensor pipeline.
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-github_pages-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
@@ -15,18 +15,18 @@ GPU-powered pro-grade image suite for ComfyUI. The pack ships 32 production-read
 
 If you prefer a manual install, clone the repository into `ComfyUI/custom_nodes/` and run `pip install -e .`.
 
-## 32-node pack at a glance
+## 34-node pack at a glance
 
 | Category | Nodes | Highlights |
 |---|---:|---|
-| Color | 10 | Color matching, tone curves, LUT import/export, selective color, ColorLab |
+| Color | 11 | Color matching, tone curves, LUT import/export, preset LUTs, selective color, ColorLab |
 | Compositing | 4 | Photoshop-style layer stack and blend modes |
 | Filters | 2 | Frequency separation and edge-aware smoothing |
 | Mask | 8 | Sub-pixel refinement, alpha matte extraction, morphology, combine, edge smoothing |
 | Geometry | 2 | Facial alignment and lens distortion correction |
-| Face | 5 | Face detection, landmarks, warp, unwrap, beauty blend |
+| Face | 6 | Face detection, landmarks, warp, unwrap, beauty blend, skin-tone masks |
 | Looks | 1 | Preset-based creative look selection |
-| **Total** | **32** | Production-ready pack v1.2.1 |
+| **Total** | **34** | Feature-complete pack v1.3.0 |
 
 ## Lean-batch entry points
 
