@@ -1,18 +1,18 @@
-name: CI
+name: Expanded bench (multi-snapshot v1)
 
 on:
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
   push:
-    branches: [main]
+    tags: ["v*"]
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: bench-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  lint-test:
+  bench:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
 
@@ -32,11 +32,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]" || (pip install -e . && pip install pytest ruff)
 
-      - name: Ruff lint
-        run: ruff check .
+      - name: Run expanded bench suite (report-only, full 23-file multi-snapshot v1)
+        run: pytest tests/bench_*.py -v
 
-      - name: Ruff format check
-        run: ruff format --check .
-
-      - name: Pytest unit tests (exclude bench)
-        run: pytest tests/ -v --ignore-glob='tests/bench_*.py' -q
+      - name: Upload bench artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-log
+          path: tests/bench_baselines/

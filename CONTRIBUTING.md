@@ -39,6 +39,16 @@ pytest tests/bench_*.py -v
 
 The bench suite is gated by a **multi-snapshot variance-aware threshold** (see below). On a CPU runner, expect the full bench suite to take roughly 18–20 minutes per pass (N=1) and up to 55 minutes when regenerating baselines (N=3).
 
+## CI workflows
+
+Three separate GitHub Actions workflows:
+
+- **`.github/workflows/ci.yml`** — lint (`ruff check` + `ruff format --check`) + unit tests (`pytest tests/ -q --ignore-glob='tests/bench_*.py'`). Required on every PR + push to `main`. Fast (~2-3 min).
+- **`.github/workflows/bench.yml`** — full 23-file expanded bench suite (report-only, multi-snapshot v1). Triggered manually via **Actions -> Expanded bench -> Run workflow** or automatically on release tag push. NOT required on PR; allows heavy pro-resolution cases (4K frequency, iterative matting) up to 180-minute timeout.
+- **`.github/workflows/docs.yml`** — doc site deploy on push to `main` (unchanged).
+
+To run bench locally: `pytest tests/bench_*.py -v` (full 23-file suite). Baselines in `tests/bench_baselines/*.json`.
+
 ## Baseline regeneration
 
 Every bench case is compared against a committed baseline JSON in `tests/bench_baselines/`. When the observed runtime drifts past the variance-aware threshold, the bench guardrail fails and CI goes red.
@@ -74,16 +84,15 @@ Before pushing or opening a pull request:
 
 ```bash
 pytest tests/ -q --ignore-glob='tests/bench_*.py'
-pytest tests/bench_*.py -v
 ruff check .
 ruff format --check .
 ```
 
-All four must pass locally. CI will reject a PR that fails any of these.
+All three must pass locally. The required CI workflow rejects PRs that fail any of these. Run `pytest tests/bench_*.py -v` separately before performance-sensitive changes or baseline regeneration.
 
 ## CI bench guardrail (multi-snapshot variance-aware, report-only v1)
 
-`.github/workflows/ci.yml` runs on every pull request to `main` and every push to `main`. It performs the Gate 6.0 triple-command (ruff check + ruff format --check + unit pytest) and then runs the bench guardrail suite.
+`.github/workflows/bench.yml` runs the full bench guardrail suite. It is triggered manually with `workflow_dispatch` or automatically on release tag pushes (`v*`). The required `.github/workflows/ci.yml` workflow intentionally runs lint + unit tests only; the hosted `ubuntu-latest` runner budget is not compatible with the pack's heaviest pro-resolution bench cases on every PR.
 
 The bench guardrail ships in **report-only mode** for the Batch-13 v1 release. Each run collects multi-snapshot variance data and prints per-case comparison lines like `[bench-report] cpu-512-b1-normal-opacity0p5: OK current=0.18ms threshold=0.20ms policy=multi_snapshot_v1` to the workflow log, but does NOT fail the build on threshold breach. The `raise AssertionError` path is gated behind the env flag `JH_PIXELPRO_BENCH_STRICT_GATE` (default `"0"`). Strict gate enablement is deferred to a Batch-13.1 follow-up that will recapture baselines from the actual GHA ubuntu-latest runner (the Batch-13 E-2 → E-8 escalation chain proved that baselines captured on dev machines are statistically incompatible with CI enforce-runner profile due to thermal/cache/scheduler differences). Locally, contributors can simulate the future strict gate behavior with `JH_PIXELPRO_BENCH_STRICT_GATE=1 pytest tests/bench_*.py -v` for diagnostic purposes.
 
