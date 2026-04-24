@@ -139,6 +139,8 @@ mkdocs build --strict
 
 The production deploy path lives in `.github/workflows/docs.yml`, which publishes the site to GitHub Pages on every push to `main`.
 
+The public docs site now carries a reference page for every live pack node. New nodes should add a `docs/nodes/<slug>.md` page, link it from the relevant `docs/categories/*.md` page, and add it to `mkdocs.yml` in the primary category nav.
+
 ## Architecture and ownership
 
 Pack authorship is split across three agents (Cowork architect, Codex core math, Claude Code integration). The detailed ownership matrix lives in the agent hub at `.agent-hub/00_charter/agent-coordination.md` (repo-local, not shipped).
