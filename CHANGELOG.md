@@ -6,7 +6,7 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ### Added
 
-- Nothing yet.
+- Post-v1.3.0 documentation polish: quickstart guide, homepage milestone hero, examples section, and generated N-34 LUT preset visual gallery assets.
 
 ### Changed
 
