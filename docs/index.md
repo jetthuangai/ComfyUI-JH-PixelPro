@@ -7,6 +7,29 @@ GPU-powered pro-grade image suite for ComfyUI. The pack ships 34 production-read
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-555555)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/LICENSE)
 
+## v1.3.0 Pack Feature Complete
+
+Version 1.3.0 is the first feature-complete public milestone: 34 live nodes, full public documentation coverage, a deployed docs site, and a released pack workflow for fast onboarding.
+
+Highlights:
+
+- 34 pro-retouch nodes across color, mask, face, geometry, filters, looks, and compositing.
+- Levin 2008 closed-form alpha matting with CUDA-capable sparse PyTorch acceleration and CPU fallback.
+- Zero-config creative color starts through N-34 bundled LUT presets.
+- Portrait tone targeting through N-35 skin-tone shadow, midtone, and highlight masks.
+- Active CI, docs deployment, and non-blocking expanded benchmark workflow.
+
+## Quick Links
+
+- [Get Started in 5 Minutes](quickstart.md)
+- [Examples](examples/index.md)
+- [LUT Preset Gallery](examples/lut-preset-gallery.md)
+- [N-29 Alpha Matte Extractor](nodes/n29-alpha-matte-extractor.md)
+- [N-33 Mask Edge Smoother](nodes/n33-mask-edge-smoother.md)
+- [N-10 Face Detect](nodes/n10-face-detect.md)
+- [GitHub repository](https://github.com/jetthuangai/ComfyUI-JH-PixelPro)
+- [Latest release](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/latest)
+
 ## Install via ComfyUI Manager
 
 1. Open **ComfyUI Manager** and search for `ComfyUI-JH-PixelPro`.
