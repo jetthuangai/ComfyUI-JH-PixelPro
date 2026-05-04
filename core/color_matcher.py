@@ -60,6 +60,25 @@ def _prepare_reference(
     return reference
 
 
+def _prepare_reference_for_stats(
+    image_reference_bchw: torch.Tensor,
+    *,
+    target_batch: int,
+    device: torch.device,
+) -> torch.Tensor:
+    reference = _prepare_image("image_reference_bchw", image_reference_bchw).to(device=device)
+
+    if reference.shape[0] not in (1, target_batch):
+        raise ValueError(
+            "image_reference_bchw batch "
+            f"({reference.shape[0]}) must be 1 or equal to target batch ({target_batch})."
+        )
+
+    if reference.shape[0] == 1 and target_batch > 1:
+        reference = reference.expand(target_batch, -1, -1, -1)
+    return reference
+
+
 def _validate_channels(channels: str) -> str:
     if not isinstance(channels, str) or channels not in _VALID_CHANNELS:
         raise ValueError(f"channels must be one of {tuple(sorted(_VALID_CHANNELS))}.")
@@ -191,3 +210,64 @@ def color_matcher(
     matched_rgb = torch.nan_to_num(matched_rgb, nan=0.0, posinf=1.0, neginf=0.0).clamp(0.0, 1.0)
     output = ((1.0 - strength) * target) + (strength * matched_rgb)
     return output.clamp(0.0, 1.0)
+
+
+def color_matcher_region(
+    image_target_bchw: torch.Tensor,
+    image_reference_bchw: torch.Tensor,
+    *,
+    channels: str = "ab",
+    strength: float = 1.0,
+    target_mask: torch.Tensor | None = None,
+    reference_mask: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """Match target colors to reference stats, allowing different image sizes.
+
+    ``target_mask`` controls both target-side statistics and where the result is
+    applied. ``reference_mask`` controls reference-side statistics. Missing masks
+    mean the full corresponding image is used.
+    """
+
+    target = _prepare_image("image_target_bchw", image_target_bchw)
+    channels = _validate_channels(channels)
+    strength = _validate_strength(strength)
+    reference = _prepare_reference_for_stats(
+        image_reference_bchw,
+        target_batch=target.shape[0],
+        device=target.device,
+    )
+    target_mask_b1hw = _prepare_mask(target_mask, image_shape=target.shape, device=target.device)
+    reference_mask_b1hw = _prepare_mask(
+        reference_mask,
+        image_shape=reference.shape,
+        device=target.device,
+    )
+
+    if strength == 0.0:
+        return target
+
+    target_lab = rgb_to_lab(target)
+    reference_lab = rgb_to_lab(reference)
+
+    channel_slice = slice(1, 3) if channels == "ab" else slice(0, 3)
+    target_selected = target_lab[:, channel_slice]
+    reference_selected = reference_lab[:, channel_slice]
+
+    target_mean, target_std = _masked_mean_std(target_selected, target_mask_b1hw)
+    reference_mean, reference_std = _masked_mean_std(reference_selected, reference_mask_b1hw)
+    matched_selected = (target_selected - target_mean) * (
+        reference_std / target_std.clamp_min(1e-6)
+    ) + reference_mean
+
+    matched_lab = target_lab.clone()
+    matched_lab[:, channel_slice] = matched_selected
+
+    matched_rgb = lab_to_rgb(matched_lab)
+    matched_rgb = torch.nan_to_num(matched_rgb, nan=0.0, posinf=1.0, neginf=0.0).clamp(0.0, 1.0)
+    matched_output = ((1.0 - strength) * target) + (strength * matched_rgb)
+    matched_output = matched_output.clamp(0.0, 1.0)
+
+    if target_mask_b1hw is None:
+        return matched_output
+
+    return torch.lerp(target, matched_output, target_mask_b1hw).clamp(0.0, 1.0)

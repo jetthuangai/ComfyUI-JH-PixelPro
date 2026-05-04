@@ -2,6 +2,7 @@
 
 from .color_lab import JHPixelProColorLab
 from .color_matcher_node import JHPixelProColorMatcher
+from .color_matcher_region_node import JHPixelProColorMatcherRegion
 from .detail_masker_node import JHPixelProHighFreqDetailMasker
 from .face_beauty_blend_node import JHPixelProFaceBeautyBlend
 from .face_detect_node import JHPixelProFaceDetect
@@ -39,6 +40,7 @@ from .unwrap_face_node import JHPixelProUnwrapFace
 
 __all__ = [
     "JHPixelProColorMatcher",
+    "JHPixelProColorMatcherRegion",
     "JHPixelProColorLab",
     "JHPixelProEdgeAwareSmoother",
     "JHPixelProFaceBeautyBlend",
