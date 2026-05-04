@@ -1,6 +1,6 @@
 """Core math — pure tensor in, pure tensor out. No PIL / cv2 / NumPy on the hot path."""  # noqa: N999
 
-from .color_matcher import color_matcher
+from .color_matcher import color_matcher, color_matcher_region
 from .detail_masker import high_freq_detail_mask
 from .face_detect import face_detect
 from .face_pipeline import beauty_blend, extract_landmarks, face_warp_delaunay
@@ -37,6 +37,7 @@ __all__ = [
     "edge_aware_smooth",
     "high_freq_detail_mask",
     "color_matcher",
+    "color_matcher_region",
     "tone_curve",
     "hue_range_mask",
     "apply_hue_sat_shift",
