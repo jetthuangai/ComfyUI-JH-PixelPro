@@ -48,9 +48,25 @@ def test_input_types(node_cls) -> None:
     required = input_types["required"]
     optional = input_types["optional"]
     assert set(required) == {"mask", "sigma_spatial", "sigma_range", "iterations"}
-    assert set(optional) == {"guide"}
+    assert set(optional) == {"guide", "backend"}
     assert required["mask"] == ("MASK",)
     assert optional["guide"] == ("IMAGE",)
+    assert optional["backend"][0] == ["opencv", "gpu"]
+    assert optional["backend"][1]["default"] == "opencv"
+    assert optional["backend"][1]["tooltip"]
+
+
+def test_smooth_gpu_backend(node_cls) -> None:
+    node = node_cls()
+    mask = torch.zeros((1, 24, 24), dtype=torch.float32)
+    mask[:, 6:18, 6:18] = 1.0
+    guide = torch.rand((1, 24, 24, 3), dtype=torch.float32)
+    (out,) = node.smooth(
+        mask, sigma_spatial=3.0, sigma_range=0.1, iterations=1, guide=guide, backend="gpu"
+    )
+    assert out.shape == mask.shape
+    assert out.min().item() >= 0.0
+    assert out.max().item() <= 1.0
 
 
 def test_smooth_runs_without_guide(node_cls) -> None:

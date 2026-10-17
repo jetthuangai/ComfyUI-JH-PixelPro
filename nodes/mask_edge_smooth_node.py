@@ -32,6 +32,17 @@ class JHPixelProMaskEdgeSmoother:
             },
             "optional": {
                 "guide": ("IMAGE",),
+                "backend": (
+                    ["opencv", "gpu"],
+                    {
+                        "default": "opencv",
+                        "tooltip": (
+                            "opencv = CPU (guide only used if opencv-contrib is installed). "
+                            "gpu = torch on CUDA, always honours the guide even without "
+                            "opencv-contrib."
+                        ),
+                    },
+                ),
             },
         }
 
@@ -42,6 +53,7 @@ class JHPixelProMaskEdgeSmoother:
         sigma_range: float,
         iterations: int,
         guide: torch.Tensor | None = None,
+        backend: str = "opencv",
     ) -> tuple[torch.Tensor]:
         with torch.no_grad():
             out = mask_edge_smooth(
@@ -50,5 +62,6 @@ class JHPixelProMaskEdgeSmoother:
                 sigma_spatial=sigma_spatial,
                 sigma_range=sigma_range,
                 iterations=iterations,
+                backend=backend,
             )
         return (out,)
