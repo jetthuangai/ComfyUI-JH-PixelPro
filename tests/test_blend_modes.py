@@ -147,3 +147,31 @@ def test_apply_blend_rejects_unknown_mode() -> None:
 def test_compose_stack_empty_raises() -> None:
     with pytest.raises(ValueError, match="empty stack"):
         compose_stack([])
+
+
+def test_compose_stack_dissolve_scatters_whole_pixels() -> None:
+    # Regression (v1.5.4): dissolve used to behave exactly like normal (a smooth 50 % mix).
+    base = torch.zeros(1, 64, 64, 3)
+    layer = torch.ones(1, 64, 64, 3)
+    stack = [
+        {"image": base},
+        {"image": layer, "blend_mode": "dissolve", "opacity": 0.5, "fill": 1.0},
+    ]
+    out = compose_stack(stack)
+    assert set(torch.unique(out).tolist()) <= {0.0, 1.0}
+    assert 0.4 < out.mean().item() < 0.6
+    assert torch.equal(out, compose_stack(stack))  # repeatable
+
+
+def test_compose_stack_dissolve_respects_mask() -> None:
+    stack = [
+        {"image": torch.zeros(1, 32, 32, 3)},
+        {
+            "image": torch.ones(1, 32, 32, 3),
+            "blend_mode": "dissolve",
+            "opacity": 1.0,
+            "mask": torch.cat([torch.ones(1, 32, 16), torch.zeros(1, 32, 16)], dim=2),
+        },
+    ]
+    out = compose_stack(stack)
+    assert out[:, :, :16].min().item() == 1.0 and out[:, :, 16:].max().item() == 0.0

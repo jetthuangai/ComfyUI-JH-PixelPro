@@ -189,6 +189,9 @@ def apply_blend(mode: str, base: torch.Tensor, blend: torch.Tensor) -> torch.Ten
     return _clamp(BLEND_FUNCTIONS[mode](base, blend))
 
 
+_DISSOLVE_SEED = 0
+
+
 def compose_stack(stack: list[dict]) -> torch.Tensor:
     """Compose a LAYER_STACK list of dict layers to a final IMAGE tensor."""
 
@@ -205,10 +208,20 @@ def compose_stack(stack: list[dict]) -> torch.Tensor:
                 previous_mask, result.shape[-3:-1], result.device, result.dtype
             )
             mask = mask * below_mask
-        blend = apply_blend(str(layer.get("blend_mode", "normal")), result, layer_image)
+        mode = str(layer.get("blend_mode", "normal"))
         strength = float(layer.get("opacity", 1.0)) * float(layer.get("fill", 1.0))
-        alpha = (mask * strength).clamp(0.0, 1.0).unsqueeze(-1)
-        result = torch.lerp(result, blend, alpha)
+        alpha = (mask * strength).clamp(0.0, 1.0)
+        if mode == "dissolve":
+            # Photoshop dissolve: each pixel is either fully the layer or fully the base, with
+            # probability = opacity x mask (fixed seed, so renders are repeatable).
+            generator = torch.Generator(device=result.device)
+            generator.manual_seed(_DISSOLVE_SEED)
+            noise = torch.rand(alpha.shape, generator=generator, device=result.device)
+            keep = (noise < alpha.expand_as(noise)).unsqueeze(-1)
+            result = torch.where(keep, layer_image, result)
+        else:
+            blend = apply_blend(mode, result, layer_image)
+            result = torch.lerp(result, blend, alpha.unsqueeze(-1))
         previous_mask = mask
     return _clamp(result)
 

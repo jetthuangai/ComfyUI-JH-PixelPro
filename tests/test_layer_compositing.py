@@ -155,3 +155,13 @@ def test_layer_add_supports_each_blend_mode(mode: str) -> None:
     assert out.shape == stack[0]["image"].shape
     assert out.min().item() >= 0.0
     assert out.max().item() <= 1.0
+
+
+def test_layer_group_opacity_is_applied_once() -> None:
+    # Regression (v1.5.4): group_opacity was copied into both opacity and fill, so 0.5 acted
+    # like 0.25.
+    (parent,) = _cls("JHPixelProLayerStackStart")().apply(_solid((0.0, 0.0, 0.0), 4))
+    (sub,) = _cls("JHPixelProLayerStackStart")().apply(_solid((1.0, 1.0, 1.0), 4))
+    (grouped,) = _cls("JHPixelProLayerGroup")().apply(parent, sub, "normal", 0.5)
+    (out,) = _cls("JHPixelProLayerFlatten")().apply(grouped)
+    assert torch.allclose(out, _solid((0.5, 0.5, 0.5), 4))

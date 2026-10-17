@@ -141,7 +141,8 @@ class JHPixelProLayerGroup:
             "mask": _resize_mask(group_mask, hw),
             "blend_mode": group_blend_mode,
             "opacity": float(group_opacity),
-            "fill": float(group_opacity),
+            # Opacity and fill multiply in compose_stack; a group has one strength control.
+            "fill": 1.0,
             "clip_to_below": False,
             "is_group": True,
             "sub_stack": sub_stack,
