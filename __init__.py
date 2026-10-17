@@ -17,7 +17,7 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 # ``__package__`` is empty and we skip the registration step — the node tests
 # load the pack themselves via ``importlib.util.spec_from_file_location``.
 # Category groups exposed to ComfyUI Add Node menu (under root "ComfyUI-JH-PixelPro/"):
-#   filters    — pixel-domain filters (FS, ES)
+#   filters    — pixel-domain filters (FS, ES, Smart Sharpen)
 #   color      — color-grade layer (Lum, ColorMatcher, ToneCurve, HALDIdentity,
 #                 LUTExport, LUTImport, HueSatRange, SatMask, ToneMatchLUT, ColorLab)
 #   compositing — Photoshop-style layer stack and blend modes
@@ -25,6 +25,7 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 #   geometry   — geometric transforms (Aligner, LensDistortion)
 #   face       — face-pipeline domain (FaceDetect, UnwrapFace, Landmarks, Warp, BeautyBlend)
 #   looks      — JSON-driven dropdown look presets (N-22 M6 Looks)
+#   qa         — before/after comparison metrics (QA Image Diff)
 if __package__:
     from .nodes import (
         JHPixelProAlphaMatteExtractor,
@@ -40,6 +41,7 @@ if __package__:
         JHPixelProFaceDetectLite,
         JHPixelProFaceLandmarks,
         JHPixelProFaceWarp,
+        JHPixelProFaceWarpTPS,
         JHPixelProFacialAligner,
         JHPixelProFrequencySeparation,
         JHPixelProHALDIdentity,
@@ -55,12 +57,16 @@ if __package__:
         JHPixelProLUTExport,
         JHPixelProLUTImport,
         JHPixelProLUTPreset,
+        JHPixelProMaskCleanup,
         JHPixelProMaskCombine,
         JHPixelProMaskEdgeSmoother,
         JHPixelProMaskMorphology,
+        JHPixelProMaskPreview,
         JHPixelProPyramidBlend,
+        JHPixelProQADiff,
         JHPixelProSaturationMask,
         JHPixelProSkinToneTriRegion,
+        JHPixelProSmartSharpen,
         JHPixelProSubPixelMaskRefiner,
         JHPixelProToneCurve,
         JHPixelProToneMatchLUT,
@@ -70,6 +76,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProFrequencySeparation"] = JHPixelProFrequencySeparation
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencySeparation"] = "GPU Frequency Separation"
+
+    NODE_CLASS_MAPPINGS["JHPixelProSmartSharpen"] = JHPixelProSmartSharpen
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSmartSharpen"] = "Filters: Smart Sharpen"
 
     NODE_CLASS_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = JHPixelProSubPixelMaskRefiner
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSubPixelMaskRefiner"] = "Sub-Pixel Mask Refiner"
@@ -91,6 +100,12 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProMaskEdgeSmoother"] = JHPixelProMaskEdgeSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMaskEdgeSmoother"] = "Mask: Edge Smoother"
+
+    NODE_CLASS_MAPPINGS["JHPixelProMaskCleanup"] = JHPixelProMaskCleanup
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMaskCleanup"] = "Mask: Cleanup"
+
+    NODE_CLASS_MAPPINGS["JHPixelProMaskPreview"] = JHPixelProMaskPreview
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMaskPreview"] = "Mask: Preview Overlay"
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"
@@ -121,6 +136,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProFaceWarp"] = JHPixelProFaceWarp
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceWarp"] = "Face Warp (Delaunay per-triangle)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProFaceWarpTPS"] = JHPixelProFaceWarpTPS
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceWarpTPS"] = "Face Warp (TPS smooth)"
 
     NODE_CLASS_MAPPINGS["JHPixelProFaceBeautyBlend"] = JHPixelProFaceBeautyBlend
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceBeautyBlend"] = "Face Beauty Blend"
@@ -181,6 +199,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProLayerFlatten"] = JHPixelProLayerFlatten
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLayerFlatten"] = "Compositing: Layer Flatten"
+
+    NODE_CLASS_MAPPINGS["JHPixelProQADiff"] = JHPixelProQADiff
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProQADiff"] = "QA: Image Diff (SSIM/PSNR)"
 
     NODE_CLASS_MAPPINGS["JHPixelProPyramidBlend"] = JHPixelProPyramidBlend
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProPyramidBlend"] = "Compositing: Pyramid Blend"
