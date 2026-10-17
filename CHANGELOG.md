@@ -16,6 +16,23 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.5.0] — 2026-10-17
+
+### Added
+
+- **N-40 `JHPixelProSmartSharpen`** (Filters: Smart Sharpen, `/filters`): unsharp mask with amount, radius, soft threshold, luminance-only mode (BT.601 luma delta, chroma untouched) and an optional mask gate. Matches `kornia.filters.unsharp_mask` at amount 1 / threshold 0.
+- **N-41 `JHPixelProMaskCleanup`** (Mask: Cleanup, `/mask`): removes islands below `min_island_area`, fills enclosed holes below `max_hole_area`, and feathers with a signed-distance ramp (`2 × feather_px` wide, centred on the edge). 4- or 8-connectivity for the foreground; holes use the complementary connectivity so diagonal outlines still enclose their holes.
+- **N-42 `JHPixelProFaceWarpTPS`** (Face Warp (TPS smooth), `/face`): thin-plate-spline alternative to N-20 with the same `LANDMARKS` inputs and fixed border anchors; one smooth field, no triangle seams. Uses all 468 points by default; with a smaller `max_points` budget every moved landmark is still kept. Control points land within ~0.5 px at 2048 px (~18 ms CUDA, ~0.8 s CPU).
+- **N-43 `JHPixelProMaskPreview`** (Mask: Preview Overlay, `/mask`): overlay, heatmap (`kornia.color.apply_colormap`, all Kornia colormaps), mask-only and checkerboard cutout views with optional contour; image input optional.
+- **N-44 `JHPixelProQADiff`** (QA: Image Diff (SSIM/PSNR), new `/qa` category): SSIM (`kornia.metrics.ssim`), PSNR (capped at 100 dB), MAE, max abs and changed-pixel % with optional mask, plus heatmap / abs / SSIM-map diff image and a JSON report.
+- Docs pages for N-40..N-44 and a QA category page.
+- Pack now registers **44 nodes**: `/color` 13, `/compositing` 5, `/filters` 3, `/mask` 10, `/geometry` 3, `/face` 8, `/looks` 1, `/qa` 1.
+
+### Fixed
+
+- **N-20 Face Warp (Delaunay):** returns the image unchanged instead of crashing when one side has no detected face (all-NaN landmarks).
+- **N-39 Auto Align:** featureless (flat) inputs now always fall back to a plain resize. On Linux CPU, SIFT returned keypoints on rounding noise of a constant image and RANSAC accepted them (CI failure on v1.4.0).
+
 ## [1.4.0] — 2026-10-17
 
 ### Added
@@ -441,7 +458,8 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.0
 [1.4.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.4.0
 [1.3.1]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.1
 [1.3.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.0

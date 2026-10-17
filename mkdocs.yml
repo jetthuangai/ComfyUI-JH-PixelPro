@@ -61,6 +61,7 @@ nav:
           - N-01 Frequency Separation: nodes/frequency-separation.md
           - N-03 Edge-Aware Smoother: nodes/edge-aware-smoother.md
           - N-04 High-Frequency Detail Masker: nodes/high-freq-detail-masker.md
+          - N-40 Smart Sharpen: nodes/smart-sharpen.md
       - Mask:
           - Overview: categories/mask.md
           - N-02 Sub-Pixel Mask Refiner: nodes/sub-pixel-mask-refiner.md
@@ -70,6 +71,8 @@ nav:
           - N-31 Mask Morphology: nodes/mask-morphology.md
           - N-32 Mask Combine: nodes/mask-combine.md
           - N-33 Mask Edge Smoother: nodes/n33-mask-edge-smoother.md
+          - N-41 Mask Cleanup: nodes/mask-cleanup.md
+          - N-43 Mask Preview Overlay: nodes/mask-preview.md
       - Geometry:
           - Overview: categories/geometry.md
           - N-06 Facial Aligner: nodes/facial-aligner.md
@@ -82,10 +85,14 @@ nav:
           - N-11 Unwrap Face: nodes/unwrap-face.md
           - N-19 Face Landmarks: nodes/face-landmarks.md
           - N-20 Face Warp: nodes/face-warp.md
+          - N-42 Face Warp (TPS smooth): nodes/face-warp-tps.md
           - N-21 Face Beauty Blend: nodes/face-beauty-blend.md
           - N-35 Skin Tone Tri-Region: nodes/skin-tone-tri-region.md
       - Looks:
           - Overview: categories/looks.md
           - N-22 Look Select: nodes/look-select.md
+      - QA:
+          - Overview: categories/qa.md
+          - N-44 QA Image Diff: nodes/qa-image-diff.md
   - Reference:
       - Smoke Test Matrix: smoke-test-matrix.md

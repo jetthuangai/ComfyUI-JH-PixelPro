@@ -5,7 +5,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** **v1.4.0** (2026-10-17) — 39 nodes live · Kornia expansion: pyramid blend, CLAHE, YuNet face detect, auto align · `/color` 13 + `/compositing` 5 + `/filters` 2 + `/mask` 8 + `/geometry` 3 + `/face` 7 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** **v1.5.0** (2026-10-17) — 44 nodes live · utilities: smart sharpen, mask cleanup, TPS face warp, mask preview, QA diff · `/color` 13 + `/compositing` 5 + `/filters` 3 + `/mask` 10 + `/geometry` 3 + `/face` 8 + `/looks` 1 + `/qa` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 > ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
@@ -30,6 +30,7 @@ This pack packages GPU-friendly tensor nodes for retouching, color science, face
 
 ## Milestones
 
+- **v1.5.0 utilities:** 44 live nodes — N-40 Smart Sharpen, N-41 Mask Cleanup, N-42 Face Warp (TPS smooth), N-43 Mask Preview Overlay, N-44 QA Image Diff (new `/qa` category).
 - **v1.4.0 Kornia expansion:** 39 live nodes — N-36 Pyramid Blend, N-37 CLAHE Local Contrast, N-38 Face Detect Lite (YuNet GPU), N-39 Auto Align (SIFT / LoFTR), plus a `gpu` backend for N-33.
 - **v1.3.0 feature-complete milestone:** 34 live nodes, full public documentation coverage, bundled LUT presets, skin-tone tri-region masks, and a released docs site.
 - **v1.1.0 mask refinement expansion:** 32 live nodes, 8 mask nodes, 23 benchmark files, and six new mask workflow scaffolds for N-28..N-33.
@@ -102,6 +103,11 @@ Restart ComfyUI. The nodes appear under the `ComfyUI-JH-PixelPro/<group>` menu.
 - [x] N-37 CLAHE Local Contrast
 - [x] N-38 Face Detect Lite (YuNet GPU)
 - [x] N-39 Auto Align
+- [x] N-40 Smart Sharpen
+- [x] N-41 Mask Cleanup
+- [x] N-42 Face Warp (TPS smooth)
+- [x] N-43 Mask Preview Overlay
+- [x] N-44 QA Image Diff
 
 ## Engineering principles
 
@@ -964,6 +970,24 @@ GPU nodes built on Kornia modules the pack did not use before (`geometry.transfo
 - **Face Detect Lite returns eye centres**, while N-10 MediaPipe returns outer eye corners; landmarks differ by a few pixels, both feed the Facial Aligner.
 - **Auto Align needs texture.** Flat or featureless pairs fall back to a plain resize (logged warning, `inliers` below `min_inliers`).
 - **CLAHE tiles stay at least 80 px.** On small images the grid is reduced automatically; images under 80 px pass through.
+
+## N-40..N-44 Utilities (v1.5.0)
+
+Everyday finishing and checking tools.
+
+| Node | Purpose |
+|---|---|
+| `JHPixelProSmartSharpen` | Unsharp mask with soft threshold, luminance-only mode (no colour fringes) and an optional mask gate, e.g. from N-04. |
+| `JHPixelProMaskCleanup` | Removes small islands, fills small enclosed holes and feathers the edge with a signed distance ramp. |
+| `JHPixelProFaceWarpTPS` | Thin-plate-spline face warp from source to destination `LANDMARKS`; one smooth field with border anchors, no triangle seams. |
+| `JHPixelProMaskPreview` | Overlay, heatmap, mask-only or checkerboard cutout view of any `MASK`, optional contour. |
+| `JHPixelProQADiff` | SSIM, PSNR, MAE and changed-pixel % between two images (optionally inside a mask) plus a heatmap / abs / SSIM-map diff image and a JSON report. |
+
+### Caveats
+
+- **Mask Cleanup feather is a half-width.** The full ramp across the edge is `2 × feather_px`, centred on the binary boundary.
+- **QA Image Diff caps PSNR at 100 dB** so identical images stay JSON-safe; image sizes must match (no silent resize).
+- **Face Warp (TPS smooth)** solves the spline itself in float64; Kornia's `get_tps_transform` is not an exact interpolator in 0.8.1.
 
 ## License
 
