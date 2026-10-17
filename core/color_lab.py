@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 import torch
+from kornia.color import linear_rgb_to_rgb, rgb_to_linear_rgb
 from kornia.filters import box_blur
 
 HUE_ANCHORS = {
@@ -96,8 +97,16 @@ def _smoothstep(edge0: float, edge1: float, x: torch.Tensor) -> torch.Tensor:
 def _apply_basic(image: torch.Tensor, params: Mapping[str, object]) -> torch.Tensor:
     out = image
     exposure = _float(params, "basic_exposure")
+    exposure_mode = str(params.get("exposure_mode", "display"))
+    if exposure_mode not in ("display", "linear"):
+        raise ValueError(f"exposure_mode must be 'display' or 'linear', got {exposure_mode!r}.")
     if exposure:
-        out = out * (2.0**exposure)
+        if exposure_mode == "linear":
+            linear = rgb_to_linear_rgb(out.permute(0, 3, 1, 2).clamp(0.0, 1.0))
+            out = linear_rgb_to_rgb((linear * (2.0**exposure)).clamp(0.0, 1.0))
+            out = out.permute(0, 2, 3, 1)
+        else:
+            out = out * (2.0**exposure)
 
     contrast = _float(params, "basic_contrast") / 100.0
     if contrast:

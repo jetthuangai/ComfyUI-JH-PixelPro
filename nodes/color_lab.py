@@ -49,7 +49,20 @@ class JHPixelProColorLab:
         required["gray_enable"] = ("BOOLEAN", {"default": False})
         for color in GRAY_MIX_COLORS:
             required[f"gray_{color}"] = _float_meta(0.0, -200.0, 300.0, 1.0)
-        return {"required": required}
+        optional = {
+            "exposure_mode": (
+                ["display", "linear"],
+                {
+                    "default": "display",
+                    "tooltip": (
+                        "display = multiply the sRGB values by 2^EV (legacy). "
+                        "linear = convert to linear light, multiply, convert back "
+                        "(like a camera / Lightroom; more natural highlights)."
+                    ),
+                },
+            ),
+        }
+        return {"required": required, "optional": optional}
 
     def apply(self, image: torch.Tensor, **params: object) -> tuple[torch.Tensor]:
         return (apply_colorlab_pipeline(image, params),)

@@ -212,3 +212,46 @@ def test_local_contrast_keeps_flat_image_flat_at_borders(key: str) -> None:
     image = _solid((0.5, 0.5, 0.5), size=32)
     out = apply_colorlab_pipeline(image, _params(**{key: 100.0}))
     assert torch.allclose(out, image, atol=1e-5)
+
+
+def test_exposure_mode_default_is_display() -> None:
+    image = _gradient()
+    default = apply_colorlab_pipeline(image, _params(basic_exposure=0.7))
+    explicit = apply_colorlab_pipeline(image, _params(basic_exposure=0.7, exposure_mode="display"))
+    assert torch.equal(default, explicit)
+
+
+def test_linear_exposure_doubles_linear_value() -> None:
+    from kornia.color import rgb_to_linear_rgb
+
+    image = _solid((0.2, 0.25, 0.3))
+    out = apply_colorlab_pipeline(image, _params(basic_exposure=1.0, exposure_mode="linear"))
+    lin_in = rgb_to_linear_rgb(image.permute(0, 3, 1, 2))
+    lin_out = rgb_to_linear_rgb(out.permute(0, 3, 1, 2))
+    assert torch.allclose(lin_out, lin_in * 2.0, atol=1e-4)
+
+
+def test_linear_exposure_midgrey_plus_one_stop() -> None:
+    out = apply_colorlab_pipeline(
+        _solid((0.5, 0.5, 0.5)), _params(basic_exposure=1.0, exposure_mode="linear")
+    )
+    assert torch.allclose(out, torch.full_like(out, 0.686), atol=0.005)
+
+
+@pytest.mark.parametrize("mode", ["display", "linear"])
+def test_exposure_zero_identity_in_both_modes(mode: str) -> None:
+    image = _gradient()
+    out = apply_colorlab_pipeline(image, _params(basic_exposure=0.0, exposure_mode=mode))
+    assert torch.equal(out, image)
+
+
+def test_linear_exposure_negative_darkens() -> None:
+    image = _gradient()
+    out = apply_colorlab_pipeline(image, _params(basic_exposure=-1.0, exposure_mode="linear"))
+    assert out.mean() < image.mean()
+
+
+def test_unknown_exposure_mode_raises() -> None:
+    image = _solid((0.5, 0.5, 0.5))
+    with pytest.raises(ValueError, match="exposure_mode"):
+        apply_colorlab_pipeline(image, _params(basic_exposure=1.0, exposure_mode="gamma"))

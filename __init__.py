@@ -34,6 +34,9 @@ if __package__:
         JHPixelProColorLab,
         JHPixelProColorMatcher,
         JHPixelProColorMatcherRegion,
+        JHPixelProDepthAnything,
+        JHPixelProDepthLensBlur,
+        JHPixelProDustSpotRemoval,
         JHPixelProEdgeAwareMaskRefiner,
         JHPixelProEdgeAwareSmoother,
         JHPixelProFaceBeautyBlend,
@@ -63,8 +66,10 @@ if __package__:
         JHPixelProMaskEdgeSmoother,
         JHPixelProMaskMorphology,
         JHPixelProMaskPreview,
+        JHPixelProPaletteExtract,
         JHPixelProPyramidBlend,
         JHPixelProQADiff,
+        JHPixelProSAMMask,
         JHPixelProSaturationMask,
         JHPixelProSkinToneTriRegion,
         JHPixelProSmartSharpen,
@@ -110,6 +115,12 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProMaskPreview"] = JHPixelProMaskPreview
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMaskPreview"] = "Mask: Preview Overlay"
+
+    NODE_CLASS_MAPPINGS["JHPixelProSAMMask"] = JHPixelProSAMMask
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSAMMask"] = "Mask: SAM One-Click"
+
+    NODE_CLASS_MAPPINGS["JHPixelProDustSpotRemoval"] = JHPixelProDustSpotRemoval
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProDustSpotRemoval"] = "Filters: Dust & Spot Removal"
 
     NODE_CLASS_MAPPINGS["JHPixelProEdgeAwareSmoother"] = JHPixelProEdgeAwareSmoother
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProEdgeAwareSmoother"] = "Edge-Aware Skin Smoother"
@@ -185,6 +196,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProColorLab"] = JHPixelProColorLab
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorLab"] = "Color: ColorLab (ACR)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProDepthAnything"] = JHPixelProDepthAnything
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProDepthAnything"] = "Depth: Depth Anything V2"
+
+    NODE_CLASS_MAPPINGS["JHPixelProDepthLensBlur"] = JHPixelProDepthLensBlur
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProDepthLensBlur"] = "Depth: Lens Blur"
+
+    NODE_CLASS_MAPPINGS["JHPixelProPaletteExtract"] = JHPixelProPaletteExtract
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProPaletteExtract"] = "Color: Palette Extract"
 
     NODE_CLASS_MAPPINGS["JHPixelProCLAHE"] = JHPixelProCLAHE
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProCLAHE"] = "Color: CLAHE Local Contrast"

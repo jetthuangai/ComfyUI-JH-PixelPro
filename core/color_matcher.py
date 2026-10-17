@@ -11,6 +11,8 @@ from kornia.color import lab_to_rgb, rgb_to_lab
 logger = logging.getLogger(__name__)
 
 _VALID_CHANNELS = {"ab", "lab"}
+_VALID_METHODS = ("stats", "histogram")
+_HIST_BINS = 4096
 
 
 def _prepare_image(name: str, image_bchw: torch.Tensor) -> torch.Tensor:
@@ -95,6 +97,85 @@ def _validate_strength(strength: float) -> float:
     return strength_float
 
 
+def _validate_method(method: str) -> str:
+    if not isinstance(method, str) or method not in _VALID_METHODS:
+        raise ValueError(f"method must be one of {_VALID_METHODS}.")
+    return method
+
+
+def _weighted_cdf(
+    values_nk: torch.Tensor, weights_nk: torch.Tensor, lo: torch.Tensor, scale: torch.Tensor
+) -> torch.Tensor:
+    """Normalised weighted CDF at the _HIST_BINS + 1 bin edges, shape (N, bins + 1)."""
+
+    pos = ((values_nk - lo) * scale).clamp_(0.0, _HIST_BINS - 1e-3)
+    hist = torch.zeros(values_nk.shape[0], _HIST_BINS, device=values_nk.device)
+    hist.scatter_add_(1, pos.long(), weights_nk)
+    cdf = torch.cumsum(hist, dim=1)
+    cdf = cdf / cdf[:, -1:].clamp_min(1e-12)
+    return torch.cat([torch.zeros_like(cdf[:, :1]), cdf], dim=1)
+
+
+def _histogram_match(
+    target_bchw: torch.Tensor,
+    reference_bchw: torch.Tensor,
+    target_mask: torch.Tensor | None,
+    reference_mask: torch.Tensor | None,
+) -> torch.Tensor:
+    """Per-channel quantile mapping of target onto the reference (masked) distribution."""
+
+    batch, channels = target_bchw.shape[:2]
+    t = target_bchw.reshape(batch * channels, -1)
+    r = reference_bchw.reshape(batch * channels, -1)
+
+    def weights(mask: torch.Tensor | None, like: torch.Tensor) -> torch.Tensor:
+        if mask is None:
+            return torch.ones_like(like)
+        return mask.reshape(batch, 1, -1).expand(batch, channels, -1).reshape(batch * channels, -1)
+
+    wt, wr = weights(target_mask, t), weights(reference_mask, r)
+    lo = torch.minimum(t.amin(dim=1, keepdim=True), r.amin(dim=1, keepdim=True))
+    hi = torch.maximum(t.amax(dim=1, keepdim=True), r.amax(dim=1, keepdim=True))
+    scale = _HIST_BINS / (hi - lo).clamp_min(1e-6)
+
+    cdf_t = _weighted_cdf(t, wt, lo, scale)
+    cdf_r = _weighted_cdf(r, wr, lo, scale)
+
+    # Target quantile of every pixel (linear inside a bin).
+    pos = ((t - lo) * scale).clamp(0.0, _HIST_BINS - 1e-3)
+    idx = pos.long()
+    frac = pos - idx
+    c0 = cdf_t.gather(1, idx)
+    c1 = cdf_t.gather(1, idx + 1)
+    p = c0 + frac * (c1 - c0)
+
+    # Inverse reference CDF at that quantile.
+    # right=True: p == 0 (target at its global minimum) lands after the leading empty reference
+    # bins, i.e. on the reference minimum instead of the shared range start ``lo``.
+    j = torch.searchsorted(cdf_r.contiguous(), p.contiguous(), right=True).clamp_(1, _HIST_BINS)
+    r0 = cdf_r.gather(1, j - 1)
+    r1 = cdf_r.gather(1, j)
+    tt = ((p - r0) / (r1 - r0).clamp_min(1e-12)).clamp_(0.0, 1.0)
+    out = lo + (j - 1 + tt) / scale
+    return out.reshape(target_bchw.shape)
+
+
+def _transfer(
+    target_selected: torch.Tensor,
+    reference_selected: torch.Tensor,
+    target_mask: torch.Tensor | None,
+    reference_mask: torch.Tensor | None,
+    method: str,
+) -> torch.Tensor:
+    if method == "histogram":
+        return _histogram_match(target_selected, reference_selected, target_mask, reference_mask)
+    target_mean, target_std = _masked_mean_std(target_selected, target_mask)
+    reference_mean, reference_std = _masked_mean_std(reference_selected, reference_mask)
+    return (target_selected - target_mean) * (
+        reference_std / target_std.clamp_min(1e-6)
+    ) + reference_mean
+
+
 def _prepare_mask(
     mask: torch.Tensor | None,
     *,
@@ -174,11 +255,18 @@ def color_matcher(
     channels: str = "ab",
     strength: float = 1.0,
     mask: torch.Tensor | None = None,
+    method: str = "stats",
 ) -> torch.Tensor:
-    """Match target RGB colors to a reference image in LAB space."""
+    """Match target RGB colors to a reference image in LAB space.
+
+    ``method`` is ``"stats"`` (Reinhard mean/std) or ``"histogram"`` (per-channel
+    quantile mapping so the target CDF matches the reference CDF). ``mask`` weights
+    both target and reference statistics.
+    """
 
     target = _prepare_image("image_target_bchw", image_target_bchw)
     channels = _validate_channels(channels)
+    method = _validate_method(method)
     strength = _validate_strength(strength)
     reference = _prepare_reference(
         image_reference_bchw,
@@ -197,11 +285,7 @@ def color_matcher(
     target_selected = target_lab[:, channel_slice]
     reference_selected = reference_lab[:, channel_slice]
 
-    target_mean, target_std = _masked_mean_std(target_selected, mask_b1hw)
-    reference_mean, reference_std = _masked_mean_std(reference_selected, mask_b1hw)
-    matched_selected = (target_selected - target_mean) * (
-        reference_std / target_std.clamp_min(1e-6)
-    ) + reference_mean
+    matched_selected = _transfer(target_selected, reference_selected, mask_b1hw, mask_b1hw, method)
 
     matched_lab = target_lab.clone()
     matched_lab[:, channel_slice] = matched_selected
@@ -220,8 +304,11 @@ def color_matcher_region(
     strength: float = 1.0,
     target_mask: torch.Tensor | None = None,
     reference_mask: torch.Tensor | None = None,
+    method: str = "stats",
 ) -> torch.Tensor:
     """Match target colors to reference stats, allowing different image sizes.
+
+    ``method`` is ``"stats"`` (Reinhard) or ``"histogram"`` (quantile mapping).
 
     ``target_mask`` controls both target-side statistics and where the result is
     applied. ``reference_mask`` controls reference-side statistics. Missing masks
@@ -230,6 +317,7 @@ def color_matcher_region(
 
     target = _prepare_image("image_target_bchw", image_target_bchw)
     channels = _validate_channels(channels)
+    method = _validate_method(method)
     strength = _validate_strength(strength)
     reference = _prepare_reference_for_stats(
         image_reference_bchw,
@@ -253,11 +341,9 @@ def color_matcher_region(
     target_selected = target_lab[:, channel_slice]
     reference_selected = reference_lab[:, channel_slice]
 
-    target_mean, target_std = _masked_mean_std(target_selected, target_mask_b1hw)
-    reference_mean, reference_std = _masked_mean_std(reference_selected, reference_mask_b1hw)
-    matched_selected = (target_selected - target_mean) * (
-        reference_std / target_std.clamp_min(1e-6)
-    ) + reference_mean
+    matched_selected = _transfer(
+        target_selected, reference_selected, target_mask_b1hw, reference_mask_b1hw, method
+    )
 
     matched_lab = target_lab.clone()
     matched_lab[:, channel_slice] = matched_selected

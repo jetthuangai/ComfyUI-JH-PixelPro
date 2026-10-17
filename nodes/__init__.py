@@ -5,7 +5,10 @@ from .clahe_node import JHPixelProCLAHE
 from .color_lab import JHPixelProColorLab
 from .color_matcher_node import JHPixelProColorMatcher
 from .color_matcher_region_node import JHPixelProColorMatcherRegion
+from .depth_anything_node import JHPixelProDepthAnything
+from .depth_lens_blur_node import JHPixelProDepthLensBlur
 from .detail_masker_node import JHPixelProHighFreqDetailMasker
+from .dust_spot_node import JHPixelProDustSpotRemoval
 from .face_beauty_blend_node import JHPixelProFaceBeautyBlend
 from .face_detect_lite_node import JHPixelProFaceDetectLite
 from .face_detect_node import JHPixelProFaceDetect
@@ -37,8 +40,10 @@ from .mask_morphology_node import JHPixelProMaskMorphology
 from .mask_preview_node import JHPixelProMaskPreview
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .mask_trimap_node import JHPixelProTrimapBuilder
+from .palette_node import JHPixelProPaletteExtract
 from .pyramid_blend_node import JHPixelProPyramidBlend
 from .qa_diff_node import JHPixelProQADiff
+from .sam_mask_node import JHPixelProSAMMask
 from .saturation_mask_node import JHPixelProSaturationMask
 from .sharpen_node import JHPixelProSmartSharpen
 from .skin_tone_region_node import JHPixelProSkinToneTriRegion
@@ -50,6 +55,7 @@ from .unwrap_face_node import JHPixelProUnwrapFace
 __all__ = [
     "JHPixelProFrequencyRecombine",
     "JHPixelProQADiff",
+    "JHPixelProSAMMask",
     "JHPixelProFaceWarpTPS",
     "JHPixelProMaskPreview",
     "JHPixelProMaskCleanup",
@@ -58,7 +64,11 @@ __all__ = [
     "JHPixelProCLAHE",
     "JHPixelProColorMatcher",
     "JHPixelProColorMatcherRegion",
+    "JHPixelProDepthAnything",
+    "JHPixelProDepthLensBlur",
     "JHPixelProColorLab",
+    "JHPixelProDustSpotRemoval",
+    "JHPixelProPaletteExtract",
     "JHPixelProEdgeAwareSmoother",
     "JHPixelProFaceBeautyBlend",
     "JHPixelProFaceDetect",

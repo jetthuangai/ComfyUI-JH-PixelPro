@@ -51,6 +51,18 @@ class JHPixelProColorMatcher:
                 ),
             },
             "optional": {
+                "method": (
+                    ["stats", "histogram"],
+                    {
+                        "default": "stats",
+                        "tooltip": (
+                            "stats = Reinhard mean/std transfer (smooth, safe). "
+                            "histogram = per-channel quantile mapping, matches the whole "
+                            "tone/colour distribution of the reference (stronger, can "
+                            "amplify noise)."
+                        ),
+                    },
+                ),
                 "mask": ("MASK",),
             },
         }
@@ -62,6 +74,7 @@ class JHPixelProColorMatcher:
         channels: str,
         strength: float,
         mask: torch.Tensor | None = None,
+        method: str = "stats",
     ) -> tuple[torch.Tensor]:
         with torch.no_grad():
             target_bchw = image_target.permute(0, 3, 1, 2).contiguous()
@@ -72,6 +85,7 @@ class JHPixelProColorMatcher:
                 channels=channels,
                 strength=float(strength),
                 mask=mask,
+                method=method,
             )
             out = out_bchw.permute(0, 2, 3, 1).contiguous()
         return (out,)
