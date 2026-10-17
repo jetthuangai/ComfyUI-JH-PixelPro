@@ -26,3 +26,7 @@ bench_out/
 # Local developer notes — not shipped
 CLAUDE.md
 AGENTS.md
+
+# Local working notes and agent state — not shipped
+plans/
+.claude/
