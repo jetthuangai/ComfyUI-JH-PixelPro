@@ -122,9 +122,7 @@ if __package__:
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorMatcher"] = "Color Matcher (LAB)"
 
     NODE_CLASS_MAPPINGS["JHPixelProColorMatcherRegion"] = JHPixelProColorMatcherRegion
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorMatcherRegion"] = (
-        "Color Matcher Region (LAB)"
-    )
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorMatcherRegion"] = "Color Matcher Region (LAB)"
 
     NODE_CLASS_MAPPINGS["JHPixelProToneCurve"] = JHPixelProToneCurve
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProToneCurve"] = "Tone Curve (RGB)"
