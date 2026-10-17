@@ -1,111 +1,15 @@
 {
-  "id": "c9d86e4a-c9af-4db5-9d6c-e9a4e6c97d98",
+  "id": "bac980f3-e065-55db-8eca-266907d69db0",
   "revision": 0,
-  "last_node_id": 4,
-  "last_link_id": 4,
+  "last_node_id": 9,
+  "last_link_id": 8,
   "nodes": [
-    {
-      "id": 2,
-      "type": "JHPixelProMaskMorphology",
-      "pos": [
-        729.7070029769446,
-        161.8848033024333
-      ],
-      "size": [
-        330,
-        150
-      ],
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 3
-        }
-      ],
-      "outputs": [
-        {
-          "name": "mask",
-          "type": "MASK",
-          "slot_index": 0,
-          "links": [
-            4
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "ComfyUI-JH-PixelPro",
-        "ver": "1.1.0",
-        "Node name for S&R": "JHPixelProMaskMorphology",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "close",
-        18,
-        1
-      ]
-    },
-    {
-      "id": 3,
-      "type": "APersonMaskGenerator",
-      "pos": [
-        438.405457870891,
-        165.5276314377171
-      ],
-      "size": [
-        270,
-        202
-      ],
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 2
-        }
-      ],
-      "outputs": [
-        {
-          "name": "masks",
-          "type": "MASK",
-          "links": [
-            3
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-workflow-encrypt",
-        "ver": "1.0.0",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "Node name for S&R": "APersonMaskGenerator"
-      },
-      "widgets_values": [
-        true,
-        false,
-        true,
-        true,
-        false,
-        0.4,
-        true
-      ]
-    },
     {
       "id": 1,
       "type": "LoadImage",
       "pos": [
-        94.90163701958627,
-        169.38246503702686
+        40,
+        40
       ],
       "size": [
         315,
@@ -119,48 +23,117 @@
         {
           "name": "IMAGE",
           "type": "IMAGE",
-          "slot_index": 0,
           "links": [
-            2
-          ]
+            4,
+            7
+          ],
+          "slot_index": 0
         },
         {
           "name": "MASK",
           "type": "MASK",
-          "slot_index": 1,
-          "links": []
+          "links": null,
+          "slot_index": 1
         }
       ],
       "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.19.0",
-        "Node name for S&R": "LoadImage",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        },
-        "#sdppp_variant": "default",
-        "#sdppp_simple_content": "canvas",
-        "#sdppp_simple_mask": "canvas",
-        "#sdppp_simple_boundary": "canvas",
-        "#sdppp_label": ""
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "73927abf94a0a498655b57eeebb03a0a.jpg",
+        "sample_portrait.jpg",
         "image"
+      ],
+      "title": "Load Image (portrait)"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        400
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "sample_binary_mask.png",
+        "image"
+      ],
+      "title": "Load Image (subject mask)"
+    },
+    {
+      "id": 3,
+      "type": "ImageToMask",
+      "pos": [
+        380,
+        560
+      ],
+      "size": [
+        340,
+        124
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            2,
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageToMask"
+      },
+      "widgets_values": [
+        "red"
       ]
     },
     {
       "id": 4,
-      "type": "MaskPreview+",
+      "type": "JHPixelProMaskMorphology",
       "pos": [
-        1083.2813494144314,
-        165.26798071299936
+        760,
+        40
       ],
       "size": [
-        304.2250495937009,
-        399.7144737528412
+        340,
+        180
       ],
       "flags": {},
       "order": 3,
@@ -169,65 +142,292 @@
         {
           "name": "mask",
           "type": "MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProMaskMorphology"
+      },
+      "widgets_values": [
+        "close",
+        64,
+        1
+      ]
+    },
+    {
+      "id": 5,
+      "type": "JHPixelProMaskPreview",
+      "pos": [
+        1140,
+        0
+      ],
+      "size": [
+        340,
+        262
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 3
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
           "link": 4
         }
       ],
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "preview",
+          "type": "IMAGE",
+          "links": [
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
       "properties": {
-        "cnr_id": "comfyui_essentials",
-        "ver": "1.1.0",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "Node name for S&R": "MaskPreview+"
+        "Node name for S&R": "JHPixelProMaskPreview"
       },
-      "widgets_values": []
+      "widgets_values": [
+        "overlay",
+        "red",
+        0.5,
+        "turbo",
+        true
+      ],
+      "title": "Before"
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        1520,
+        0
+      ],
+      "size": [
+        280,
+        380
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Before"
+    },
+    {
+      "id": 7,
+      "type": "JHPixelProMaskPreview",
+      "pos": [
+        1140,
+        420
+      ],
+      "size": [
+        340,
+        262
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 6
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "preview",
+          "type": "IMAGE",
+          "links": [
+            8
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProMaskPreview"
+      },
+      "widgets_values": [
+        "overlay",
+        "red",
+        0.5,
+        "turbo",
+        true
+      ],
+      "title": "After close r=64"
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        1520,
+        420
+      ],
+      "size": [
+        280,
+        380
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "After close r=64"
+    },
+    {
+      "id": 9,
+      "type": "Note",
+      "pos": [
+        40,
+        780
+      ],
+      "size": [
+        1000,
+        140
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Mask Morphology — reshape a mask.\n\nclose (dilate then erode) seals small gaps and holes such as the shadow notch by the nose without growing the outline. dilate grows, erode shrinks, open removes small specks; gradient / tophat / blackhat extract edges and details."
+      ]
     }
   ],
   "links": [
     [
-      2,
       1,
+      2,
       0,
       3,
       0,
       "IMAGE"
     ],
     [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "MASK"
+    ],
+    [
       3,
       3,
       0,
-      2,
+      5,
       0,
       "MASK"
     ],
     [
       4,
-      2,
+      1,
       0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
       4,
       0,
+      7,
+      0,
       "MASK"
+    ],
+    [
+      7,
+      1,
+      0,
+      7,
+      1,
+      "IMAGE"
+    ],
+    [
+      8,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [],
   "config": {},
   "extra": {
-    "ue_links": [],
-    "links_added_by_ue": [],
     "ds": {
-      "scale": 0.9090909090909091,
+      "scale": 0.75,
       "offset": [
-        644.6985939595262,
-        502.09161418394507
+        40,
+        40
       ]
-    },
-    "frontendVersion": "1.42.10",
-    "VHS_latentpreview": false,
-    "VHS_latentpreviewrate": 0,
-    "VHS_MetadataImage": true,
-    "VHS_KeepIntermediate": true
+    }
   },
   "version": 0.4
 }

@@ -1,22 +1,62 @@
 {
-  "id": "s14-lut-export-20260420",
+  "id": "c4d1e1cc-8bf2-56b5-9bd8-e2c457a71584",
   "revision": 0,
-  "last_node_id": 9,
-  "last_link_id": 6,
+  "last_node_id": 6,
+  "last_link_id": 5,
   "nodes": [
+    {
+      "id": 1,
+      "type": "JHPixelProHALDIdentity",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        340,
+        150
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "level",
+          "type": "INT",
+          "links": [
+            3
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProHALDIdentity"
+      },
+      "widgets_values": [
+        "8"
+      ]
+    },
     {
       "id": 2,
       "type": "JHPixelProToneCurve",
       "pos": [
-        109.52662581881582,
-        303.5145244412094
+        380,
+        40
       ],
       "size": [
-        264.3032692465722,
-        263.33914122663873
+        340,
+        208
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [
         {
@@ -29,42 +69,37 @@
         {
           "name": "image_toned",
           "type": "IMAGE",
-          "slot_index": 0,
           "links": [
-            2
-          ]
+            2,
+            4
+          ],
+          "slot_index": 0
         }
       ],
       "properties": {
-        "cnr_id": "ComfyUI-JH-PixelPro",
-        "ver": "0.6.0",
-        "Node name for S&R": "JHPixelProToneCurve",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
+        "Node name for S&R": "JHPixelProToneCurve"
       },
       "widgets_values": [
         "s_curve_mild",
         "rgb_master",
         "[[0.0, 0.0], [0.15, 0.10], [0.30, 0.25], [0.45, 0.43], [0.55, 0.57], [0.70, 0.75], [0.85, 0.90], [1.0, 1.0]]",
-        1
-      ]
+        1.0
+      ],
+      "title": "Your grade (colour-only nodes)"
     },
     {
       "id": 3,
       "type": "JHPixelProLUTExport",
       "pos": [
-        391.6887486714923,
-        179.65854536126486
+        760,
+        40
       ],
       "size": [
-        318.619970813181,
-        106
+        340,
+        206
       ],
       "flags": {},
-      "order": 3,
+      "order": 2,
       "mode": 0,
       "inputs": [
         {
@@ -85,146 +120,110 @@
         {
           "name": "path",
           "type": "STRING",
-          "slot_index": 0,
           "links": [
-            4
-          ]
+            5
+          ],
+          "slot_index": 0
         }
       ],
       "properties": {
-        "cnr_id": "ComfyUI-JH-PixelPro",
-        "ver": "0.6.0",
-        "Node name for S&R": "JHPixelProLUTExport",
-        "ue_properties": {
-          "widget_ue_connectable": {
-            "level": true
-          },
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
+        "Node name for S&R": "JHPixelProLUTExport"
       },
       "widgets_values": [
-        "s14_demo.cube",
-        "S-14 Demo",
-        "JHPixelPro LUT"
+        8,
+        "pixelpro_demo.cube",
+        "PixelPro demo"
       ]
     },
     {
       "id": 4,
-      "type": "Note",
+      "type": "PreviewImage",
       "pos": [
-        399.11723736774354,
-        335.5562636874037
+        1140,
+        0
       ],
       "size": [
-        637.7848539631854,
-        228.8766385486125
+        300,
+        300
       ],
       "flags": {},
-      "order": 0,
+      "order": 3,
       "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
         }
-      },
-      "widgets_values": [
-        "ℹ️ LUT Export (.cube) — round-trip color-grade into portable .cube\n\nChain: N-12 HALD Identity (level=8, 512×512) → N-09 Tone Curve (s_curve_mild) → N-13 LUT Export (.cube).\n\nN-12 generates an identity HALD image encoding a 64×64×64 color cube. Everything you wire between N-12 and N-13 gets *baked into* the exported LUT — any chain that is color-grade-only (Tone Curve, Color Matcher, Luminosity Masking blends, etc.) becomes a portable .cube you can load into DaVinci Resolve / Premiere / OBS / OCIO / hardware LUT boxes.\n\nN-13's `level` pin MUST match the level from N-12 (wired here via the INT link). The `filename` defaults to 'pack_lut.cube' under ComfyUI's output/ directory; absolute paths are honored verbatim. The '.cube' extension is auto-appended if you leave it off.\n\nDO NOT wire anything pixel-structure-aware (sharpening, denoise, detail masks, face pipeline, skin smoother, lens distortion) between N-12 and N-13 — those operators are spatial, not color-only, and will NOT linearize into a 3D LUT."
       ],
-      "color": "#243",
-      "bgcolor": "#365"
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Graded HALD"
     },
     {
       "id": 5,
-      "type": "ShowText|pysssss",
+      "type": "PreviewAny",
       "pos": [
-        721.38506974608,
-        184.4669497373793
+        760,
+        300
       ],
       "size": [
-        309.8932688090165,
-        97.61275571650242
+        380,
+        120
       ],
       "flags": {},
       "order": 4,
       "mode": 0,
       "inputs": [
         {
-          "name": "text",
-          "type": "STRING",
-          "link": 4
+          "name": "source",
+          "type": "*",
+          "link": 5
         }
       ],
       "outputs": [
         {
           "name": "STRING",
-          "shape": 6,
           "type": "STRING",
-          "links": []
+          "links": null,
+          "slot_index": 0
         }
       ],
       "properties": {
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "cnr_id": "comfyui-workflow-encrypt",
-        "ver": "1.0.0",
-        "Node name for S&R": "ShowText|pysssss"
+        "Node name for S&R": "PreviewAny"
       },
-      "widgets_values": [
-        "F:\\AI\\ComfyUI\\output\\S-14 Demo.cube"
-      ]
+      "widgets_values": [],
+      "title": "Saved .cube path"
     },
     {
-      "id": 1,
-      "type": "JHPixelProHALDIdentity",
+      "id": 6,
+      "type": "Note",
       "pos": [
-        115.35814594680204,
-        180.432516653501
+        40,
+        460
       ],
       "size": [
-        255.5477811267374,
-        78
+        1000,
+        150
       ],
       "flags": {},
-      "order": 1,
+      "order": 5,
       "mode": 0,
       "inputs": [],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            1
-          ]
-        },
-        {
-          "name": "level",
-          "type": "INT",
-          "slot_index": 1,
-          "links": [
-            3
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "ComfyUI-JH-PixelPro",
-        "ver": "0.6.0",
-        "Node name for S&R": "JHPixelProHALDIdentity",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
-      },
+      "outputs": [],
+      "properties": {},
       "widgets_values": [
-        "8"
+        "LUT Export — turn a colour grade into a .cube file.\n\nHALD Identity makes a neutral colour chart; grade it with colour-only nodes (Tone Curve, ColorLab, HSL…), then LUT Export writes ComfyUI/output/pixelpro_demo.cube. The LUT works in LUT Import and in apps that read Adobe .cube. Do not blur, sharpen or resize between HALD Identity and LUT Export."
       ]
     }
   ],
@@ -255,6 +254,14 @@
     ],
     [
       4,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
       3,
       0,
       5,
@@ -266,19 +273,12 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.6105100000000012,
+      "scale": 0.75,
       "offset": [
-        428.799707930373,
-        102.63090169116197
+        40,
+        40
       ]
-    },
-    "ue_links": [],
-    "links_added_by_ue": [],
-    "frontendVersion": "1.42.10",
-    "VHS_latentpreview": false,
-    "VHS_latentpreviewrate": 0,
-    "VHS_MetadataImage": true,
-    "VHS_KeepIntermediate": true
+    }
   },
   "version": 0.4
 }

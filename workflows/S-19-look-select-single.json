@@ -18,7 +18,7 @@
         {"name": "MASK", "type": "MASK", "links": null}
       ],
       "properties": {"Node name for S&R": "LoadImage"},
-      "widgets_values": ["sample.jpg", "image"]
+      "widgets_values": ["sample_portrait.jpg", "image"]
     },
     {
       "id": 2,

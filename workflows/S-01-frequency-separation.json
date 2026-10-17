@@ -1,13 +1,15 @@
 {
-  "last_node_id": 5,
-  "last_link_id": 3,
+  "id": "e22e393e-a2cc-50fe-a55a-d04ea76b9731",
+  "revision": 0,
+  "last_node_id": 7,
+  "last_link_id": 6,
   "nodes": [
     {
       "id": 1,
       "type": "LoadImage",
       "pos": [
-        80,
-        200
+        40,
+        40
       ],
       "size": [
         315,
@@ -29,7 +31,8 @@
         {
           "name": "MASK",
           "type": "MASK",
-          "links": null
+          "links": null,
+          "slot_index": 1
         }
       ],
       "properties": {
@@ -44,12 +47,12 @@
       "id": 2,
       "type": "JHPixelProFrequencySeparation",
       "pos": [
-        460,
-        200
+        380,
+        40
       ],
       "size": [
-        315,
-        130
+        340,
+        206
       ],
       "flags": {},
       "order": 1,
@@ -66,7 +69,8 @@
           "name": "low",
           "type": "IMAGE",
           "links": [
-            2
+            2,
+            4
           ],
           "slot_index": 0
         },
@@ -74,7 +78,8 @@
           "name": "high",
           "type": "IMAGE",
           "links": [
-            3
+            3,
+            5
           ],
           "slot_index": 1
         }
@@ -92,12 +97,12 @@
       "id": 3,
       "type": "PreviewImage",
       "pos": [
-        840,
-        140
+        760,
+        0
       ],
       "size": [
-        300,
-        260
+        260,
+        360
       ],
       "flags": {},
       "order": 2,
@@ -109,22 +114,30 @@
           "link": 2
         }
       ],
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
       "properties": {
         "Node name for S&R": "PreviewImage"
       },
-      "widgets_values": []
+      "widgets_values": [],
+      "title": "low (colour & tone)"
     },
     {
       "id": 4,
       "type": "PreviewImage",
       "pos": [
-        840,
-        440
+        1040,
+        0
       ],
       "size": [
-        300,
-        260
+        260,
+        360
       ],
       "flags": {},
       "order": 3,
@@ -136,36 +149,118 @@
           "link": 3
         }
       ],
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
       "properties": {
         "Node name for S&R": "PreviewImage"
       },
-      "widgets_values": []
+      "widgets_values": [],
+      "title": "high (texture, looks dark)"
     },
     {
       "id": 5,
-      "type": "Note",
+      "type": "JHPixelProFrequencyRecombine",
       "pos": [
-        80,
-        560
+        380,
+        330
       ],
       "size": [
-        700,
-        180
+        340,
+        150
       ],
       "flags": {},
       "order": 4,
       "mode": 0,
-      "inputs": [],
-      "outputs": [],
+      "inputs": [
+        {
+          "name": "low",
+          "type": "IMAGE",
+          "link": 4
+        },
+        {
+          "name": "high",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
       "properties": {
-        "text": ""
+        "Node name for S&R": "JHPixelProFrequencyRecombine"
       },
       "widgets_values": [
-        "⚠️ Invariant: low + high = original (pre-clamp).\n- The `high` pin can contain negative values (mean ≈ 0). PreviewImage shows\n  miscoloured output — this is expected.\n- A pure (non-clamping) ImageAdd node is required to reconstruct. ComfyUI\n  core only ships ImageBlend, which clamps to [0, 1] and breaks the\n  invariant. JHPixelProImageAdd is planned for v0.2.\n- For now: trust test_frequency.py — the invariant is verified numerically,\n  no UI demo needed."
+        1.6
+      ]
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        760,
+        400
       ],
-      "color": "#432",
-      "bgcolor": "#653"
+      "size": [
+        260,
+        360
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Recombined, detail 1.6"
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [
+        40,
+        780
+      ],
+      "size": [
+        1000,
+        150
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Frequency Separation + Frequency Recombine.\n\nlow holds colour and tone, high holds pores and fine texture (signed values, so its preview looks dark — that is normal). Retouch either layer, then rebuild with Frequency Recombine: detail = 1 restores the original exactly, above 1 boosts texture, below 1 softens it."
+      ]
     }
   ],
   "links": [
@@ -192,10 +287,42 @@
       4,
       0,
       "IMAGE"
+    ],
+    [
+      4,
+      2,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      2,
+      1,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      6,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [],
   "config": {},
-  "extra": {},
+  "extra": {
+    "ds": {
+      "scale": 0.75,
+      "offset": [
+        40,
+        40
+      ]
+    }
+  },
   "version": 0.4
 }

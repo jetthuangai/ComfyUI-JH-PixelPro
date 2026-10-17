@@ -1,15 +1,15 @@
 {
-  "id": "96876431-8fd1-488d-8f53-af9419cb938b",
+  "id": "5284aad9-240c-5835-9951-3323d14c83aa",
   "revision": 0,
-  "last_node_id": 8,
-  "last_link_id": 6,
+  "last_node_id": 4,
+  "last_link_id": 2,
   "nodes": [
     {
       "id": 1,
       "type": "LoadImage",
       "pos": [
-        80,
-        200
+        40,
+        40
       ],
       "size": [
         315,
@@ -23,33 +23,20 @@
         {
           "name": "IMAGE",
           "type": "IMAGE",
-          "slot_index": 0,
           "links": [
-            1,
-            3,
-            4
-          ]
+            1
+          ],
+          "slot_index": 0
         },
         {
           "name": "MASK",
           "type": "MASK",
-          "links": null
+          "links": null,
+          "slot_index": 1
         }
       ],
       "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.19.0",
-        "Node name for S&R": "LoadImage",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        },
-        "#sdppp_variant": "default",
-        "#sdppp_simple_content": "canvas",
-        "#sdppp_simple_mask": "canvas",
-        "#sdppp_simple_boundary": "canvas",
-        "#sdppp_label": ""
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
         "sample_portrait.jpg",
@@ -60,15 +47,15 @@
       "id": 2,
       "type": "JHPixelProToneCurve",
       "pos": [
-        417.18823518026454,
-        210.85368335681355
+        380,
+        40
       ],
       "size": [
-        345.52845531377875,
-        296.17896108414345
+        340,
+        208
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [
         {
@@ -81,73 +68,35 @@
         {
           "name": "image_toned",
           "type": "IMAGE",
-          "slot_index": 0,
           "links": [
-            2,
-            5
-          ]
+            2
+          ],
+          "slot_index": 0
         }
       ],
       "properties": {
-        "cnr_id": "comfyui-workflow-encrypt",
-        "ver": "1.0.0",
-        "Node name for S&R": "JHPixelProToneCurve",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
+        "Node name for S&R": "JHPixelProToneCurve"
       },
       "widgets_values": [
-        "custom",
+        "s_curve_mild",
         "rgb_master",
         "[[0.0, 0.0], [0.15, 0.10], [0.30, 0.25], [0.45, 0.43], [0.55, 0.57], [0.70, 0.75], [0.85, 0.90], [1.0, 1.0]]",
-        1
+        1.0
       ]
     },
     {
-      "id": 5,
-      "type": "Note",
-      "pos": [
-        80,
-        560
-      ],
-      "size": [
-        674.4779597851632,
-        323.0149424061842
-      ],
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {
-        "text": "",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "ℹ️ Tone Curve (RGB) — S-09\n\nDefaults: preset=s_curve_mild, channel=rgb_master, strength=1.0.\n\nPRESETS (8 control points each, Catmull-Rom interpolated to a 1024-step LUT):\n- linear        — identity (no-op, useful as a bypass).\n- s_curve_mild  — subtle contrast bump (default; safe portrait dose).\n- s_curve_strong — punchier contrast (editorial / commercial look).\n- lift_shadows  — opens dark regions (matte / film stock vibe).\n- crush_blacks  — deepens shadows (dramatic / cinematic).\n- custom        — paste your own 8-point JSON via the points_json widget.\n\nCHANNEL:\n- rgb_master = apply the curve to R, G and B equally (global contrast / brightness).\n- r / g / b   = apply only to that channel (color balance / per-channel grading; e.g., lift the b channel of shadows for a teal-and-orange look).\n\nSTRENGTH: 0 = identity (bypass), 1 = full curve. Use 0.5–0.8 for subtle grading.\n\nCUSTOM POINTS: 8 control points [[x1,y1],...,[x8,y8]] in [0,1]^2. The first MUST be (0,0) and the last MUST be (1,1) (clamped endpoints). x values must be strictly increasing (monotone). Photoshop .acv users: re-sample your curve to exactly 8 points before pasting — the wrapper raises a clear ValueError otherwise.\n\nPAIR WITH: S-05 Luminosity Masking upstream to gate the tone curve to shadows / midtones / highlights only — a poor-man's region-aware curve."
-      ],
-      "color": "#243",
-      "bgcolor": "#365"
-    },
-    {
-      "id": 4,
+      "id": 3,
       "type": "PreviewImage",
       "pos": [
-        785.9844783573957,
-        526.3113713417483
+        760,
+        0
       ],
       "size": [
-        333.3883391650088,
-        357.17496733139126
+        280,
+        400
       ],
       "flags": {},
-      "order": 4,
+      "order": 2,
       "mode": 0,
       "inputs": [
         {
@@ -156,135 +105,39 @@
           "link": 2
         }
       ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.19.0",
-        "Node name for S&R": "PreviewImage",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
         }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
       },
-      "widgets_values": []
+      "widgets_values": [],
+      "title": "S-curve"
     },
     {
-      "id": 3,
-      "type": "PreviewImage",
+      "id": 4,
+      "type": "Note",
       "pos": [
-        778.74865632999,
-        152.1892510043767
+        40,
+        420
       ],
       "size": [
-        333.88666032824744,
-        334.7500017181401
+        700,
+        140
       ],
       "flags": {},
       "order": 3,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 3
-        }
-      ],
+      "inputs": [],
       "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.19.0",
-        "Node name for S&R": "PreviewImage",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 8,
-      "type": "PreviewImage",
-      "pos": [
-        1136.073613483137,
-        356.06257546969715
-      ],
-      "size": [
-        432.14948313402874,
-        524.3674434257819
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 6
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "cnr_id": "comfy-core",
-        "ver": "0.19.0",
-        "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 7,
-      "type": "NH_ImageCompare",
-      "pos": [
-        1185.6957258013422,
-        158.379589949757
-      ],
-      "size": [
-        270,
-        150
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image_a",
-          "type": "IMAGE",
-          "link": 4
-        },
-        {
-          "name": "image_b",
-          "type": "IMAGE",
-          "link": 5
-        }
-      ],
-      "outputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            6
-          ]
-        }
-      ],
-      "properties": {
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "cnr_id": "nh-nodes",
-        "ver": "0e75f569fe7c3f83b0b39ea84f59c3bbefd5159b",
-        "Node name for S&R": "NH_ImageCompare"
-      },
+      "properties": {},
       "widgets_values": [
-        "split_vertical",
-        0.5,
-        0.5,
-        "lanczos"
+        "Tone Curve — classic contrast curve.\n\npreset = s_curve_mild deepens shadows and lifts highlights. Pick custom and edit points_json ([[in, out], …] from 0 to 1) for your own curve, or curve a single channel (r, g, b) for colour casts. strength blends with the original."
       ]
     }
   ],
@@ -301,39 +154,7 @@
       2,
       2,
       0,
-      4,
-      0,
-      "IMAGE"
-    ],
-    [
       3,
-      1,
-      0,
-      3,
-      0,
-      "IMAGE"
-    ],
-    [
-      4,
-      1,
-      0,
-      7,
-      0,
-      "IMAGE"
-    ],
-    [
-      5,
-      2,
-      0,
-      7,
-      1,
-      "IMAGE"
-    ],
-    [
-      6,
-      7,
-      0,
-      8,
       0,
       "IMAGE"
     ]
@@ -341,20 +162,13 @@
   "groups": [],
   "config": {},
   "extra": {
-    "ue_links": [],
-    "links_added_by_ue": [],
     "ds": {
-      "scale": 1.2284597357367268,
+      "scale": 0.75,
       "offset": [
-        374.5301379428501,
-        104.39505062684962
+        40,
+        40
       ]
-    },
-    "frontendVersion": "1.42.10",
-    "VHS_latentpreview": false,
-    "VHS_latentpreviewrate": 0,
-    "VHS_MetadataImage": true,
-    "VHS_KeepIntermediate": true
+    }
   },
   "version": 0.4
 }

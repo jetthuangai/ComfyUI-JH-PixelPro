@@ -1,120 +1,261 @@
 {
-  "id": "d3d3fd18-609d-4c72-a842-f59b5d433ed7",
+  "id": "e2f85058-e410-502f-a2a2-ddb5cc9cbe4f",
   "revision": 0,
-  "last_node_id": 8,
-  "last_link_id": 10,
+  "last_node_id": 12,
+  "last_link_id": 11,
   "nodes": [
     {
-      "id": 3,
-      "type": "APersonMaskGenerator",
+      "id": 1,
+      "type": "LoadImage",
       "pos": [
-        275.0799835522684,
-        155.69743689981263
+        40,
+        40
       ],
       "size": [
-        270,
-        202
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "sample_portrait.jpg",
+        "image"
+      ],
+      "title": "Load Image (portrait)"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        400
+      ],
+      "size": [
+        315,
+        314
       ],
       "flags": {},
       "order": 1,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 2
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "name": "masks",
-          "type": "MASK",
+          "name": "IMAGE",
+          "type": "IMAGE",
           "links": [
-            3
-          ]
+            2
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "slot_index": 1
         }
       ],
       "properties": {
-        "cnr_id": "comfyui-workflow-encrypt",
-        "ver": "1.0.0",
-        "Node name for S&R": "APersonMaskGenerator",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.6.2"
-        }
+        "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        true,
-        false,
-        true,
-        true,
-        false,
-        0.4,
-        true
-      ]
+        "sample_binary_mask.png",
+        "image"
+      ],
+      "title": "Load Image (subject mask)"
     },
     {
-      "id": 2,
-      "type": "JHPixelProTrimapBuilder",
+      "id": 3,
+      "type": "ImageScaleBy",
       "pos": [
-        563.0890678497319,
-        155.69743689981263
+        380,
+        40
       ],
       "size": [
-        210,
-        106
+        340,
+        152
       ],
       "flags": {},
       "order": 2,
       "mode": 0,
       "inputs": [
         {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6,
+            10
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScaleBy"
+      },
+      "widgets_values": [
+        "area",
+        0.25
+      ],
+      "title": "Downscale (matting is heavy)"
+    },
+    {
+      "id": 4,
+      "type": "ImageScaleBy",
+      "pos": [
+        380,
+        400
+      ],
+      "size": [
+        340,
+        152
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageScaleBy"
+      },
+      "widgets_values": [
+        "area",
+        0.25
+      ]
+    },
+    {
+      "id": 5,
+      "type": "ImageToMask",
+      "pos": [
+        380,
+        560
+      ],
+      "size": [
+        340,
+        124
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageToMask"
+      },
+      "widgets_values": [
+        "red"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "JHPixelProTrimapBuilder",
+      "pos": [
+        760,
+        40
+      ],
+      "size": [
+        340,
+        180
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
           "name": "mask",
           "type": "MASK",
-          "link": 3
+          "link": 4
         }
       ],
       "outputs": [
         {
           "name": "trimap",
           "type": "MASK",
-          "slot_index": 0,
           "links": [
-            4,
-            5
-          ]
+            5,
+            7
+          ],
+          "slot_index": 0
         }
       ],
       "properties": {
-        "cnr_id": "ComfyUI-JH-PixelPro",
-        "ver": "1.1.0",
-        "Node name for S&R": "JHPixelProTrimapBuilder",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        }
+        "Node name for S&R": "JHPixelProTrimapBuilder"
       },
       "widgets_values": [
-        1,
-        64,
-        1.3
+        3,
+        8,
+        0.0
       ]
     },
     {
-      "id": 5,
+      "id": 7,
       "type": "JHPixelProAlphaMatteExtractor",
       "pos": [
-        565.6497929621512,
-        309.6084992112988
+        760,
+        300
       ],
       "size": [
-        210,
-        102
+        340,
+        234
       ],
       "flags": {},
-      "order": 4,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -132,181 +273,35 @@
         {
           "name": "alpha",
           "type": "MASK",
-          "slot_index": 0,
           "links": [
-            7,
-            8
-          ]
+            9
+          ],
+          "slot_index": 0
         }
       ],
       "properties": {
-        "cnr_id": "ComfyUI-JH-PixelPro",
-        "ver": "1.1.0",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        },
         "Node name for S&R": "JHPixelProAlphaMatteExtractor"
       },
       "widgets_values": [
-        0.0000001,
+        1e-07,
         1,
         100.0,
         "auto"
       ]
     },
     {
-      "id": 7,
-      "type": "LayerUtility: ImageRemoveAlpha",
+      "id": 8,
+      "type": "MaskToImage",
       "pos": [
-        817.1717846464838,
-        458.4329007781472
+        1140,
+        40
       ],
       "size": [
-        313.3931640625,
-        102
+        340,
+        96
       ],
       "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "RGBA_image",
-          "type": "IMAGE",
-          "link": 9
-        },
-        {
-          "name": "mask",
-          "shape": 7,
-          "type": "MASK",
-          "link": 8
-        }
-      ],
-      "outputs": [
-        {
-          "name": "RGB_image",
-          "type": "IMAGE",
-          "links": [
-            10
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui_layerstyle",
-        "ver": "2.0.38",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
-        "Node name for S&R": "LayerUtility: ImageRemoveAlpha"
-      },
-      "widgets_values": [
-        true,
-        "#000000"
-      ],
-      "color": "rgba(38, 73, 116, 0.7)"
-    },
-    {
-      "id": 1,
-      "type": "LoadImage",
-      "pos": [
-        -62.276771075818914,
-        155.69743689981263
-      ],
-      "size": [
-        315,
-        314
-      ],
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "slot_index": 0,
-          "links": [
-            2,
-            6,
-            9
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "slot_index": 1,
-          "links": []
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.19.0",
-        "Node name for S&R": "LoadImage",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.6.2",
-          "input_ue_unconnectable": {}
-        },
-        "#sdppp_variant": "default",
-        "#sdppp_simple_content": "canvas",
-        "#sdppp_simple_mask": "canvas",
-        "#sdppp_simple_boundary": "canvas",
-        "#sdppp_label": ""
-      },
-      "widgets_values": [
-        "73927abf94a0a498655b57eeebb03a0a.jpg",
-        "image"
-      ]
-    },
-    {
-      "id": 4,
-      "type": "MaskPreview+",
-      "pos": [
-        792.3664111620599,
-        161.50949585719036
-      ],
-      "size": [
-        155.071875,
-        246
-      ],
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 4
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfyui_essentials",
-        "ver": "1.1.0",
-        "Node name for S&R": "MaskPreview+",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.6.2"
-        }
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 6,
-      "type": "MaskPreview+",
-      "pos": [
-        973.3273727419869,
-        155.69743689981263
-      ],
-      "size": [
-        155.071875,
-        246
-      ],
-      "flags": {},
-      "order": 5,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -315,56 +310,164 @@
           "link": 7
         }
       ],
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8
+          ],
+          "slot_index": 0
+        }
+      ],
       "properties": {
-        "cnr_id": "comfyui_essentials",
-        "ver": "1.1.0",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.6.2"
-        },
-        "Node name for S&R": "MaskPreview+"
+        "Node name for S&R": "MaskToImage"
       },
       "widgets_values": []
     },
     {
-      "id": 8,
+      "id": 9,
       "type": "PreviewImage",
       "pos": [
-        1153.5233771009594,
-        155.69743689981263
+        1400,
+        0
       ],
       "size": [
-        212.9061928834567,
-        353.9888609587375
+        280,
+        380
       ],
       "flags": {},
-      "order": 7,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Trimap 0 / 0.5 / 1"
+    },
+    {
+      "id": 10,
+      "type": "JHPixelProMaskPreview",
+      "pos": [
+        1140,
+        420
+      ],
+      "size": [
+        340,
+        262
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 9
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
           "link": 10
         }
       ],
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "preview",
+          "type": "IMAGE",
+          "links": [
+            11
+          ],
+          "slot_index": 0
+        }
+      ],
       "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.19.0",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
+        "Node name for S&R": "JHPixelProMaskPreview"
+      },
+      "widgets_values": [
+        "cutout",
+        "red",
+        0.5,
+        "turbo",
+        false
+      ],
+      "title": "Alpha matte cutout"
+    },
+    {
+      "id": 11,
+      "type": "PreviewImage",
+      "pos": [
+        1520,
+        420
+      ],
+      "size": [
+        280,
+        380
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
         "Node name for S&R": "PreviewImage"
       },
-      "widgets_values": []
+      "widgets_values": [],
+      "title": "Alpha matte cutout"
+    },
+    {
+      "id": 12,
+      "type": "Note",
+      "pos": [
+        40,
+        780
+      ],
+      "size": [
+        1000,
+        150
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Alpha Matte — closed-form (Levin 2008) matting from a trimap.\n\nTrimap Builder turns the subject mask into sure-foreground / unknown / sure-background; Alpha Matte solves the unknown band against the photo so hair strands get partial alpha. The image is downscaled to 25% first: matting cost grows with the unknown area, so work at preview size, then refine. compute_device = auto stays on CPU for CPU images (portable); pick cuda on an NVIDIA GPU for ~5x speed."
+      ]
     }
   ],
   "links": [
     [
-      2,
+      1,
       1,
       0,
       3,
@@ -372,66 +475,82 @@
       "IMAGE"
     ],
     [
-      3,
-      3,
-      0,
+      2,
       2,
       0,
-      "MASK"
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
     ],
     [
       4,
-      2,
+      5,
       0,
-      4,
+      6,
       0,
       "MASK"
     ],
     [
       5,
-      2,
+      6,
       0,
-      5,
+      7,
       0,
       "MASK"
     ],
     [
       6,
-      1,
+      3,
       0,
-      5,
+      7,
       1,
       "IMAGE"
     ],
     [
       7,
-      5,
-      0,
       6,
+      0,
+      8,
       0,
       "MASK"
     ],
     [
       8,
-      5,
+      8,
       0,
-      7,
-      1,
-      "MASK"
+      9,
+      0,
+      "IMAGE"
     ],
     [
       9,
-      1,
-      0,
       7,
       0,
-      "IMAGE"
+      10,
+      0,
+      "MASK"
     ],
     [
       10,
-      7,
+      3,
       0,
-      8,
+      10,
+      1,
+      "IMAGE"
+    ],
+    [
+      11,
+      10,
+      0,
+      11,
       0,
       "IMAGE"
     ]
@@ -439,20 +558,13 @@
   "groups": [],
   "config": {},
   "extra": {
-    "ue_links": [],
-    "links_added_by_ue": [],
     "ds": {
-      "scale": 0.9229599817706438,
+      "scale": 0.75,
       "offset": [
-        388.72584221194415,
-        417.35076560829026
+        40,
+        40
       ]
-    },
-    "frontendVersion": "1.42.10",
-    "VHS_latentpreview": false,
-    "VHS_latentpreviewrate": 0,
-    "VHS_MetadataImage": true,
-    "VHS_KeepIntermediate": true
+    }
   },
   "version": 0.4
 }
