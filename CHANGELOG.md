@@ -16,6 +16,21 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.5.1] — 2026-10-17
+
+### Added
+
+- Sample workflows for N-36..N-44 (`workflows/N-36-pyramid-blend.json` … `N-44-qa-image-diff.json`), built from core ComfyUI nodes and this pack only, each executed on a live ComfyUI; `-preview.png` files are the real outputs. Linked from the docs pages and `workflows/README.md`.
+- **N-42 Face Warp (TPS smooth) `smoothness`** widget (default `1.0`, `0` = exact interpolation). Spline regularisation absorbs landmark detection noise between two photos, which folded/rippled the image with exact interpolation (found while building the N-42 sample).
+
+### Fixed
+
+- **N-19 Face Landmarks / N-10 Face Detect:** crashed in ComfyUI with "incompatible constructor arguments" when the image came from ImageScale/ImageCrop (channel-planar strides); the frame is now passed to MediaPipe as a C-contiguous array.
+
+### Changed
+
+- **N-42:** default output is now regularised (`smoothness = 1`); set `0` to restore the v1.5.0 exact behaviour. Clean edits move by < 1 px (median 0.01 px, p95 0.9 px for a 6% zoom on the sample portrait). `smoothness` is an optional input, so v1.5.0 API-format prompts still queue.
+
 ## [1.5.0] — 2026-10-17
 
 ### Added
@@ -458,7 +473,8 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.1
 [1.5.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.0
 [1.4.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.4.0
 [1.3.1]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.1

@@ -58,7 +58,7 @@ If you prefer a manual install, clone the repository into `ComfyUI/custom_nodes/
 | Face | 8 | Face detection (MediaPipe and YuNet GPU), landmarks, Delaunay and TPS warp, unwrap, beauty blend, skin-tone masks |
 | Looks | 1 | Preset-based creative look selection |
 | QA | 1 | SSIM / PSNR image comparison with visual diff |
-| **Total** | **44** | v1.5.0 |
+| **Total** | **44** | v1.5.1 |
 
 ## Lean-batch entry points
 

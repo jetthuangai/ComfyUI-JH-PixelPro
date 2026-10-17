@@ -5,7 +5,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** **v1.5.0** (2026-10-17) — 44 nodes live · utilities: smart sharpen, mask cleanup, TPS face warp, mask preview, QA diff · `/color` 13 + `/compositing` 5 + `/filters` 3 + `/mask` 10 + `/geometry` 3 + `/face` 8 + `/looks` 1 + `/qa` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** **v1.5.1** (2026-10-17) — 44 nodes live · utilities: smart sharpen, mask cleanup, TPS face warp, mask preview, QA diff · sample workflows for every new node · `/color` 13 + `/compositing` 5 + `/filters` 3 + `/mask` 10 + `/geometry` 3 + `/face` 8 + `/looks` 1 + `/qa` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 > ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
