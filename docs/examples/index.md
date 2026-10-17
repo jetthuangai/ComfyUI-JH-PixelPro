@@ -1,6 +1,6 @@
 # Examples
 
-These examples show the shortest practical paths into the v1.3.0 pack. They are not exhaustive tutorials; each page gives a concrete entry chain and the node references needed to expand it.
+These examples show the shortest practical paths into the v1.3.1 pack. They are not exhaustive tutorials; each page gives a concrete entry chain and the node references needed to expand it.
 
 ## Example pages
 

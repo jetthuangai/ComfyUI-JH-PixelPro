@@ -5,7 +5,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** **v1.3.0** (2026-04-24) — 34 nodes live · feature-complete milestone · `/color` 11 + `/compositing` 4 + `/filters` 2 + `/mask` 8 + `/geometry` 2 + `/face` 6 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** **v1.3.1** (2026-10-17) — 35 nodes live · border + memory fixes on top of the v1.3.0 feature-complete milestone · `/color` 12 + `/compositing` 4 + `/filters` 2 + `/mask` 8 + `/geometry` 2 + `/face` 6 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 > ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
@@ -96,6 +96,7 @@ Restart ComfyUI. The nodes appear under the `ComfyUI-JH-PixelPro/<group>` menu.
 - [x] N-33 Mask Edge Smoother
 - [x] N-34 Preset Pack LUT
 - [x] N-35 Skin Tone Tri-Region
+- [x] Color Matcher Region (LAB) — region-aware variant of N-08
 
 ## Engineering principles
 

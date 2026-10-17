@@ -6,7 +6,7 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 ### Added
 
-- Post-v1.3.0 documentation polish: quickstart guide, homepage milestone hero, examples section, and generated N-34 LUT preset visual gallery assets.
+- Nothing yet.
 
 ### Changed
 
@@ -15,6 +15,20 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 ### Fixed
 
 - Nothing yet.
+
+## [1.3.1] — 2026-10-17
+
+### Added
+
+- **`JHPixelProColorMatcherRegion`** (Color Matcher Region) (`ComfyUI-JH-PixelPro/color`): region-aware LAB color matching — transfers statistics from an optional reference-mask region into an optional target-mask region. Pack now registers **35 nodes** (`/color` 12).
+- Post-v1.3.0 documentation polish: quickstart guide, homepage milestone hero, examples section, and generated N-34 LUT preset visual gallery assets.
+- Border and memory regression tests for N-28, N-02 and N-23 ColorLab.
+
+### Fixed
+
+- **N-28 Edge-Aware Mask Refiner:** the guided filter's box filter now uses replicate padding with two separable average pools. The previous zero-padded box filter biased every window touching the frame, so a full mask came back as low as ~0.26 at the corners (radius 16); it now stays exactly 1.0. Interior pixels match the previous output within ~5e-6, and CPU runtime drops ~4x (1024², radius 8).
+- **N-02 Sub-Pixel Mask Refiner:** erosion/dilation now use separable `max_pool2d` instead of `kornia.morphology` (unfold engine). Output is bit-identical, but peak GPU memory drops from ~5.6 GB to ~30 MB at radius 16 on a 1024² mask, radius 64 on 2048² (multi-GB to hundreds of GB before, unusable) runs in ~110 MB, and CPU runtime drops 3–16x.
+- **N-23 ColorLab Texture / Clarity:** local-contrast blur uses `kornia.filters.box_blur` with replicate padding, removing the bright halo (0.5 → ~0.62) along the image frame. Interior pixels are unchanged.
 
 ## [1.3.0] — 2026-04-24
 
@@ -410,7 +424,8 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.1
 [1.3.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.0
 [0.3.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.3.0
 [0.2.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.2.0

@@ -1,6 +1,6 @@
 # ComfyUI-JH-PixelPro
 
-GPU-powered pro-grade image suite for ComfyUI. The pack ships 34 production-ready nodes across seven categories for retouch, color science, mask finishing, face workflows, and Photoshop-style compositing without leaving the tensor pipeline.
+GPU-powered pro-grade image suite for ComfyUI. The pack ships 35 production-ready nodes across seven categories for retouch, color science, mask finishing, face workflows, and Photoshop-style compositing without leaving the tensor pipeline.
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-github_pages-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
@@ -13,7 +13,7 @@ Version 1.3.0 is the first feature-complete public milestone: 34 live nodes, ful
 
 Highlights:
 
-- 34 pro-retouch nodes across color, mask, face, geometry, filters, looks, and compositing.
+- 35 pro-retouch nodes across color, mask, face, geometry, filters, looks, and compositing.
 - Levin 2008 closed-form alpha matting with CUDA-capable sparse PyTorch acceleration and CPU fallback.
 - Zero-config creative color starts through N-34 bundled LUT presets.
 - Portrait tone targeting through N-35 skin-tone shadow, midtone, and highlight masks.
@@ -38,18 +38,18 @@ Highlights:
 
 If you prefer a manual install, clone the repository into `ComfyUI/custom_nodes/` and run `pip install -e .`.
 
-## 34-node pack at a glance
+## 35-node pack at a glance
 
 | Category | Nodes | Highlights |
 |---|---:|---|
-| Color | 11 | Color matching, tone curves, LUT import/export, preset LUTs, selective color, ColorLab |
+| Color | 12 | Color matching (global and region-aware), tone curves, LUT import/export, preset LUTs, selective color, ColorLab |
 | Compositing | 4 | Photoshop-style layer stack and blend modes |
 | Filters | 2 | Frequency separation and edge-aware smoothing |
 | Mask | 8 | Sub-pixel refinement, alpha matte extraction, morphology, combine, edge smoothing |
 | Geometry | 2 | Facial alignment and lens distortion correction |
 | Face | 6 | Face detection, landmarks, warp, unwrap, beauty blend, skin-tone masks |
 | Looks | 1 | Preset-based creative look selection |
-| **Total** | **34** | Feature-complete pack v1.3.0 |
+| **Total** | **35** | Feature-complete pack, v1.3.1 |
 
 ## Lean-batch entry points
 
