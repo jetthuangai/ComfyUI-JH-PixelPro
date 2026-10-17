@@ -35,8 +35,16 @@ Khớp màu giữa hai vùng bạn chọn, ví dụ da của khuôn mặt AI v�
 | `strength` | 1.0 (0 đến 1) | 0 giữ nguyên ảnh, 1 áp dụng khớp hoàn toàn. | 0.6 đến 0.9 cho kết quả tự nhiên. |
 | `target_mask` (tùy chọn) | toàn ảnh | Vùng của ảnh đích được đo và đổi màu. Viền mềm cho chuyển tiếp mềm. Phải cùng kích thước ảnh đích. | Nên feather mask cứng trước. |
 | `reference_mask` (tùy chọn) | toàn ảnh | Vùng của ảnh tham chiếu được đo. Phải cùng kích thước ảnh tham chiếu. | Chọn mảng sạch, sáng đều. |
+| `method` (tùy chọn) | `stats` | `stats` khớp giá trị trung bình và độ trải của từng kênh (mượt, an toàn). `histogram` khớp toàn bộ phân bố của từng kênh, nên vùng tối, trung tính và sáng đều rơi đúng chỗ như ảnh tham chiếu. | Thử `histogram` khi `stats` gần đúng nhưng chưa tới. |
 
 **Đầu ra:** `image_matched`, ảnh đã đổi màu. Ngoài `target_mask`, ảnh giữ nguyên.
+
+## Stats hay histogram?
+
+- **`stats`** (mặc định) dịch và co giãn từng kênh để trung bình và độ trải bằng ảnh tham chiếu. Nhẹ nhàng, dễ đoán, hợp với hầu hết việc sửa màu da và cân bằng trắng.
+- **`histogram`** uốn từng kênh để toàn bộ phân bố (histogram) theo ảnh tham chiếu. Dùng khi hai ảnh cùng mức trung bình nhưng cảm giác khác hẳn, ví dụ bản render phẳng so với ảnh chụp tương phản. Mạnh hơn, nên hạ `strength` và để ý nhiễu hoặc dải bậc (banding) ở vùng mịn.
+
+Workflow cũ vẫn chạy: khi không có `method`, node dùng `stats`.
 
 ## Mẹo khi chỉnh ảnh
 
@@ -48,9 +56,17 @@ Khớp màu giữa hai vùng bạn chọn, ví dụ da của khuôn mặt AI v�
 ??? note "Bên trong node hoạt động thế nào"
     Cả hai ảnh được chuyển sang CIE LAB (Kornia). Trung bình và độ lệch chuẩn của các kênh được chọn được tính có trọng số mask trong từng mask, sau đó ảnh đích được dịch và co giãn theo thống kê của ảnh tham chiếu (Reinhard). Kết quả đổi về RGB, trộn theo `strength`, cuối cùng ghép bằng `lerp(target, matched, target_mask)`. Mỗi mask phải cùng chiều cao, chiều rộng với ảnh của nó và có ít nhất một pixel dương; một mask hoặc một ảnh tham chiếu duy nhất sẽ được dùng cho cả batch. Ảnh và mask ngoài 0..1 bị kẹp lại kèm cảnh báo trong log.
 
+    Với `method = histogram`, mỗi kênh được chọn của ảnh đích và ảnh tham chiếu được chia vào histogram 4096 bin (có trọng số theo mask nếu có). Mỗi pixel đích được ánh xạ sang phân vị của nó trong CDF của ảnh đích, rồi sang giá trị ở cùng phân vị trong CDF của ảnh tham chiếu (nội suy tuyến tính trong bin). Phần trộn theo `strength` và đường ra giống `stats`. Chạy trên GPU vài mili giây ở 2K, dùng dưới 1 GB.
+
 ## Node liên quan
 
 - [Color Matcher](color-matcher.md): bản khớp toàn khung
 - [Skin Tone Tri-Region](skin-tone-tri-region.md): các vùng da dựng sẵn để làm mask
 - [Saturation Mask](saturation-mask.md): chọn vùng theo độ đậm màu
 - [Mask Edge Smoother](mask-edge-smoother.md): làm mềm viền mask
+
+## Workflow mẫu
+
+[Workflow mẫu Color Matcher stats và histogram](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-49-color-matcher-histogram.json) khớp ảnh tông lạnh theo ảnh tham chiếu tông ấm bằng cả hai cách, đặt cạnh nhau (dùng Color Matcher; node Region có cùng nút `method`). Workflow chỉ dùng node lõi của ComfyUI và pack này. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`.
+
+![Kết quả: Workflow mẫu Color Matcher stats và histogram](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-49-color-matcher-histogram-preview.png)

@@ -27,7 +27,7 @@ Five minutes from install to your first result.
     Use the same Python that runs ComfyUI (for a portable or venv install, its own `python`). Then restart ComfyUI.
 
 !!! info "Requirements"
-    Python 3.10+, the PyTorch that comes with ComfyUI, Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8 and SciPy ≥ 1.10.
+    Python 3.10+, the PyTorch that comes with ComfyUI, Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8 and SciPy ≥ 1.10. Optional: `onnxruntime-gpu` (or `onnxruntime`) for Depth Anything and Depth Lens Blur.
     An NVIDIA GPU with 8 GB VRAM or more is recommended. Everything also runs on CPU, just slower.
 
 ## 2. Find the nodes

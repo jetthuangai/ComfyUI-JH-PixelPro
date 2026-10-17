@@ -82,6 +82,12 @@ Nhóm node này lo mọi thứ về màu và độ sáng: khớp ảnh này vớ
 
     Tự dựng LUT từ màu và tông của một ảnh tham chiếu.
 
+-   ![](../assets/nodes/palette-extract.jpg)
+
+    **[Palette Extract](../nodes/palette-extract.md)**
+
+    Lấy 2–16 màu chủ đạo thành ô màu và mã HEX, kèm phiên bản ảnh màu phẳng (posterize).
+
 </div>
 
 ## Chuỗi node thường dùng

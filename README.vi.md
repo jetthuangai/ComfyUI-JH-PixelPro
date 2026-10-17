@@ -2,7 +2,7 @@
 
 # PixelPro cho ComfyUI
 
-**Bộ công cụ retouch, màu và mask chuyên nghiệp cho ComfyUI — 45 node chạy GPU, xây dựng trên PyTorch + Kornia.**
+**Bộ công cụ retouch, màu và mask chuyên nghiệp cho ComfyUI — 50 node chạy GPU, xây dựng trên PyTorch + Kornia.**
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-EN%20%7C%20VI-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/)
@@ -59,7 +59,7 @@ pip install -r requirements.txt   # dùng đúng Python mà ComfyUI đang chạy
 
 Khởi động lại ComfyUI. Các node nằm trong **Add Node → ComfyUI-JH-PixelPro**.
 
-Yêu cầu: Python 3.10+, PyTorch (đi kèm ComfyUI), Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8, SciPy ≥ 1.10. Nên có GPU NVIDIA từ 8 GB VRAM; CPU vẫn chạy được.
+Yêu cầu: Python 3.10+, PyTorch (đi kèm ComfyUI), Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8, SciPy ≥ 1.10. Tùy chọn: `onnxruntime-gpu` (hoặc `onnxruntime`) cho Depth Anything và Depth Lens Blur. Nên có GPU NVIDIA từ 8 GB VRAM; CPU vẫn chạy được.
 
 ## Bắt đầu nhanh
 
@@ -69,11 +69,11 @@ Yêu cầu: Python 3.10+, PyTorch (đi kèm ComfyUI), Kornia ≥ 0.7, MediaPipe 
 
 Hướng dẫn đầy đủ: [Hướng dẫn nhanh](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/quickstart/).
 
-## 45 node
+## 50 node
 
 Bấm vào tên node để xem hướng dẫn (thông số, mẹo, ảnh trước/sau).
 
-### Màu & tông · 13
+### Màu & tông · 14
 
 | Node | Công dụng |
 |---|---|
@@ -90,8 +90,9 @@ Bấm vào tên node để xem hướng dẫn (thông số, mẹo, ảnh trướ
 | [LUT Export](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/lut-export/) | Xuất HALD đã chỉnh màu thành file .cube. |
 | [HALD Identity](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/hald-identity/) | Ảnh HALD trung tính để chỉnh màu rồi xuất LUT. |
 | [Tone Match LUT](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/tone-match-lut/) | Tạo file .cube từ một khung hình mẫu đã chỉnh màu. |
+| [Palette Extract](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/palette-extract/) | Màu chủ đạo thành ô màu + mã HEX, kèm ảnh màu phẳng. |
 
-### Mask · 10
+### Mask · 11
 
 | Node | Công dụng |
 |---|---|
@@ -103,6 +104,7 @@ Bấm vào tên node để xem hướng dẫn (thông số, mẹo, ảnh trướ
 | [Mask Combine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/mask-combine/) | Cộng, trừ, giao, hợp hoặc nhân hai mask. |
 | [Mask Edge Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/mask-edge-smoother/) | Làm mượt viền mask răng cưa bằng lọc bilateral (CPU hoặc GPU). |
 | [Mask Cleanup](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/mask-cleanup/) | Xóa chấm lẻ, lấp lỗ, làm mềm viền theo khoảng cách. |
+| [SAM One-Click Mask](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/sam-mask/) | Segment Anything từ một điểm, một khung mặt hoặc một mask thô. |
 | [Mask Preview](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/mask-preview/) | Xem mask dạng phủ màu, bản đồ nhiệt hoặc cắt nền. |
 | [Detail Mask](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/high-freq-detail-masker/) | Mask vùng chi tiết nhỏ (tóc, mắt, texture) để bảo vệ hoặc làm nét. |
 
@@ -129,7 +131,7 @@ Bấm vào tên node để xem hướng dẫn (thông số, mẹo, ảnh trướ
 | [Layer Flatten](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/layer-flatten/) | Gộp chồng layer thành ảnh. |
 | [Pyramid Blend](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/pyramid-blend/) | Hòa trộn đa tần số để ghép ảnh liền mạch. |
 
-### Bộ lọc · 4 · Hình học · 3 · Look màu · 1 · Kiểm tra · 1
+### Bộ lọc · 5 · Độ sâu · 2 · Hình học · 3 · Look màu · 1 · Kiểm tra · 1
 
 | Node | Công dụng |
 |---|---|
@@ -137,6 +139,9 @@ Bấm vào tên node để xem hướng dẫn (thông số, mẹo, ảnh trướ
 | [Frequency Recombine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/frequency-recombine/) | Ghép lại ảnh từ low + high, chỉnh được lượng texture. |
 | [Skin Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/edge-aware-smoother/) | Làm mịn da giữ viền, có mask và cường độ. |
 | [Smart Sharpen](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/smart-sharpen/) | Unsharp mask trên độ sáng, có ngưỡng và mask. |
+| [Dust & Spot Removal](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/dust-spot-removal/) | Xóa đốm nhỏ và bụi, giữ nguyên chi tiết lớn. |
+| [Depth Anything V2](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/depth-anything/) | Bản đồ độ sâu từ một ảnh (bản Small: Apache-2.0). |
+| [Depth Lens Blur](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/depth-lens-blur/) | Bokeh theo độ sâu, lấy nét theo mask mặt hoặc chủ thể. |
 | [Facial Aligner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/facial-aligner/) | Căn mặt về khung vuông chuẩn; trả về ma trận để Unwrap Face dán lại. |
 | [Lens Distortion](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/lens-distortion/) | Sửa hoặc tạo méo thùng/méo gối của ống kính. |
 | [Auto Align](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/auto-align/) | Căn ảnh chụp thứ hai khớp ảnh chuẩn (SIFT hoặc LoFTR). |

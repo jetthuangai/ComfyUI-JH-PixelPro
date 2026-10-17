@@ -90,6 +90,12 @@ Masks decide *where* an edit happens: which pixels get smoothed, graded, replace
 
     Shows a mask as an overlay, heatmap, black-and-white view or cutout.
 
+-   ![](../assets/nodes/sam-mask.jpg)
+
+    **[SAM One-Click Mask](../nodes/sam-mask.md)**
+
+    Segment Anything: one point, a face box or a rough mask gives a clean object mask.
+
 </div>
 
 ## Typical chains

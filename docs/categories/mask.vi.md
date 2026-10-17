@@ -90,6 +90,12 @@ Mask quyết định chỉnh sửa xảy ra *ở đâu*: pixel nào được là
 
     Xem mask dạng phủ màu, heatmap, đen trắng hoặc cutout.
 
+-   ![](../assets/nodes/sam-mask.jpg)
+
+    **[SAM One-Click Mask](../nodes/sam-mask.md)**
+
+    Segment Anything: một điểm, một khung mặt hoặc một mask thô là ra mask vật thể sạch.
+
 </div>
 
 ## Chuỗi node thường dùng

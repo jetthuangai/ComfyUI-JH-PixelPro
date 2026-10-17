@@ -28,6 +28,12 @@ Nhóm bộ lọc làm việc trực tiếp trên bức ảnh: texture, cạnh v�
 
     Unsharp mask với ngưỡng nhiễu, chế độ chỉ luminance và mask.
 
+-   ![](../assets/nodes/dust-spot-removal.jpg)
+
+    **[Dust & Spot Removal](../nodes/dust-spot-removal.md)**
+
+    Tìm và xóa đốm nhỏ tối hoặc sáng (bụi cảm biến, mụn nhỏ), không đụng vào chi tiết lớn.
+
 </div>
 
 ## Chuỗi node thường dùng

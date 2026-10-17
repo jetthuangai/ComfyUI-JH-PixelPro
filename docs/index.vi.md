@@ -10,7 +10,7 @@ hide:
 
 # PixelPro cho ComfyUI
 
-<p class="pp-lead">Những kỹ thuật hậu kỳ bạn vẫn dùng hằng ngày (tách tần số, luminosity mask, LUT, chồng layer, tách nền chuẩn từng sợi tóc, căn khuôn mặt) nay thành 45 node chạy GPU ngay trong ComfyUI.</p>
+<p class="pp-lead">Những kỹ thuật hậu kỳ bạn vẫn dùng hằng ngày (tách tần số, luminosity mask, LUT, chồng layer, tách nền chuẩn từng sợi tóc, căn khuôn mặt) nay thành 50 node chạy GPU ngay trong ComfyUI.</p>
 
 [Bắt đầu :material-arrow-right:](quickstart.md){ .md-button .md-button--primary }
 [Xem các node](categories/color.md){ .md-button }
@@ -113,12 +113,13 @@ Mỗi bước là một node. Hãy bắt đầu với [Hướng dẫn nhanh](qui
 
 | Nhóm | Số node | Nổi bật |
 |---|---:|---|
-| [Màu & tông](categories/color.md) | 13 | ColorLab (kiểu ACR), Tone Curve, Color Matcher (toàn ảnh và theo vùng), LUT Preset / Import / Export, HALD, Tone Match LUT, CLAHE |
-| [Mask](categories/mask.md) | 10 | Tinh chỉnh Sub-Pixel và Edge-Aware, Alpha Matte, Trimap, Morphology, Combine, Edge Smoother, Cleanup, Preview, Detail Mask |
+| [Màu & tông](categories/color.md) | 14 | ColorLab (kiểu ACR), Tone Curve, Color Matcher (toàn ảnh và theo vùng), LUT Preset / Import / Export, HALD, Tone Match LUT, CLAHE |
+| [Mask](categories/mask.md) | 11 | Tinh chỉnh Sub-Pixel và Edge-Aware, Alpha Matte, Trimap, Morphology, Combine, Edge Smoother, Cleanup, Preview, Detail Mask |
 | [Khuôn mặt](categories/face.md) | 8 | Face Detect (MediaPipe) và Detect Lite (YuNet GPU), 468 landmark, warp Delaunay và TPS, Unwrap, Beauty Blend, mask tông da |
 | [Ghép ảnh](categories/compositing.md) | 5 | Chồng layer (start, add, group, flatten), Pyramid Blend |
-| [Bộ lọc](categories/filters.md) | 4 | Frequency Separation và Recombine, Skin Smoother, Smart Sharpen |
+| [Bộ lọc](categories/filters.md) | 5 | Frequency Separation và Recombine, Skin Smoother, Smart Sharpen, Dust & Spot Removal |
+| [Độ sâu](categories/depth.md) | 2 | Depth Anything V2, Depth Lens Blur (bokeh) |
 | [Hình học](categories/geometry.md) | 3 | Facial Aligner, Lens Distortion, Auto Align |
 | [Look màu](categories/looks.md) | 1 | Look Select |
 | [Kiểm tra chất lượng](categories/qa.md) | 1 | QA Image Diff |
-| **Tổng** | **45** | v1.5.x · Apache-2.0 |
+| **Tổng** | **50** | v1.5.x · Apache-2.0 |

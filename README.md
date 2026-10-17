@@ -2,7 +2,7 @@
 
 # PixelPro for ComfyUI
 
-**Pro-grade retouch, colour and mask tools for ComfyUI — 45 GPU nodes built on PyTorch + Kornia.**
+**Pro-grade retouch, colour and mask tools for ComfyUI — 50 GPU nodes built on PyTorch + Kornia.**
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-EN%20%7C%20VI-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
@@ -59,7 +59,7 @@ pip install -r requirements.txt   # use the Python that runs ComfyUI
 
 Restart ComfyUI. The nodes appear under **Add Node → ComfyUI-JH-PixelPro**.
 
-Requirements: Python 3.10+, PyTorch (from ComfyUI), Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8, SciPy ≥ 1.10. An NVIDIA GPU with 8 GB+ VRAM is recommended; CPU works too.
+Requirements: Python 3.10+, PyTorch (from ComfyUI), Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8, SciPy ≥ 1.10. Optional: `onnxruntime-gpu` (or `onnxruntime`) for Depth Anything and Depth Lens Blur. An NVIDIA GPU with 8 GB+ VRAM is recommended; CPU works too.
 
 ## Quick start
 
@@ -69,11 +69,11 @@ Requirements: Python 3.10+, PyTorch (from ComfyUI), Kornia ≥ 0.7, MediaPipe �
 
 Full walk-through: [Quickstart](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/quickstart/).
 
-## The 45 nodes
+## The 50 nodes
 
 Each name links to its guide (settings, tips, before/after image).
 
-### Color & Tone · 13
+### Color & Tone · 14
 
 | Node | What it does |
 |---|---|
@@ -90,8 +90,9 @@ Each name links to its guide (settings, tips, before/after image).
 | [LUT Export](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/lut-export/) | Bake a graded HALD into a .cube file. |
 | [HALD Identity](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/hald-identity/) | Neutral HALD image to grade into a LUT. |
 | [Tone Match LUT](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/tone-match-lut/) | Generate a .cube from one graded reference frame. |
+| [Palette Extract](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/palette-extract/) | Dominant colours as swatches + HEX, and a flat-colour version. |
 
-### Masks · 10
+### Masks · 11
 
 | Node | What it does |
 |---|---|
@@ -103,6 +104,7 @@ Each name links to its guide (settings, tips, before/after image).
 | [Mask Combine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/mask-combine/) | Add, subtract, intersect, union or multiply two masks. |
 | [Mask Edge Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/mask-edge-smoother/) | Bilateral cleanup of jagged mask edges (CPU or GPU). |
 | [Mask Cleanup](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/mask-cleanup/) | Remove specks, fill holes, distance feather. |
+| [SAM One-Click Mask](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/sam-mask/) | Segment Anything from one point, a face box or a rough mask. |
 | [Mask Preview](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/mask-preview/) | See any mask as overlay, heatmap or cutout. |
 | [Detail Mask](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/high-freq-detail-masker/) | Mask of fine detail (hair, eyes, texture) to protect or sharpen. |
 
@@ -129,7 +131,7 @@ Each name links to its guide (settings, tips, before/after image).
 | [Layer Flatten](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/layer-flatten/) | Render the stack to an image. |
 | [Pyramid Blend](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/pyramid-blend/) | Multi-band blending for seamless composites. |
 
-### Filters · 4 · Geometry · 3 · Looks · 1 · QA · 1
+### Filters · 5 · Depth · 2 · Geometry · 3 · Looks · 1 · QA · 1
 
 | Node | What it does |
 |---|---|
@@ -137,6 +139,9 @@ Each name links to its guide (settings, tips, before/after image).
 | [Frequency Recombine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/frequency-recombine/) | Rebuild the image from low + high, with a texture amount. |
 | [Skin Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/edge-aware-smoother/) | Edge-preserving skin smoothing with mask and strength. |
 | [Smart Sharpen](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/smart-sharpen/) | Unsharp mask on luminance, with threshold and mask. |
+| [Dust & Spot Removal](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/dust-spot-removal/) | Heal small specks and dust, leave larger details alone. |
+| [Depth Anything V2](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/depth-anything/) | Depth map from a single photo (Small model: Apache-2.0). |
+| [Depth Lens Blur](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/depth-lens-blur/) | Bokeh from depth, focus picked by a face or subject mask. |
 | [Facial Aligner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/facial-aligner/) | Align a face to a standard square crop; outputs the matrix Unwrap Face needs to paste it back. |
 | [Lens Distortion](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/lens-distortion/) | Correct or add barrel/pincushion distortion. |
 | [Auto Align](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/auto-align/) | Align a second shot to a reference (SIFT or LoFTR). |

@@ -40,6 +40,7 @@ Global tone and presence.
 | Setting | Range | What it does |
 |---|---|---|
 | `basic_exposure` | -5 to 5 (stops) | Overall brightness. Each +1 doubles the light. |
+| `exposure_mode` (optional) | `display` | `display` multiplies the picture values by 2^EV (the classic ColorLab behaviour). `linear` converts to linear light first, multiplies, then converts back, like a camera or Lightroom. |
 | `basic_contrast` | ±100 | Spreads tones away from mid-grey. |
 | `basic_highlights` | ±100 | Brightens or recovers the bright half of the picture. |
 | `basic_shadows` | ±100 | Opens up or deepens the dark half. |
@@ -91,6 +92,7 @@ There is no `gray_magenta` slider: magenta follows its neighbours.
 
 ## Tips from retouching
 
+- For natural exposure moves, set `exposure_mode` to `linear`. Real light adds up in linear space, so +1 stop behaves like opening the camera aperture one stop: mid-grey 0.5 goes to about 0.69, highlights roll off gradually and colours keep their balance. `display` multiplies the stored values instead, so the same +1 sends mid-grey to 1.0 and clips bright areas quickly. Old workflows stay on `display`.
 - Work top to bottom: tone in Basic first, colour in HSL or Grading afterwards, so the colour edits sit on a stable base.
 - Use small steps. Many sliders act strongly near their ends; 10 to 30 is often plenty.
 - Skin mostly sits in the orange band. Move `hsl_orange_*` gently and shift blues and greens harder when you want a look without sickly skin.
@@ -101,7 +103,7 @@ There is no `gray_magenta` slider: magenta follows its neighbours.
 ??? note "Under the hood"
     The pipeline lives in `core/color_lab.py` and uses plain PyTorch plus a Kornia box blur. Input is clamped to 0..1.
 
-    - **Basic:** exposure multiplies by `2^exposure`; contrast pivots around 0.5; highlights, shadows, whites and blacks add smoothstep-weighted offsets driven by luma (Rec. 601 weights) and are range-protected so they do not clip; texture and clarity are unsharp-style boosts using a 5 px and a 9 px box blur with replicated borders (clarity is weighted toward the mid-tones); dehaze is a contrast and offset change; vibrance and saturation work in HSV, with vibrance down-weighted near the skin hue.
+    - **Basic:** exposure multiplies by `2^exposure` (`display`, on the sRGB values) or converts to linear RGB with Kornia, multiplies by `2^exposure`, clamps and converts back (`linear`; mid-grey 0.5 at +1 EV becomes about 0.686); contrast pivots around 0.5; highlights, shadows, whites and blacks add smoothstep-weighted offsets driven by luma (Rec. 601 weights) and are range-protected so they do not clip; texture and clarity are unsharp-style boosts using a 5 px and a 9 px box blur with replicated borders (clarity is weighted toward the mid-tones); dehaze is a contrast and offset change; vibrance and saturation work in HSV, with vibrance down-weighted near the skin hue.
     - **HSL:** each band is a Gaussian on the hue circle (sigma 20 degrees) around fixed anchors: red 0, orange 30, yellow 60, green 120, aqua 180, blue 240, purple 280, magenta 310.
     - **Color Grading:** each range uses a smooth luma mask (shifted by `bal`), a tint built from `hue` and `sat`, and `lum` as a lift.
     - **Gray Mix:** luma is modulated by the per-band weights; magenta is not a band.

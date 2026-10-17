@@ -82,6 +82,12 @@ These nodes handle everything about colour and brightness: matching one image to
 
     Build a LUT automatically from the colour and tone of a reference image.
 
+-   ![](../assets/nodes/palette-extract.jpg)
+
+    **[Palette Extract](../nodes/palette-extract.md)**
+
+    Pull the 2–16 dominant colours as swatches and HEX codes, plus a flat-colour (posterised) version.
+
 </div>
 
 ## Typical chains

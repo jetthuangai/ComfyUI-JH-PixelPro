@@ -10,7 +10,7 @@ hide:
 
 # PixelPro for ComfyUI
 
-<p class="pp-lead">The retouching desk you already know (frequency separation, luminosity masks, LUTs, layer stacks, hair-accurate mattes, face alignment) rebuilt as 45 GPU nodes for ComfyUI.</p>
+<p class="pp-lead">The retouching desk you already know (frequency separation, luminosity masks, LUTs, layer stacks, hair-accurate mattes, face alignment) rebuilt as 50 GPU nodes for ComfyUI.</p>
 
 [Get started :material-arrow-right:](quickstart.md){ .md-button .md-button--primary }
 [Browse the nodes](categories/color.md){ .md-button }
@@ -113,12 +113,13 @@ Each step is one node. Start with [Quickstart](quickstart.md), or open the [exam
 
 | Group | Nodes | Highlights |
 |---|---:|---|
-| [Color & Tone](categories/color.md) | 13 | ColorLab (ACR-style), Tone Curve, Color Matcher (global and region), LUT Preset / Import / Export, HALD, Tone Match LUT, CLAHE |
-| [Masks](categories/mask.md) | 10 | Sub-Pixel and Edge-Aware refiners, Alpha Matte, Trimap, Morphology, Combine, Edge Smoother, Cleanup, Preview, Detail Mask |
+| [Color & Tone](categories/color.md) | 14 | ColorLab (ACR-style), Tone Curve, Color Matcher (global and region), LUT Preset / Import / Export, HALD, Tone Match LUT, CLAHE |
+| [Masks](categories/mask.md) | 11 | Sub-Pixel and Edge-Aware refiners, Alpha Matte, Trimap, Morphology, Combine, Edge Smoother, Cleanup, Preview, Detail Mask |
 | [Face](categories/face.md) | 8 | Face Detect (MediaPipe) and Detect Lite (YuNet GPU), 468 landmarks, Delaunay and TPS warp, Unwrap, Beauty Blend, skin-tone masks |
 | [Compositing](categories/compositing.md) | 5 | Layer stack (start, add, group, flatten), Pyramid Blend |
-| [Filters](categories/filters.md) | 4 | Frequency Separation and Recombine, Skin Smoother, Smart Sharpen |
+| [Filters](categories/filters.md) | 5 | Frequency Separation and Recombine, Skin Smoother, Smart Sharpen, Dust & Spot Removal |
+| [Depth](categories/depth.md) | 2 | Depth Anything V2, Depth Lens Blur (bokeh) |
 | [Geometry](categories/geometry.md) | 3 | Facial Aligner, Lens Distortion, Auto Align |
 | [Looks](categories/looks.md) | 1 | Look Select |
 | [QA](categories/qa.md) | 1 | QA Image Diff |
-| **Total** | **45** | v1.5.x · Apache-2.0 |
+| **Total** | **50** | v1.5.x · Apache-2.0 |

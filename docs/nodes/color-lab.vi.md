@@ -40,6 +40,7 @@ Tông toàn ảnh và độ "nổi".
 | Thông số | Khoảng | Tác dụng |
 |---|---|---|
 | `basic_exposure` | -5 đến 5 (stop) | Độ sáng chung. Mỗi +1 là gấp đôi lượng sáng. |
+| `exposure_mode` (tùy chọn) | `display` | `display` nhân giá trị ảnh với 2^EV (cách ColorLab hoạt động từ trước). `linear` đổi sang ánh sáng tuyến tính, nhân, rồi đổi ngược lại, giống máy ảnh hoặc Lightroom. |
 | `basic_contrast` | ±100 | Đẩy các tông ra xa mức xám trung bình. |
 | `basic_highlights` | ±100 | Làm sáng hoặc cứu lại nửa sáng của ảnh. |
 | `basic_shadows` | ±100 | Mở hoặc làm sâu nửa tối. |
@@ -91,6 +92,7 @@ Không có thanh `gray_magenta`: magenta đi theo các màu lân cận.
 
 ## Mẹo khi chỉnh ảnh
 
+- Muốn chỉnh phơi sáng tự nhiên, đặt `exposure_mode` là `linear`. Ánh sáng thật cộng dồn trong không gian tuyến tính, nên +1 stop giống mở khẩu máy ảnh thêm một stop: xám trung bình 0.5 lên khoảng 0.69, vùng sáng chuyển mượt và màu giữ được cân bằng. `display` nhân thẳng giá trị đã lưu nên cùng +1 đẩy xám trung bình lên 1.0 và vùng sáng cháy rất nhanh. Workflow cũ vẫn dùng `display`.
 - Làm từ trên xuống: tông ở Basic trước, màu ở HSL hoặc Grading sau, để chỉnh màu nằm trên nền ổn định.
 - Chỉnh bước nhỏ. Nhiều thanh rất mạnh ở gần hai đầu; 10 đến 30 thường là đủ.
 - Da chủ yếu nằm ở dải orange. Chỉnh `hsl_orange_*` nhẹ tay, đẩy mạnh hơn ở blue và green khi muốn tạo tông mà da không bị xanh xao.
@@ -101,7 +103,7 @@ Không có thanh `gray_magenta`: magenta đi theo các màu lân cận.
 ??? note "Bên trong node hoạt động thế nào"
     Chuỗi xử lý nằm ở `core/color_lab.py`, dùng PyTorch thuần cùng box blur của Kornia. Ảnh vào được kẹp trong 0..1.
 
-    - **Basic:** exposure nhân với `2^exposure`; contrast xoay quanh 0.5; highlights, shadows, whites, blacks cộng độ lệch có trọng số smoothstep theo luma (hệ số Rec. 601) và có bảo vệ biên để không bị cháy; texture và clarity là kiểu unsharp dùng box blur 5 px và 9 px với biên được sao chép (clarity ưu tiên midtone); dehaze là thay đổi tương phản và offset; vibrance và saturation làm việc trong HSV, vibrance giảm tác động gần hue của da.
+    - **Basic:** exposure nhân với `2^exposure` (`display`, trên giá trị sRGB) hoặc đổi sang RGB tuyến tính bằng Kornia, nhân với `2^exposure`, kẹp rồi đổi ngược lại (`linear`; xám 0.5 ở +1 EV thành khoảng 0.686); contrast xoay quanh 0.5; highlights, shadows, whites, blacks cộng độ lệch có trọng số smoothstep theo luma (hệ số Rec. 601) và có bảo vệ biên để không bị cháy; texture và clarity là kiểu unsharp dùng box blur 5 px và 9 px với biên được sao chép (clarity ưu tiên midtone); dehaze là thay đổi tương phản và offset; vibrance và saturation làm việc trong HSV, vibrance giảm tác động gần hue của da.
     - **HSL:** mỗi dải là một đường Gauss trên vòng hue (sigma 20 độ) quanh điểm neo cố định: red 0, orange 30, yellow 60, green 120, aqua 180, blue 240, purple 280, magenta 310.
     - **Color Grading:** mỗi vùng dùng một mask luma mượt (dịch bởi `bal`), màu nhuộm dựng từ `hue` và `sat`, còn `lum` là độ nâng.
     - **Gray Mix:** luma được điều biến theo trọng số của từng dải; magenta không phải một dải.

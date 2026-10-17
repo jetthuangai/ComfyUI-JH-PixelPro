@@ -73,6 +73,7 @@ plugins:
             Compositing: Ghép ảnh
             Filters: Bộ lọc
             Geometry: Hình học
+            Depth: Độ sâu
             Looks: Look màu
             QA: Kiểm tra chất lượng
 
@@ -114,6 +115,7 @@ nav:
           - LUT Export: nodes/lut-export.md
           - HALD Identity: nodes/hald-identity.md
           - Tone Match LUT: nodes/tone-match-lut.md
+          - Palette Extract: nodes/palette-extract.md
       - Masks:
           - Overview: categories/mask.md
           - Sub-Pixel Mask Refiner: nodes/sub-pixel-mask-refiner.md
@@ -125,6 +127,7 @@ nav:
           - Mask Edge Smoother: nodes/mask-edge-smoother.md
           - Mask Cleanup: nodes/mask-cleanup.md
           - Mask Preview: nodes/mask-preview.md
+          - SAM One-Click Mask: nodes/sam-mask.md
           - Detail Mask: nodes/high-freq-detail-masker.md
       - Face:
           - Overview: categories/face.md
@@ -149,6 +152,11 @@ nav:
           - Frequency Recombine: nodes/frequency-recombine.md
           - Skin Smoother: nodes/edge-aware-smoother.md
           - Smart Sharpen: nodes/smart-sharpen.md
+          - Dust & Spot Removal: nodes/dust-spot-removal.md
+      - Depth:
+          - Overview: categories/depth.md
+          - Depth Anything V2: nodes/depth-anything.md
+          - Depth Lens Blur: nodes/depth-lens-blur.md
       - Geometry:
           - Overview: categories/geometry.md
           - Facial Aligner: nodes/facial-aligner.md

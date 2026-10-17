@@ -28,6 +28,12 @@ Filters work on the picture itself: texture, edges and smoothness. Split detail 
 
     Unsharp mask with a noise threshold, luminance-only mode and a mask.
 
+-   ![](../assets/nodes/dust-spot-removal.jpg)
+
+    **[Dust & Spot Removal](../nodes/dust-spot-removal.md)**
+
+    Find and heal small dark or bright specks (sensor dust, tiny blemishes), leaving larger shapes alone.
+
 </div>
 
 ## Typical chains

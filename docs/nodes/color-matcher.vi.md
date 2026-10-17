@@ -38,11 +38,19 @@ Cần khớp riêng một vùng, hoặc hai ảnh khác kích thước? Dùng [C
 | `channels` | `ab` | `ab` chỉ khớp màu, giữ độ sáng của ảnh đích. `lab` khớp cả độ sáng. | Chân dung, sản phẩm: dùng `ab`. |
 | `strength` | 1.0 (0 đến 1) | Pha trộn giữa ảnh gốc (0) và bản khớp hoàn toàn (1). | Da tự nhiên: 0.6 đến 0.8. |
 | `mask` (tùy chọn) | không | Mask quyết định pixel nào được dùng để đo thống kê màu, trên cả hai ảnh. | Xem lưu ý bên dưới. |
+| `method` (tùy chọn) | `stats` | `stats` khớp giá trị trung bình và độ trải của từng kênh (mượt, an toàn). `histogram` khớp toàn bộ phân bố của từng kênh, nên vùng tối, trung tính và sáng đều rơi đúng chỗ như ảnh tham chiếu. | Thử `histogram` khi `stats` gần đúng nhưng chưa tới. |
 
 **Đầu ra:** `image_matched`, ảnh đã đổi màu.
 
 !!! note "Mask chọn vùng để đo, không chọn vùng áp dụng"
     Mask chỉ dùng để đo thống kê màu (ví dụ chỉ đo các pixel da của hai ảnh). Phần chỉnh màu sau đó vẫn áp lên toàn khung ảnh đích. Muốn giới hạn vùng bị đổi màu, hãy dùng [Color Matcher Region](color-matcher-region.md), hoặc tự trộn kết quả lại bằng mask trong chuỗi node của bạn.
+
+## Stats hay histogram?
+
+- **`stats`** (mặc định) dịch và co giãn từng kênh để trung bình và độ trải bằng ảnh tham chiếu. Nhẹ nhàng, dễ đoán, hợp với hầu hết việc sửa màu da và cân bằng trắng.
+- **`histogram`** uốn từng kênh để toàn bộ phân bố (histogram) theo ảnh tham chiếu. Dùng khi hai ảnh cùng mức trung bình nhưng cảm giác khác hẳn, ví dụ bản render phẳng so với ảnh chụp tương phản. Mạnh hơn, nên hạ `strength` và để ý nhiễu hoặc dải bậc (banding) ở vùng mịn.
+
+Workflow cũ vẫn chạy: khi không có `method`, node dùng `stats`.
 
 ## Mẹo khi chỉnh ảnh
 
@@ -53,6 +61,8 @@ Cần khớp riêng một vùng, hoặc hai ảnh khác kích thước? Dùng [C
 
 ??? note "Bên trong node hoạt động thế nào"
     Cả hai ảnh được chuyển sang LAB bằng Kornia `rgb_to_lab`. Với các kênh được chọn, ảnh đích được dịch và co giãn để trung bình và độ lệch chuẩn bằng của ảnh tham chiếu: `(target − mean_t) × (std_ref / std_t) + mean_ref`. Khi có mask, trung bình và độ lệch chuẩn được tính có trọng số theo mask. Kết quả đổi về RGB, loại NaN, kẹp trong 0..1 rồi trộn với ảnh gốc theo `strength`. `strength = 0` trả lại ảnh nguyên bản. Ảnh đích và tham chiếu phải cùng chiều cao, chiều rộng; mask cũng phải khớp và có ít nhất một pixel dương. Giá trị ngoài 0..1 bị kẹp lại kèm cảnh báo trong log.
+
+    Với `method = histogram`, mỗi kênh được chọn của ảnh đích và ảnh tham chiếu được chia vào histogram 4096 bin (có trọng số theo mask nếu có). Mỗi pixel đích được ánh xạ sang phân vị của nó trong CDF của ảnh đích, rồi sang giá trị ở cùng phân vị trong CDF của ảnh tham chiếu (nội suy tuyến tính trong bin). Phần trộn theo `strength` và đường ra giống `stats`. Chạy trên GPU vài mili giây ở 2K, dùng dưới 1 GB.
 
 ## Node liên quan
 
@@ -66,3 +76,7 @@ Cần khớp riêng một vùng, hoặc hai ảnh khác kích thước? Dùng [C
 [Workflow mẫu Color Matcher](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-08-color-matcher.json). Bản chỉnh tông lạnh của ảnh chân dung là ảnh đích, bản golden-hour là ảnh tham chiếu; Color Matcher chuyển màu tham chiếu sang trong không gian LAB. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow chỉ dùng node lõi của ComfyUI và pack này.
 
 ![Kết quả: Workflow mẫu Color Matcher](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-08-color-matcher-preview.png)
+
+[Workflow stats và histogram](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-49-color-matcher-histogram.json) chạy cả hai giá trị `method` trên cùng một cặp ảnh để so sánh.
+
+![Kết quả: Workflow stats và histogram](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-49-color-matcher-histogram-preview.png)

@@ -27,7 +27,7 @@ Năm phút từ lúc cài đặt đến kết quả đầu tiên.
     Dùng đúng Python mà ComfyUI đang chạy (bản portable hoặc venv có `python` riêng). Sau đó khởi động lại ComfyUI.
 
 !!! info "Yêu cầu"
-    Python 3.10 trở lên, PyTorch đi kèm ComfyUI, Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8 và SciPy ≥ 1.10.
+    Python 3.10 trở lên, PyTorch đi kèm ComfyUI, Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8 và SciPy ≥ 1.10. Tùy chọn: `onnxruntime-gpu` (hoặc `onnxruntime`) cho Depth Anything và Depth Lens Blur.
     Nên có GPU NVIDIA từ 8 GB VRAM. Máy chỉ có CPU vẫn chạy được, chỉ chậm hơn.
 
 ## 2. Tìm node
