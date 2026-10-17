@@ -5,7 +5,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** **v1.5.1** (2026-10-17) — 44 nodes live · utilities: smart sharpen, mask cleanup, TPS face warp, mask preview, QA diff · sample workflows for every new node · `/color` 13 + `/compositing` 5 + `/filters` 3 + `/mask` 10 + `/geometry` 3 + `/face` 8 + `/looks` 1 + `/qa` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** **v1.5.2** (2026-10-18) — 44 nodes live · utilities: smart sharpen, mask cleanup, TPS face warp, mask preview, QA diff · sample workflows for every new node · `/color` 13 + `/compositing` 5 + `/filters` 3 + `/mask` 10 + `/geometry` 3 + `/face` 8 + `/looks` 1 + `/qa` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 > ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
@@ -194,7 +194,7 @@ Edge-preserving bilateral smoothing for portrait skin retouch. Smooths flat regi
 | `sigma_color` | FLOAT | `0.1` | Intensity sigma on the `[0, 1]` image scale — **not** the 8-bit 10–50 range from OpenCV docs. Small values preserve edges; large values smooth across weak edges. Range 0.01..0.5 (step 0.01). |
 | `sigma_space` | FLOAT | `6.0` | Spatial sigma in pixels. Larger = wider spatial influence = stronger smoothing. Kernel size auto-sized to `2*ceil(3*sigma_space)+1`. Range 1.0..8.0 (v1.1 cap). For wider smoothing, downsample the image first with an upstream Resize node. |
 | `device` | COMBO | `auto` | Compute device. `auto` picks CUDA if available, else CPU. Explicit `cuda` raises if CUDA is unavailable. `cpu` forces CPU (slow but deterministic). |
-| `tile_mode` | BOOLEAN | `False` | Enable 512×512 tile processing to avoid OOM on large images. Required for 4K+ or `sigma_space > 4` on most GPUs. Leave off for small images (≤1K) for max speed. |
+| `tile_mode` | BOOLEAN | `False` | Enable tiled processing (tile size picked from a ~2 GB budget, e.g. 118 px at sigma 6) to avoid OOM on large images. Required for 4K+ or `sigma_space > 4` on most GPUs. Leave off for small images (≤1K) for max speed. |
 | `mask` | MASK | *(optional)* | Optional region gate (BHW float32 `[0, 1]`). Where `mask=0` the output equals the input pixel-exact; where `mask=1` full smoothing applies; intermediate values blend. |
 
 **Outputs:**
@@ -212,7 +212,7 @@ Edge-preserving bilateral smoothing for portrait skin retouch. Smooths flat regi
 ### Performance & device options (v1.1)
 
 - **`device` pin.** `auto` picks CUDA if a GPU is present, otherwise CPU. Use `cuda` to fail loudly if a GPU is required (raises `RuntimeError` if CUDA is unavailable). Use `cpu` to pin the run to CPU regardless of hardware.
-- **`tile_mode` pin.** Off by default. Enable it for 4K+ images or any run with `sigma_space > 4` — the kernel is processed in 512×512 tiles and stitched, trading a small speed hit for an OOM-proof path. Leave it off for images ≤1K for max throughput.
+- **`tile_mode` pin.** Off by default. Enable it for 4K+ images or any run with `sigma_space > 4` — the image is processed in tiles sized to keep peak memory near 2 GB (v1.5.2; before, 512 px tiles peaked at ~20 GB at sigma 6) and stitched exactly. Leave it off for images ≤1K for max throughput.
 - **`sigma_space` cap = 8.0.** Wider smoothing is deliberately blocked: it blows up the kernel and the memory budget. To smooth wider, downsample the image first (Resize node upstream), run the smoother, and upscale back.
 - **2 GB memory guardrail.** A non-tile run whose projected peak memory exceeds ≈2 GB raises a `RuntimeError` early with an actionable message (`enable tile_mode`, `reduce sigma_space`, or `downsample`), instead of crashing with CUDA OOM halfway through.
 

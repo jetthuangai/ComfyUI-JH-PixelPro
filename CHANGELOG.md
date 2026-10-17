@@ -16,6 +16,12 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.5.2] — 2026-10-18
+
+### Fixed
+
+- **N-03 Edge-Aware Skin Smoother `tile_mode`:** tiles were a fixed 512 px, but Kornia's bilateral filter keeps ~4x the unfold size in temporaries, so a full-size portrait (2333x3500, sigma 6) peaked at ~20 GB VRAM. With other models resident this spilled into shared system memory and froze or crashed ComfyUI (reported with the N-44 sample workflow). Tile size is now derived from the 2 GB budget: peak 1.8 GB, and 20x faster on the same image (53.7 s -> 2.7 s). Output is unchanged (tiles overlap by the kernel radius).
+
 ## [1.5.1] — 2026-10-17
 
 ### Added
@@ -473,7 +479,8 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.5.2...HEAD
+[1.5.2]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.2
 [1.5.1]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.1
 [1.5.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.0
 [1.4.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.4.0
