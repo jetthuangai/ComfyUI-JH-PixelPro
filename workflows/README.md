@@ -76,7 +76,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | [Trimap Builder](N-30-trimap-builder.json) | Sure-subject, unknown and sure-background bands from a subject mask. | [image](N-30-trimap-builder-preview.png) |
 | [Mask Morphology](N-31-mask-morphology.json) | `close` at radius 64 seals the small shadow gap by the nose. | [image](N-31-mask-morphology-preview.png) |
 | [Mask Combine](N-32-mask-combine.json) | Subject mask intersected with Luminosity Masking highlights, with `soft_feather`. | [image](N-32-mask-combine-preview.png) |
-| [Mask Edge Smoother](N-33-mask-edge-smoother.json) | Guided smoothing of stair-stepped mask edges (`backend = gpu` needs an NVIDIA GPU). | [image](N-33-mask-edge-smoother-preview.png) |
+| [Mask Edge Smoother](N-33-mask-edge-smoother.json) | Guided smoothing of stair-stepped mask edges (`backend = gpu` uses CUDA when available, otherwise runs on CPU). | [image](N-33-mask-edge-smoother-preview.png) |
 | [Mask Cleanup](N-41-mask-cleanup.json) | Remove specks, fill the hole by the nose, add a 6 px feather. | [image](N-41-mask-cleanup-preview.png) |
 | [Mask Preview](N-43-mask-preview.json) | A saturation mask shown as a heatmap and as an overlay with contour. | [image](N-43-mask-preview-preview.png) |
 | [Detail Mask (High-Frequency Detail Masker)](S-04-hf-detail-masker.json) | A mask of textured areas such as hair, eyes and fabric. | [image](S-04-hf-detail-masker-screenshot.png) |
