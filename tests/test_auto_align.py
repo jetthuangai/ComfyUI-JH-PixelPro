@@ -265,3 +265,17 @@ def test_affine_fit_leaves_numpy_global_rng_untouched() -> None:
     pts = torch.rand(60, 2) * 100
     auto_align_module._fit_affine(pts, pts + 3.0, 2.0)
     assert np.array_equal(np.random.rand(2), expected)
+
+
+def test_flat_image_falls_back_even_if_detector_returns_noise(monkeypatch) -> None:
+    # Regression (CI ubuntu): SIFT found ~174 "matches" on a constant image and RANSAC fit them.
+    def noisy_matches(*_args, **_kwargs):
+        pts = torch.rand(200, 2) * 60
+        return pts, pts + 1.0
+
+    monkeypatch.setattr(auto_align_module, "_match_sift", noisy_matches)
+    flat = torch.full((1, 64, 96, 3), 0.5)
+    ref = torch.full((1, 80, 80, 3), 0.5)
+    aligned, _, _, inliers = auto_align(flat, ref)
+    assert inliers[0] == 0
+    assert torch.allclose(aligned, ref, atol=1e-4)

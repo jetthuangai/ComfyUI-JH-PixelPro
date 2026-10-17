@@ -91,6 +91,10 @@ def _get_loftr(device: torch.device):
     return _MODEL_CACHE[key]
 
 
+# Grey-level std below ~0.25/255 means no usable structure to match.
+_MIN_TEXTURE_STD = 1e-3
+
+
 def _gray_small(
     image: torch.Tensor, max_side: int, multiple: int
 ) -> tuple[torch.Tensor, float, float]:
@@ -274,7 +278,11 @@ def auto_align(
                     grays_ref[rb] = (g, sxr, syr)
                 g_ref, sxr, syr = grays_ref[rb]
                 g_img, sxi, syi = _gray_small(img[b].to(feat_device), max_side, multiple)
-                if method == "sift":
+                if min(float(g_img.std()), float(g_ref.std())) < _MIN_TEXTURE_STD:
+                    # Featureless input: detectors still return keypoints on rounding noise
+                    # (platform dependent), which RANSAC can "fit". Treat as no matches.
+                    pts0 = pts1 = torch.empty(0, 2)
+                elif method == "sift":
                     pts0, pts1 = _match_sift(_sift_features(g_img), feats_ref[rb])
                 else:
                     pts0, pts1 = _match_loftr(g_img, g_ref)
