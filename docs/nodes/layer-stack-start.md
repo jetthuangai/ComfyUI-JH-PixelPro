@@ -53,4 +53,6 @@ The stack travels on a special `LAYER_STACK` connection. **Layer Stack Start** c
 
 ## Example workflow
 
-[Layer compositing: 2-layer overlay](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-26-layer-compositing-2layer-overlay.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. The workflow also loads a second image for the overlay; pick any image of your own in that Load Image node.
+[Layer compositing: 2-layer overlay](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-26-layer-compositing-2layer-overlay.json). The portrait is the background and a cinematic teal-orange copy goes on top with `soft_light` at 80% opacity, then Layer Flatten renders it. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. It uses only core ComfyUI nodes and this pack.
+
+![Result: Layer compositing: 2-layer overlay](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-26-layer-compositing-2layer-overlay-preview.png)

@@ -57,4 +57,6 @@ Nó nắm bắt màu và tông tổng thể: màu trung bình, độ trải rộ
 
 ## Workflow mẫu
 
-[Tone Match LUT example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-17-tone-match-lut.json). Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/` và dùng làm ảnh tham chiếu.
+[Tone Match LUT example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-17-tone-match-lut.json). Bản golden-hour của ảnh chân dung là ảnh tham chiếu. Tone Match LUT ghi một file `.cube` vào `ComfyUI/output/` và đường dẫn được nối thẳng vào LUT Import để áp lên ảnh gốc. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Tone Match LUT example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-17-tone-match-lut-preview.png)

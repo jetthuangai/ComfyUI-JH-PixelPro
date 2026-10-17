@@ -59,4 +59,6 @@ Hue wheel positions: 0 red, 60 yellow, 120 green, 180 cyan, 240 blue, 300 magent
 
 ## Example workflow
 
-[Hue/Saturation per Range example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` first.
+[Hue/Saturation per Range example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). It shifts and boosts one colour band of the portrait and shows the matching Saturation Mask. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. It uses only core ComfyUI nodes and this pack.
+
+![Result: Hue/Saturation per Range example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-16-selective-color-preview.png)

@@ -60,4 +60,6 @@ If you also give it a **guide** photo, it compares photo colours instead of mask
 
 ## Example workflow
 
-[Mask Edge Smoother example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-33-mask-edge-smoother.json). Open it and point the `Load Image` node at your own photo.
+[Mask Edge Smoother example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-33-mask-edge-smoother.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`. It uses `backend = gpu` (needs an NVIDIA GPU) with the portrait as the guide to smooth stair-stepped mask edges. With the default `opencv` backend the node runs on the CPU. It uses only core ComfyUI nodes and this pack.
+
+![Result: Mask Edge Smoother example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-33-mask-edge-smoother-preview.png)

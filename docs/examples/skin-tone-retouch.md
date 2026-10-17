@@ -18,7 +18,7 @@ Person / skin mask (optional) ──► Skin Tone Tri-Region
                                      └─ highlight_mask
 ```
 
-The skin mask can come from any segmentation node. The sample workflow uses a person-mask node from another custom-node pack. Without a skin mask the whole frame is split by brightness, including hair, clothing and background.
+The skin mask can come from any segmentation node. The sample workflow uses the person-mask node from the external A Person Mask Generator pack, which you need to install separately. Without a skin mask the whole frame is split by brightness, including hair, clothing and background.
 
 ## Try it
 

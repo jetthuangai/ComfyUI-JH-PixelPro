@@ -63,4 +63,4 @@ Hãy nối thêm một mask da (tùy chọn) để tóc, quần áo và hậu c�
 
 ## Workflow mẫu
 
-[Workflow mẫu Skin Tone Tri-Region](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-35-skin-tone-tri-region.json). Workflow dùng một node tách người từ pack custom node khác để tạo mask da. Xem [ví dụ Retouch tông da](../examples/skin-tone-retouch.md) để có hướng dẫn đầy đủ.
+[Workflow mẫu Skin Tone Tri-Region](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-35-skin-tone-tri-region.json). Workflow dùng node tách người của pack ngoài A Person Mask Generator (cần cài riêng) để tạo mask da. Xem [ví dụ Retouch tông da](../examples/skin-tone-retouch.md) để có hướng dẫn đầy đủ.

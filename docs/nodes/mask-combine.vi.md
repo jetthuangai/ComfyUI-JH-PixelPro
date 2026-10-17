@@ -65,4 +65,6 @@ Gộp hai mask thành một: cộng lại, cắt cái này khỏi cái kia, ch�
 
 ## Workflow mẫu
 
-[Workflow mẫu Mask Combine](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-32-mask-combine.json). Mở workflow rồi trỏ node `Load Image` vào ảnh của bạn.
+[Workflow mẫu Mask Combine](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-32-mask-combine.json). Chép `workflows/sample_portrait.jpg` và `workflows/sample_binary_mask.png` vào `ComfyUI/input/`. Workflow lấy phần giao giữa mask chủ thể và vùng highlight của Luminosity Masking, có `soft_feather` ở mép, nên chỉ còn lại phần sáng của chủ thể. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Mask Combine](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-32-mask-combine-preview.png)

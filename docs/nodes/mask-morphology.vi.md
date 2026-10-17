@@ -65,4 +65,6 @@ Làm nở mask, co mask, lấp khe nhỏ, bỏ gai mảnh, hoặc chỉ lấy đ
 
 ## Workflow mẫu
 
-[Workflow mẫu Mask Morphology](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-31-mask-morphology.json). Mở workflow rồi trỏ node `Load Image` vào ảnh của bạn.
+[Workflow mẫu Mask Morphology](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-31-mask-morphology.json). Chép `workflows/sample_portrait.jpg` và `workflows/sample_binary_mask.png` vào `ComfyUI/input/`. Workflow chạy `close` với bán kính 64 để lấp khe bóng nhỏ cạnh mũi mà không làm nở viền. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Mask Morphology](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-31-mask-morphology-preview.png)

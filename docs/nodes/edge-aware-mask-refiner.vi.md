@@ -56,4 +56,6 @@ Hiệu quả nhất với cạnh có độ tương phản rõ giữa chủ thể
 
 ## Workflow mẫu
 
-[Workflow mẫu Edge-Aware Mask Refiner](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-28-edge-aware-mask-refiner.json). Mở workflow rồi trỏ node `Load Image` vào ảnh của bạn.
+[Workflow mẫu Edge-Aware Mask Refiner](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-28-edge-aware-mask-refiner.json). Chép `workflows/sample_portrait.jpg` và `workflows/sample_binary_mask.png` vào `ComfyUI/input/`. Một mask cố ý làm mềm từ Sub-Pixel Mask Refiner được kéo bám vào mép tóc và da thật, dùng chính ảnh chân dung làm guide. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Edge-Aware Mask Refiner](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-28-edge-aware-mask-refiner-preview.png)

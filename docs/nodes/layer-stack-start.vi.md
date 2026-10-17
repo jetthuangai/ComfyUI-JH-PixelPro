@@ -53,4 +53,6 @@ Chồng layer đi qua một kết nối riêng tên `LAYER_STACK`. **Layer Stack
 
 ## Workflow mẫu
 
-[Layer compositing: 2-layer overlay](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-26-layer-compositing-2layer-overlay.json). Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow này còn nạp một ảnh thứ hai làm overlay; hãy chọn ảnh của bạn trong node Load Image đó.
+[Layer compositing: 2-layer overlay](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-26-layer-compositing-2layer-overlay.json). Ảnh chân dung là nền và một bản teal-orange kiểu cinematic đặt lên trên với `soft_light` ở opacity 80%, sau đó Layer Flatten render kết quả. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Layer compositing: 2-layer overlay](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-26-layer-compositing-2layer-overlay-preview.png)

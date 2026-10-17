@@ -67,4 +67,6 @@ To lift the shadows, raise the y of the second and third point. To darken the hi
 
 ## Example workflow
 
-[Tone Curve example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-09-tone-curve.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` first.
+[Tone Curve example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-09-tone-curve.json). It applies the `s_curve_mild` preset to the portrait. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. It uses only core ComfyUI nodes and this pack.
+
+![Result: Tone Curve example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-09-tone-curve-preview.png)

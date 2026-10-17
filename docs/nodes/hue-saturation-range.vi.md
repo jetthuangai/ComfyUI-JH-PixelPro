@@ -59,4 +59,6 @@ Vị trí trên vòng hue: 0 đỏ, 60 vàng, 120 xanh lá, 180 cyan, 240 xanh l
 
 ## Workflow mẫu
 
-[Workflow mẫu Hue/Saturation per Range](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/` trước.
+[Workflow mẫu Hue/Saturation per Range](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). Workflow dịch và tăng một dải màu của ảnh chân dung, kèm Saturation Mask tương ứng. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Hue/Saturation per Range](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-16-selective-color-preview.png)

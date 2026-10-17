@@ -65,4 +65,6 @@ For removing specks or holes by their **size** (rather than by brush radius), [M
 
 ## Example workflow
 
-[Mask Morphology example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-31-mask-morphology.json). Open it and point the `Load Image` node at your own photo.
+[Mask Morphology example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-31-mask-morphology.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`. It runs `close` at radius 64 to seal the small shadow gap by the nose without growing the outline. It uses only core ComfyUI nodes and this pack.
+
+![Result: Mask Morphology example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-31-mask-morphology-preview.png)

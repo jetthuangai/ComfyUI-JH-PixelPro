@@ -57,4 +57,6 @@ It captures overall colour and tone: the average colour, how widely the colours 
 
 ## Example workflow
 
-[Tone Match LUT example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-17-tone-match-lut.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` and use it as the reference.
+[Tone Match LUT example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-17-tone-match-lut.json). A golden-hour copy of the portrait is the reference. Tone Match LUT writes a `.cube` file to `ComfyUI/output/` and its path goes straight into LUT Import, which applies it to the original. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. It uses only core ComfyUI nodes and this pack.
+
+![Result: Tone Match LUT example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-17-tone-match-lut-preview.png)

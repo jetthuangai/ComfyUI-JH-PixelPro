@@ -65,4 +65,6 @@ This is the mask version of Photoshop's selection modes: add to selection, subtr
 
 ## Example workflow
 
-[Mask Combine example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-32-mask-combine.json). Open it and point the `Load Image` node at your own photo.
+[Mask Combine example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-32-mask-combine.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`. It intersects the subject mask with the Luminosity Masking highlights, with `soft_feather` on the edge, so only the bright parts of the subject stay selected. It uses only core ComfyUI nodes and this pack.
+
+![Result: Mask Combine example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-32-mask-combine-preview.png)

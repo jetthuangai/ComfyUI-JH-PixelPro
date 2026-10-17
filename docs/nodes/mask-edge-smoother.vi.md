@@ -60,4 +60,6 @@ Nếu bạn đưa thêm ảnh **guide**, node so sánh màu của ảnh thay vì
 
 ## Workflow mẫu
 
-[Workflow mẫu Mask Edge Smoother](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-33-mask-edge-smoother.json). Mở workflow rồi trỏ node `Load Image` vào ảnh của bạn.
+[Workflow mẫu Mask Edge Smoother](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-33-mask-edge-smoother.json). Chép `workflows/sample_portrait.jpg` và `workflows/sample_binary_mask.png` vào `ComfyUI/input/`. Workflow dùng `backend = gpu` (cần GPU NVIDIA) với ảnh chân dung làm guide để làm mượt mép mask bị răng cưa. Với backend mặc định `opencv`, node chạy bằng CPU. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Mask Edge Smoother](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-33-mask-edge-smoother-preview.png)

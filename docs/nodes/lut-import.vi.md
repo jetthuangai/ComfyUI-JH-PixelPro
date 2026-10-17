@@ -64,4 +64,6 @@ Muốn chỉnh màu chỉ một phần ảnh, nối một `MASK` (ví dụ từ 
 
 ## Workflow mẫu
 
-[LUT Import example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-15-lut-import.json). Workflow nạp file tên `S-14 Demo.cube`, vì vậy hãy chạy trước [LUT Export example](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json), chép file đã xuất vào `ComfyUI/input/` rồi đổi tên hoặc sửa `filename`. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/` để lấy ảnh.
+[LUT Import example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-15-lut-import.json). Workflow tự tạo LUT (HALD Identity → Tone Curve → LUT Export) rồi nối đường dẫn file vào LUT Import, nên chạy được mà không cần thêm file nào. Với LUT của bạn, hãy gõ tên file (tên tương đối được đọc từ `ComfyUI/input/`) hoặc đường dẫn tuyệt đối. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`.
+
+![Kết quả: LUT Import example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-15-lut-import-preview.png)

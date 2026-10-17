@@ -64,4 +64,6 @@ Thuật toán matting không cố quyết định cả bức ảnh. Nó chỉ t�
 
 ## Workflow mẫu
 
-[Workflow mẫu Trimap Builder](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-30-trimap-builder.json). Mở workflow rồi trỏ node `Load Image` vào ảnh của bạn.
+[Workflow mẫu Trimap Builder](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-30-trimap-builder.json). Chép `workflows/sample_portrait.jpg` và `workflows/sample_binary_mask.png` vào `ComfyUI/input/`. Workflow hiển thị vùng chắc chắn là chủ thể, vùng chưa xác định và vùng chắc chắn là nền, dựng từ mask chủ thể. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Trimap Builder](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-30-trimap-builder-preview.png)

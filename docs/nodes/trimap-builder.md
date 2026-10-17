@@ -64,4 +64,6 @@ The width of the unknown band is roughly `fg_radius + bg_radius`.
 
 ## Example workflow
 
-[Trimap Builder example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-30-trimap-builder.json). Open it and point the `Load Image` node at your own photo.
+[Trimap Builder example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-30-trimap-builder.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`. It shows the sure-subject, unknown and sure-background bands built from the subject mask. It uses only core ComfyUI nodes and this pack.
+
+![Result: Trimap Builder example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-30-trimap-builder-preview.png)

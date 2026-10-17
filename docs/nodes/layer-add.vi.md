@@ -59,6 +59,8 @@ Cách chồng layer hoạt động:
 | Comparative (so sánh) | `difference`, `exclusion`, `subtract`, `divide` |
 | Màu | `hue`, `saturation`, `color`, `luminosity` |
 
+`dissolve` hoạt động giống Photoshop: mỗi pixel hoặc hoàn toàn là layer, hoặc hoàn toàn là nền, với xác suất bằng `opacity × fill × mask`. Mode này không trộn màu. Họa tiết dùng seed cố định, nên cùng thiết lập luôn cho cùng một kết quả.
+
 ## Mẹo khi chỉnh ảnh
 
 - **Soft Light hoặc Overlay** ở opacity thấp là cách nhanh nhất để thêm tương phản hoặc phủ màu mà không bị cháy.
@@ -68,7 +70,7 @@ Cách chồng layer hoạt động:
 - Dùng `clip_to_below` để giữ layer nằm trong vùng mask của layer bên dưới.
 
 ??? note "Bên trong node hoạt động thế nào"
-    Các layer được render lần lượt. Kết quả blend được tính từ ảnh hiện tại và ảnh của layer (cả hai đều giới hạn trong 0..1), rồi trộn lại bằng `lerp` với `alpha = mask × opacity × fill`, nên opacity và fill cho cùng một kết quả ở đây. Không có mask thì coi như mask trắng hoàn toàn. Với `clip_to_below`, mask của layer được nhân với mask của layer bên dưới; nếu layer dưới không có mask thì coi như trắng, nên clipping không đổi gì. Ảnh và mask của layer được co giãn bilinear theo kích thước nền. Các mode `hue`, `saturation`, `color`, `luminosity` được tính trong không gian HSV nên có thể lệch nhẹ so với Photoshop. Nguồn: `nodes/layer_compositing.py` và `core/blend_modes.py`.
+    Các layer được render lần lượt. Kết quả blend được tính từ ảnh hiện tại và ảnh của layer (cả hai đều giới hạn trong 0..1), rồi trộn lại bằng `lerp` với `alpha = mask × opacity × fill`, nên opacity và fill cho cùng một kết quả ở đây. Riêng `dissolve` là ngoại lệ: `alpha` được dùng làm xác suất để một pixel lấy hoàn toàn từ layer, với giá trị ngẫu nhiên seed cố định cho từng pixel. Không có mask thì coi như mask trắng hoàn toàn. Với `clip_to_below`, mask của layer được nhân với mask của layer bên dưới; nếu layer dưới không có mask thì coi như trắng, nên clipping không đổi gì. Ảnh và mask của layer được co giãn bilinear theo kích thước nền. Các mode `hue`, `saturation`, `color`, `luminosity` được tính trong không gian HSV nên có thể lệch nhẹ so với Photoshop. Nguồn: `nodes/layer_compositing.py` và `core/blend_modes.py`.
 
 ## Node liên quan
 
@@ -79,6 +81,7 @@ Cách chồng layer hoạt động:
 
 ## Workflow mẫu
 
+- [Layer compositing: 2-layer overlay](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-26-layer-compositing-2layer-overlay.json)
 - [Layer compositing: chỉnh màu 5 layer kiểu cinematic](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-27-layer-compositing-5layer-cinematic.json)
 - [Layer compositing: group và clipping](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-28-layer-compositing-group-clipping.json)
 

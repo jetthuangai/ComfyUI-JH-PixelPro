@@ -65,4 +65,6 @@ Node dùng **closed-form matting** (Levin, Lischinski và Weiss, 2008). "Closed-
 
 ## Workflow mẫu
 
-[Workflow mẫu Alpha Matte](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-29-alpha-matte-extractor.json). Mở workflow rồi trỏ node `Load Image` vào ảnh của bạn.
+[Workflow mẫu Alpha Matte](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-29-alpha-matte-extractor.json). Chép `workflows/sample_portrait.jpg` và `workflows/sample_binary_mask.png` vào `ComfyUI/input/`. Workflow dựng trimap từ mask chủ thể, thu nhỏ ảnh còn 25% để matting chạy nhanh, rồi giải vùng chưa xác định. Với `compute_device = auto`, ảnh trên CPU vẫn chạy bằng CPU; chọn `cuda` trên GPU NVIDIA để nhanh hơn khoảng 5 lần. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Alpha Matte](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-29-alpha-matte-extractor-preview.png)

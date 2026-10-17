@@ -64,4 +64,6 @@ To grade only part of the picture, connect a `MASK` (for example from [Saturatio
 
 ## Example workflow
 
-[LUT Import example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-15-lut-import.json). It loads a file called `S-14 Demo.cube`, so first run the [LUT Export example](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json), copy the exported file to `ComfyUI/input/`, and rename it or change `filename`. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` for the image.
+[LUT Import example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-15-lut-import.json). The workflow builds its own LUT (HALD Identity → Tone Curve → LUT Export) and wires the file path into LUT Import, so it runs without any extra file. For your own LUT, type its file name (relative names are read from `ComfyUI/input/`) or an absolute path. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![Result: LUT Import example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-15-lut-import-preview.png)

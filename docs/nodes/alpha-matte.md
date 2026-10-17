@@ -65,4 +65,6 @@ This node uses **closed-form matting** (Levin, Lischinski and Weiss, 2008). "Clo
 
 ## Example workflow
 
-[Alpha Matte example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-29-alpha-matte-extractor.json). Open it and point the `Load Image` node at your own photo.
+[Alpha Matte example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-29-alpha-matte-extractor.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`. It builds a trimap from the subject mask, shrinks the photo to 25% to keep matting fast, and solves the unknown band. With `compute_device = auto` a CPU image stays on the CPU; pick `cuda` on an NVIDIA GPU for roughly 5x speed. It uses only core ComfyUI nodes and this pack.
+
+![Result: Alpha Matte example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-29-alpha-matte-extractor-preview.png)

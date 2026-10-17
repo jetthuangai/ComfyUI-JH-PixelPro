@@ -1,6 +1,6 @@
 # Bộ lọc (Filters)
 
-Nhóm bộ lọc làm việc trực tiếp trên bức ảnh: texture, cạnh và độ mịn. Tách chi tiết khỏi tông màu bằng frequency separation, làm mịn da mà không mất cạnh, và làm nét ở cuối. Ba node này gộp lại là phần lõi của một lượt retouch chân dung.
+Nhóm bộ lọc làm việc trực tiếp trên bức ảnh: texture, cạnh và độ mịn. Tách chi tiết khỏi tông màu bằng frequency separation, làm mịn da mà không mất cạnh, và làm nét ở cuối. Các node này gộp lại là phần lõi của một lượt retouch chân dung.
 
 <div class="grid cards" markdown>
 
@@ -9,6 +9,12 @@ Nhóm bộ lọc làm việc trực tiếp trên bức ảnh: texture, cạnh v�
     **[Frequency Separation](../nodes/frequency-separation.md)**
 
     Tách ảnh thành lớp màu mượt và lớp chi tiết mịn.
+
+-   ![](../assets/nodes/frequency-recombine.jpg)
+
+    **[Frequency Recombine](../nodes/frequency-recombine.md)**
+
+    Ghép lại hai lớp low và high, có thanh trượt tăng hoặc giảm texture.
 
 -   ![](../assets/nodes/edge-aware-smoother.jpg)
 
@@ -27,5 +33,5 @@ Nhóm bộ lọc làm việc trực tiếp trên bức ảnh: texture, cạnh v�
 ## Chuỗi node thường dùng
 
 - **Da tự nhiên:** Load Image → [Skin Smoother](../nodes/edge-aware-smoother.md) (strength 0.3 đến 0.5, kèm mask da) → [Smart Sharpen](../nodes/smart-sharpen.md) → Preview Image
-- **Sửa màu, giữ lỗ chân lông:** Load Image → [Frequency Separation](../nodes/frequency-separation.md) → chỉ chỉnh `low` → cộng `low` và `high` lại với nhau
+- **Sửa màu, giữ lỗ chân lông:** Load Image → [Frequency Separation](../nodes/frequency-separation.md) → chỉ chỉnh `low` → [Frequency Recombine](../nodes/frequency-recombine.md)
 - **Chỉ làm nét phần chi tiết:** [Detail Mask](../nodes/high-freq-detail-masker.md) → `mask` của [Smart Sharpen](../nodes/smart-sharpen.md)

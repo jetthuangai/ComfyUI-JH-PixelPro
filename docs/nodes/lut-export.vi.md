@@ -68,4 +68,6 @@ Hãy thử file trong phần mềm đích trước khi dựa vào nó. Pack này
 
 ## Workflow mẫu
 
-[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json) — HALD Identity, Tone Curve và LUT Export. Không cần ảnh đầu vào. Sau khi chạy, mở [LUT Import](lut-import.md) và nạp file vừa ghi.
+[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json). HALD Identity tạo bảng màu trung tính, Tone Curve chỉnh bảng đó, và LUT Export ghi `pixelpro_demo.cube` vào `ComfyUI/output/`; node Preview Any hiển thị đường dẫn file. Không cần ảnh đầu vào. Mở [LUT Import](lut-import.md) để áp file này.
+
+![Kết quả: LUT Export example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-14-lut-export-preview.png)

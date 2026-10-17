@@ -2,7 +2,7 @@
 
 # PixelPro for ComfyUI
 
-**Pro-grade retouch, colour and mask tools for ComfyUI — 44 GPU nodes built on PyTorch + Kornia.**
+**Pro-grade retouch, colour and mask tools for ComfyUI — 45 GPU nodes built on PyTorch + Kornia.**
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-EN%20%7C%20VI-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
@@ -69,7 +69,7 @@ Requirements: Python 3.10+, PyTorch (from ComfyUI), Kornia ≥ 0.7, MediaPipe �
 
 Full walk-through: [Quickstart](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/quickstart/).
 
-## The 44 nodes
+## The 45 nodes
 
 Each name links to its guide (settings, tips, before/after image).
 
@@ -129,11 +129,12 @@ Each name links to its guide (settings, tips, before/after image).
 | [Layer Flatten](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/layer-flatten/) | Render the stack to an image. |
 | [Pyramid Blend](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/pyramid-blend/) | Multi-band blending for seamless composites. |
 
-### Filters · 3 · Geometry · 3 · Looks · 1 · QA · 1
+### Filters · 4 · Geometry · 3 · Looks · 1 · QA · 1
 
 | Node | What it does |
 |---|---|
 | [Frequency Separation](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/frequency-separation/) | Split colour/tone (low) from texture (high). |
+| [Frequency Recombine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/frequency-recombine/) | Rebuild the image from low + high, with a texture amount. |
 | [Skin Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/edge-aware-smoother/) | Edge-preserving skin smoothing with mask and strength. |
 | [Smart Sharpen](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/smart-sharpen/) | Unsharp mask on luminance, with threshold and mask. |
 | [Facial Aligner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/facial-aligner/) | Align a face to a standard square crop; outputs the matrix Unwrap Face needs to paste it back. |

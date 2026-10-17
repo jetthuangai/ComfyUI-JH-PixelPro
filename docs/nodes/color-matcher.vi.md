@@ -63,4 +63,6 @@ Cần khớp riêng một vùng, hoặc hai ảnh khác kích thước? Dùng [C
 
 ## Workflow mẫu
 
-[Workflow mẫu Color Matcher](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-08-color-matcher.json). Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow còn dùng thêm một ảnh tham chiếu thứ hai; hãy trỏ Load Image đó tới bất kỳ ảnh nào cùng kích thước.
+[Workflow mẫu Color Matcher](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-08-color-matcher.json). Bản chỉnh tông lạnh của ảnh chân dung là ảnh đích, bản golden-hour là ảnh tham chiếu; Color Matcher chuyển màu tham chiếu sang trong không gian LAB. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Color Matcher](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-08-color-matcher-preview.png)

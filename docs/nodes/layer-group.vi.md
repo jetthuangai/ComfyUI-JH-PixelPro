@@ -32,7 +32,7 @@ Khi một look gồm nhiều layer (ví dụ phủ màu, vignette và glow), b�
 | `parent_stack` | — | Chồng layer nhận group. | Group được đặt lên trên cùng. |
 | `sub_stack` | — | Chồng layer sẽ gộp thành group. | Cần layer nền riêng từ Layer Stack Start. |
 | `group_blend_mode` | `normal` | Cách group đã gộp hòa với các layer bên dưới. | Cùng 27 mode như [Layer Add](layer-add.md). |
-| `group_opacity` | `1.0` (0 đến 1) | Độ mạnh của group. | Giảm xuống để mờ cả look. |
+| `group_opacity` | `1.0` (0 đến 1) | Độ mạnh của group. Chỉ được áp dụng một lần, là thanh độ mạnh duy nhất của group. | Giảm xuống để mờ cả look. |
 | `group_mask` (tùy chọn) | không | Nơi group hiện ra. | Trắng hiện group, đen ẩn đi. |
 
 Đầu ra: `LAYER_STACK`, chồng layer chính có thêm group ở trên cùng.
@@ -44,7 +44,7 @@ Khi một look gồm nhiều layer (ví dụ phủ màu, vignette và glow), b�
 - Dựng các layer của group trên cùng ảnh với nền chính nếu muốn chúng phản ứng theo cùng một bức ảnh.
 
 ??? note "Bên trong node hoạt động thế nào"
-    Chồng layer con được render trước bằng đúng bộ render của [Layer Flatten](layer-flatten.md) (`compose_stack` trong `core/blend_modes.py`), co giãn theo canvas của chồng chính, rồi được thêm vào chồng chính như một layer thường có nhớ chồng layer con. Nguồn: `nodes/layer_compositing.py`.
+    Chồng layer con được render trước bằng đúng bộ render của [Layer Flatten](layer-flatten.md) (`compose_stack` trong `core/blend_modes.py`), co giãn theo canvas của chồng chính, rồi được thêm vào chồng chính như một layer thường có nhớ chồng layer con. Group không có fill riêng: `group_opacity` là thanh độ mạnh duy nhất và chỉ được áp dụng một lần (đã sửa ở v1.5.4; các bản trước áp dụng hai lần nên group trông yếu hơn giá trị trên thanh trượt). Nguồn: `nodes/layer_compositing.py`.
 
 ## Node liên quan
 

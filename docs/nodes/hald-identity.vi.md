@@ -71,4 +71,4 @@ Hướng dẫn đầy đủ nằm ở trang [LUT Export](lut-export.md).
 
 ## Workflow mẫu
 
-[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json) — HALD Identity, Tone Curve và LUT Export nối liền. Không cần ảnh đầu vào.
+[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json). HALD Identity, Tone Curve và LUT Export nối liền; node Preview Any hiển thị đường dẫn file đã ghi. Không cần ảnh đầu vào.

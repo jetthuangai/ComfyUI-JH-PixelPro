@@ -63,4 +63,6 @@ Need to match only a part of the picture, or use images of different sizes? Use 
 
 ## Example workflow
 
-[Color Matcher example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-08-color-matcher.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. The workflow also references a second reference photo; point that Load Image at any picture of the same size.
+[Color Matcher example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-08-color-matcher.json). A cool-graded copy of the portrait is the target and a golden-hour copy is the reference; Color Matcher transfers the reference colour in LAB. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. It uses only core ComfyUI nodes and this pack.
+
+![Result: Color Matcher example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-08-color-matcher-preview.png)

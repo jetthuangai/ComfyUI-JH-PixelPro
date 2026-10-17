@@ -28,14 +28,14 @@ Sửa lỗi màu trên `low`, sửa lỗi texture trên `high`, rồi ghép hai 
 `high` bằng ảnh gốc trừ ảnh đã làm mờ. Chỗ nào pixel sáng hơn vùng xung quanh (mép lỗ chân lông sáng, điểm sáng trên tóc) thì kết quả dương. Chỗ nào tối hơn (lỗ chân lông, bóng trong nếp nhăn) thì kết quả âm. Trung bình các giá trị nằm quanh 0. Ảnh chỉ lưu được giá trị từ 0 đến 1 nên giá trị âm không hiển thị như ảnh thường được: bản xem trước trông tối hoặc lệch màu. Điều này bình thường. Hai lớp vẫn cộng lại đúng nguyên vẹn: `low + high = ảnh gốc`.
 
 !!! warning "Ghép lại thành ảnh"
-    Để ghép lại cần một phép cộng không giới hạn giá trị trong 0..1. Các node blend có giới hạn (kể cả các node layer của pack này) sẽ cắt mất nửa âm của `high`, nên tổng không còn khớp với ảnh gốc.
+    Hãy dùng [Frequency Recombine](frequency-recombine.md) để ghép hai lớp lại. Các node blend có giới hạn giá trị trong 0..1 (kể cả các node layer của pack này) sẽ cắt mất nửa âm của `high`, nên tổng không còn khớp với ảnh gốc.
 
 ## Bắt đầu nhanh
 
 1. `Load Image` → **GPU Frequency Separation**.
 2. Giữ `radius = 8`, `sigma = 0`, `precision = float32`.
 3. Nối `low` vào `Preview Image` để xem lớp mượt. Bản xem trước của `high` sẽ tối, đó là bình thường.
-4. Chỉnh `low` hoặc `high` bằng các node của bạn, rồi cộng hai lớp lại.
+4. Chỉnh `low` hoặc `high` bằng các node của bạn, rồi ghép lại bằng [Frequency Recombine](frequency-recombine.md). Với `detail = 1` node trả về đúng ảnh gốc.
 
 ## Thông số
 
@@ -62,11 +62,11 @@ Sửa lỗi màu trên `low`, sửa lỗi texture trên `high`, rồi ghép hai 
 
 ## Node liên quan
 
+- [Frequency Recombine](frequency-recombine.md)
 - [Skin Smoother](edge-aware-smoother.md)
 - [Smart Sharpen](smart-sharpen.md)
 - [Detail Mask](high-freq-detail-masker.md)
-- [Layer Add](layer-add.md)
 
 ## Workflow mẫu
 
-[Workflow mẫu Frequency Separation](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-01-frequency-separation.json). Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`.
+[Workflow mẫu Frequency Separation](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-01-frequency-separation.json). Workflow tách ảnh chân dung, xem trước `low` và `high`, rồi ghép lại bằng Frequency Recombine với `detail` 1.6. Workflow chỉ dùng node lõi của ComfyUI và pack này. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`.

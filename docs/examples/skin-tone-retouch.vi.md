@@ -18,7 +18,7 @@ Mask người / da (tùy chọn) ─────► Skin Tone Tri-Region
                                      └─ highlight_mask
 ```
 
-Mask da có thể đến từ bất kỳ node phân vùng nào. Workflow mẫu dùng một node tách người từ pack custom node khác. Nếu không có mask da, cả khung hình sẽ được tách theo độ sáng, kể cả tóc, quần áo và hậu cảnh.
+Mask da có thể đến từ bất kỳ node phân vùng nào. Workflow mẫu dùng node tách người của pack ngoài A Person Mask Generator, bạn cần cài riêng pack này. Nếu không có mask da, cả khung hình sẽ được tách theo độ sáng, kể cả tóc, quần áo và hậu cảnh.
 
 ## Thử ngay
 

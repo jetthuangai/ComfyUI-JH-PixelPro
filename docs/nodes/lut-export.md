@@ -68,4 +68,6 @@ Check the file in your target app before relying on it. This pack writes and rea
 
 ## Example workflow
 
-[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json) — HALD Identity, Tone Curve and LUT Export. It needs no input image. After a run, open [LUT Import](lut-import.md) and load the file it wrote.
+[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json). HALD Identity makes a neutral chart, Tone Curve grades it, and LUT Export writes `pixelpro_demo.cube` to `ComfyUI/output/`; a Preview Any node shows the file path. No input image is needed. Open [LUT Import](lut-import.md) to apply the file.
+
+![Result: LUT Export example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-14-lut-export-preview.png)

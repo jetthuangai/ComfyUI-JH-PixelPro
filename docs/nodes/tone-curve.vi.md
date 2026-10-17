@@ -67,4 +67,6 @@ Muốn nâng vùng bóng, tăng y của điểm thứ hai và thứ ba. Muốn h
 
 ## Workflow mẫu
 
-[Workflow mẫu Tone Curve](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-09-tone-curve.json). Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/` trước.
+[Workflow mẫu Tone Curve](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-09-tone-curve.json). Workflow áp preset `s_curve_mild` lên ảnh chân dung. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Workflow mẫu Tone Curve](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-09-tone-curve-preview.png)

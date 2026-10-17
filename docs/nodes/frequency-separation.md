@@ -28,14 +28,14 @@ Retouch colour problems on `low`, texture problems on `high`, then put the two b
 `high` is the original minus the blurred copy. Where a pixel is brighter than its surroundings (a bright pore edge, a hair highlight) the result is positive. Where it is darker (a pore, a shadow in a crease) the result is negative. On average the values sit around zero. An image can only store values from 0 to 1, so a negative value cannot be shown as a normal picture: the preview looks dark or oddly coloured. That is expected. The pieces still add up exactly: `low + high = original`.
 
 !!! warning "Rebuilding the image"
-    Rebuilding needs an add that does not clamp values to 0..1. Blend nodes that clamp (including the layer nodes in this pack) throw the negative half of `high` away, so the sum no longer matches the original.
+    Use [Frequency Recombine](frequency-recombine.md) to put the layers back together. Blend nodes that clamp values to 0..1 (including the layer nodes in this pack) throw the negative half of `high` away, so the sum no longer matches the original.
 
 ## Quick start
 
 1. `Load Image` → **GPU Frequency Separation**.
 2. Leave `radius = 8`, `sigma = 0`, `precision = float32`.
 3. Send `low` to `Preview Image` to see the smooth layer. The `high` preview looks dark; that is normal.
-4. Edit `low` or `high` with your own nodes, then add them back together.
+4. Edit `low` or `high` with your own nodes, then join them with [Frequency Recombine](frequency-recombine.md). At `detail = 1` it restores the original exactly.
 
 ## Settings
 
@@ -62,11 +62,11 @@ Retouch colour problems on `low`, texture problems on `high`, then put the two b
 
 ## Related nodes
 
+- [Frequency Recombine](frequency-recombine.md)
 - [Skin Smoother](edge-aware-smoother.md)
 - [Smart Sharpen](smart-sharpen.md)
 - [Detail Mask](high-freq-detail-masker.md)
-- [Layer Add](layer-add.md)
 
 ## Example workflow
 
-[Frequency Separation example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-01-frequency-separation.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+[Frequency Separation example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-01-frequency-separation.json). The workflow splits the portrait, previews `low` and `high`, and rebuilds the image with Frequency Recombine at `detail` 1.6. It uses only core ComfyUI nodes and this pack. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`.

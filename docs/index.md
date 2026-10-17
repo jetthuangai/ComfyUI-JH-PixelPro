@@ -10,7 +10,7 @@ hide:
 
 # PixelPro for ComfyUI
 
-<p class="pp-lead">The retouching desk you already know (frequency separation, luminosity masks, LUTs, layer stacks, hair-accurate mattes, face alignment) rebuilt as 44 GPU nodes for ComfyUI.</p>
+<p class="pp-lead">The retouching desk you already know (frequency separation, luminosity masks, LUTs, layer stacks, hair-accurate mattes, face alignment) rebuilt as 45 GPU nodes for ComfyUI.</p>
 
 [Get started :material-arrow-right:](quickstart.md){ .md-button .md-button--primary }
 [Browse the nodes](categories/color.md){ .md-button }
@@ -117,8 +117,8 @@ Each step is one node. Start with [Quickstart](quickstart.md), or open the [exam
 | [Masks](categories/mask.md) | 10 | Sub-Pixel and Edge-Aware refiners, Alpha Matte, Trimap, Morphology, Combine, Edge Smoother, Cleanup, Preview, Detail Mask |
 | [Face](categories/face.md) | 8 | Face Detect (MediaPipe) and Detect Lite (YuNet GPU), 468 landmarks, Delaunay and TPS warp, Unwrap, Beauty Blend, skin-tone masks |
 | [Compositing](categories/compositing.md) | 5 | Layer stack (start, add, group, flatten), Pyramid Blend |
-| [Filters](categories/filters.md) | 3 | Frequency Separation, Skin Smoother, Smart Sharpen |
+| [Filters](categories/filters.md) | 4 | Frequency Separation and Recombine, Skin Smoother, Smart Sharpen |
 | [Geometry](categories/geometry.md) | 3 | Facial Aligner, Lens Distortion, Auto Align |
 | [Looks](categories/looks.md) | 1 | Look Select |
 | [QA](categories/qa.md) | 1 | QA Image Diff |
-| **Total** | **44** | v1.5.x · Apache-2.0 |
+| **Total** | **45** | v1.5.x · Apache-2.0 |

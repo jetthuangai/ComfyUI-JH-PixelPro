@@ -10,6 +10,12 @@ Filters work on the picture itself: texture, edges and smoothness. Split detail 
 
     Splits an image into a smooth colour layer and a fine-detail layer.
 
+-   ![](../assets/nodes/frequency-recombine.jpg)
+
+    **[Frequency Recombine](../nodes/frequency-recombine.md)**
+
+    Puts the low and high layers back together, with a slider to boost or soften texture.
+
 -   ![](../assets/nodes/edge-aware-smoother.jpg)
 
     **[Skin Smoother](../nodes/edge-aware-smoother.md)**
@@ -27,5 +33,5 @@ Filters work on the picture itself: texture, edges and smoothness. Split detail 
 ## Typical chains
 
 - **Natural skin:** Load Image → [Skin Smoother](../nodes/edge-aware-smoother.md) (strength 0.3 to 0.5, with a skin mask) → [Smart Sharpen](../nodes/smart-sharpen.md) → Preview Image
-- **Fix colour, keep pores:** Load Image → [Frequency Separation](../nodes/frequency-separation.md) → edit `low` only → add `low` and `high` back together
+- **Fix colour, keep pores:** Load Image → [Frequency Separation](../nodes/frequency-separation.md) → edit `low` only → [Frequency Recombine](../nodes/frequency-recombine.md)
 - **Sharpen only the detail:** [Detail Mask](../nodes/high-freq-detail-masker.md) → `mask` of [Smart Sharpen](../nodes/smart-sharpen.md)

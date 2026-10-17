@@ -62,4 +62,6 @@ Giá trị được đo bằng saturation của hệ HLS (hue, lightness, satura
 
 ## Workflow mẫu
 
-[Selective color example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/` rồi chọn trong Load Image.
+[Selective color example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). Workflow tạo Saturation Mask từ ảnh chân dung, hiển thị dạng heatmap, và dùng Hue/Saturation per Range trên một dải màu. Chép `workflows/sample_portrait.jpg` vào `ComfyUI/input/`. Workflow chỉ dùng node lõi của ComfyUI và pack này.
+
+![Kết quả: Selective color example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-16-selective-color-preview.png)

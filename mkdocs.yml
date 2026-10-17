@@ -146,6 +146,7 @@ nav:
       - Filters:
           - Overview: categories/filters.md
           - Frequency Separation: nodes/frequency-separation.md
+          - Frequency Recombine: nodes/frequency-recombine.md
           - Skin Smoother: nodes/edge-aware-smoother.md
           - Smart Sharpen: nodes/smart-sharpen.md
       - Geometry:

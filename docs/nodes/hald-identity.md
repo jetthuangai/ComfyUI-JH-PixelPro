@@ -71,4 +71,4 @@ The full walk-through is on the [LUT Export](lut-export.md) page.
 
 ## Example workflow
 
-[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json) — HALD Identity, Tone Curve and LUT Export in a row. No input image is needed.
+[LUT Export example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-14-lut-export.json). HALD Identity, Tone Curve and LUT Export in a row; a Preview Any node shows the written file path. No input image is needed.

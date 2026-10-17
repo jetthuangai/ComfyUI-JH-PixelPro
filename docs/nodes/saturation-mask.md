@@ -62,4 +62,6 @@ The value is measured as HLS saturation (hue, lightness, saturation), the same i
 
 ## Example workflow
 
-[Selective color example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` and choose it in Load Image.
+[Selective color example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-16-selective-color.json). It builds a Saturation Mask from the portrait, shows it as a heatmap, and uses Hue/Saturation per Range on one colour band. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`. It uses only core ComfyUI nodes and this pack.
+
+![Result: Selective color example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/S-16-selective-color-preview.png)

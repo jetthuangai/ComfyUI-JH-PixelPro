@@ -59,6 +59,8 @@ All 27 modes in `core/blend_modes.py`, grouped like the Photoshop menu:
 | Comparative | `difference`, `exclusion`, `subtract`, `divide` |
 | Colour | `hue`, `saturation`, `color`, `luminosity` |
 
+`dissolve` works like Photoshop: each pixel becomes either fully the layer or fully the base, with a chance equal to `opacity × fill × mask`. It does not blend colours. The pattern uses a fixed seed, so the same settings always give the same result.
+
 ## Tips from retouching
 
 - **Soft Light or Overlay** at low opacity is the quickest way to add contrast or a colour wash without clipping.
@@ -68,7 +70,7 @@ All 27 modes in `core/blend_modes.py`, grouped like the Photoshop menu:
 - Use `clip_to_below` to keep a layer inside the masked area of the layer under it.
 
 ??? note "Under the hood"
-    Layers are rendered in order. The blend result is computed from the running image and the layer image (both clamped to 0..1), then mixed back with `lerp` using `alpha = mask × opacity × fill`, so opacity and fill behave the same here. A missing mask counts as all white. With `clip_to_below`, the layer's mask is multiplied by the mask of the layer below; a layer below without a mask counts as white, so clipping changes nothing in that case. Layer images and masks are resized bilinearly to the background size. The `hue`, `saturation`, `color` and `luminosity` modes are computed in HSV, so they can differ slightly from Photoshop's versions. Source: `nodes/layer_compositing.py` and `core/blend_modes.py`.
+    Layers are rendered in order. The blend result is computed from the running image and the layer image (both clamped to 0..1), then mixed back with `lerp` using `alpha = mask × opacity × fill`, so opacity and fill behave the same here. `dissolve` is the exception: `alpha` is used as the probability that a pixel is taken fully from the layer, using a fixed-seed random value per pixel. A missing mask counts as all white. With `clip_to_below`, the layer's mask is multiplied by the mask of the layer below; a layer below without a mask counts as white, so clipping changes nothing in that case. Layer images and masks are resized bilinearly to the background size. The `hue`, `saturation`, `color` and `luminosity` modes are computed in HSV, so they can differ slightly from Photoshop's versions. Source: `nodes/layer_compositing.py` and `core/blend_modes.py`.
 
 ## Related nodes
 
@@ -79,6 +81,7 @@ All 27 modes in `core/blend_modes.py`, grouped like the Photoshop menu:
 
 ## Example workflow
 
+- [Layer compositing: 2-layer overlay](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-26-layer-compositing-2layer-overlay.json)
 - [Layer compositing: 5-layer cinematic grade](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-27-layer-compositing-5layer-cinematic.json)
 - [Layer compositing: group and clipping](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-28-layer-compositing-group-clipping.json)
 

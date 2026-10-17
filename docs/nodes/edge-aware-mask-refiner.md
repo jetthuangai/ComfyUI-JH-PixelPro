@@ -56,4 +56,6 @@ It works best on edges with clear contrast between subject and background. For w
 
 ## Example workflow
 
-[Edge-Aware Mask Refiner example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-28-edge-aware-mask-refiner.json). Open it and point the `Load Image` node at your own photo.
+[Edge-Aware Mask Refiner example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-28-edge-aware-mask-refiner.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`. A deliberately soft mask from Sub-Pixel Mask Refiner is snapped onto the real hair and skin edge, using the portrait as the guide. It uses only core ComfyUI nodes and this pack.
+
+![Result: Edge-Aware Mask Refiner example workflow](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-28-edge-aware-mask-refiner-preview.png)

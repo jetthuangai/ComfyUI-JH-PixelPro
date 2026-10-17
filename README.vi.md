@@ -2,7 +2,7 @@
 
 # PixelPro cho ComfyUI
 
-**Bộ công cụ retouch, màu và mask chuyên nghiệp cho ComfyUI — 44 node chạy GPU, xây dựng trên PyTorch + Kornia.**
+**Bộ công cụ retouch, màu và mask chuyên nghiệp cho ComfyUI — 45 node chạy GPU, xây dựng trên PyTorch + Kornia.**
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-EN%20%7C%20VI-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/)
@@ -69,7 +69,7 @@ Yêu cầu: Python 3.10+, PyTorch (đi kèm ComfyUI), Kornia ≥ 0.7, MediaPipe 
 
 Hướng dẫn đầy đủ: [Hướng dẫn nhanh](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/quickstart/).
 
-## 44 node
+## 45 node
 
 Bấm vào tên node để xem hướng dẫn (thông số, mẹo, ảnh trước/sau).
 
@@ -129,11 +129,12 @@ Bấm vào tên node để xem hướng dẫn (thông số, mẹo, ảnh trướ
 | [Layer Flatten](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/layer-flatten/) | Gộp chồng layer thành ảnh. |
 | [Pyramid Blend](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/pyramid-blend/) | Hòa trộn đa tần số để ghép ảnh liền mạch. |
 
-### Bộ lọc · 3 · Hình học · 3 · Look màu · 1 · Kiểm tra · 1
+### Bộ lọc · 4 · Hình học · 3 · Look màu · 1 · Kiểm tra · 1
 
 | Node | Công dụng |
 |---|---|
 | [Frequency Separation](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/frequency-separation/) | Tách màu/khối (low) khỏi texture (high). |
+| [Frequency Recombine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/frequency-recombine/) | Ghép lại ảnh từ low + high, chỉnh được lượng texture. |
 | [Skin Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/edge-aware-smoother/) | Làm mịn da giữ viền, có mask và cường độ. |
 | [Smart Sharpen](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/smart-sharpen/) | Unsharp mask trên độ sáng, có ngưỡng và mask. |
 | [Facial Aligner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/vi/nodes/facial-aligner/) | Căn mặt về khung vuông chuẩn; trả về ma trận để Unwrap Face dán lại. |

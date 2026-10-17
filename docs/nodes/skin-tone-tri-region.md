@@ -63,4 +63,4 @@ Feed it an optional skin mask so that hair, clothing and background do not take 
 
 ## Example workflow
 
-[Skin Tone Tri-Region example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-35-skin-tone-tri-region.json). It uses a person-mask node from another custom pack to create the skin mask. See the [Skin Tone Retouch example](../examples/skin-tone-retouch.md) for a full walkthrough.
+[Skin Tone Tri-Region example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-35-skin-tone-tri-region.json). It uses the person-mask node of the external A Person Mask Generator pack (install it separately) to create the skin mask. See the [Skin Tone Retouch example](../examples/skin-tone-retouch.md) for a full walkthrough.
