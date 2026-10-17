@@ -68,7 +68,7 @@ def test_dot_at_single_control_point_lands_at_destination() -> None:
     near = (src[0] - centre).norm(dim=-1) < 12.0
     dst[0, near] += torch.tensor([10.0, 6.0])
     cx0, cy0 = (src[0, near].mean(dim=0)).tolist()
-    out = face_warp_tps(_dot_image(cx0, cy0), src, dst)
+    out = face_warp_tps(_dot_image(cx0, cy0), src, dst, smoothness=0.0)
     cx, cy = _centroid(out)
     assert abs(cx - (cx0 + 10.0)) < 1.0 and abs(cy - (cy0 + 6.0)) < 1.0, (cx, cy)
 
@@ -87,12 +87,12 @@ def test_border_anchors_keep_corners_fixed() -> None:
     image = torch.rand(1, SIZE, SIZE, 3)
     src = _grid_landmarks_px()
     dst = src + torch.tensor([12.0, 9.0])
-    out = face_warp_tps(image, src, dst, anchor_border=True)
+    out = face_warp_tps(image, src, dst, anchor_border=True, smoothness=0.0)
     for y, x in [(0, 0), (0, SIZE - 1), (SIZE - 1, 0), (SIZE - 1, SIZE - 1)]:
         assert torch.allclose(out[0, y, x], image[0, y, x], atol=1e-3)
     # edge midpoint is pinned with anchors but dragged along without them
     mid = SIZE // 2
-    free = face_warp_tps(image, src, dst, anchor_border=False)
+    free = face_warp_tps(image, src, dst, anchor_border=False, smoothness=0.0)
     assert torch.allclose(out[0, 0, mid], image[0, 0, mid], atol=1e-2)
     assert not torch.allclose(free[0, 0, mid], image[0, 0, mid], atol=1e-3)
 
@@ -172,6 +172,7 @@ def test_control_points_land_within_half_pixel_on_large_image() -> None:
             _dot_image(float(src[0, index, 0]), float(src[0, index, 1]), size=size, sigma=3.0),
             src,
             dst,
+            smoothness=0.0,
         )
         cx, cy = _centroid(out)
         assert abs(cx - float(dst[0, index, 0])) < 0.5, (index, cx)
@@ -256,6 +257,9 @@ def test_validation_errors() -> None:
             face_warp_tps(image, lm, lm, max_points=bad)  # type: ignore[arg-type]
     with pytest.raises(ValueError):
         face_warp_tps(image, lm, lm, anchor_border=1)  # type: ignore[arg-type]
+    for bad in (-0.1, 20.5, True, "1"):
+        with pytest.raises(ValueError, match="smoothness"):
+            face_warp_tps(image, lm, lm, smoothness=bad)  # type: ignore[arg-type]
 
 
 def test_subsample_prefers_unmoved_points_near_the_edit() -> None:
@@ -269,3 +273,32 @@ def test_subsample_prefers_unmoved_points_near_the_edit() -> None:
     assert 0.0 in xs and len(xs) == 11
     assert {1.0, 2.0, 3.0, 4.0, 5.0} <= xs  # nearest neighbours of the edit are pinned
     assert max(xs) > 90.0  # the far end stays pinned as well
+
+
+def _fold_fraction(
+    src_px: torch.Tensor, dst_px: torch.Tensor, size: int, smoothness: float
+) -> float:
+    from core.face_warp_tps import _SMOOTHNESS_TO_RIDGE, _border_anchors, _eval_field, _fit_tps
+
+    anchors = _border_anchors(size, size)
+    sv = torch.cat([src_px.double(), anchors]) * (2.0 / (size - 1)) - 1.0
+    dv = torch.cat([dst_px.double(), anchors]) * (2.0 / (size - 1)) - 1.0
+    kernel_w, affine_w = _fit_tps(dv, sv, smoothness * _SMOOTHNESS_TO_RIDGE)
+    axis = torch.linspace(-1.0, 1.0, 129, dtype=torch.float64)
+    gy, gx = torch.meshgrid(axis, axis, indexing="ij")
+    field = _eval_field(torch.stack([gx, gy], -1).reshape(-1, 2), dv, kernel_w, affine_w)
+    field = field.reshape(129, 129, 2)
+    fx, fy = field[:, 1:] - field[:, :-1], field[1:] - field[:-1]
+    det = fx[:-1, :, 0] * fy[:, :-1, 1] - fx[:-1, :, 1] * fy[:, :-1, 0]
+    return float((det <= 0).double().mean())
+
+
+def test_default_smoothness_absorbs_landmark_noise_without_folds() -> None:
+    # Regression (v1.5.1): target landmarks re-detected on another photo carry several px of
+    # noise; exact interpolation through 468 dense noisy points folded the image (ripples).
+    size = 512
+    src = _oval_landmarks_px(size)[0]
+    gen = torch.Generator().manual_seed(0)
+    noisy = src * 1.03 - src.mean(0) * 0.03 + torch.randn(src.shape, generator=gen) * 4.0
+    assert _fold_fraction(src, noisy, size, smoothness=0.0) > 0.0
+    assert _fold_fraction(src, noisy, size, smoothness=1.0) == 0.0

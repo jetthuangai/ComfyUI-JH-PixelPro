@@ -46,6 +46,24 @@ class JHPixelProFaceWarpTPS:
                     },
                 ),
             },
+            # Optional so API-format prompts saved with v1.5.0 (no smoothness) still queue.
+            "optional": {
+                "smoothness": (
+                    "FLOAT",
+                    {
+                        "default": 1.0,
+                        "min": 0.0,
+                        "max": 20.0,
+                        "step": 0.1,
+                        "tooltip": (
+                            "0 = every landmark lands exactly. 1 (default) absorbs detection "
+                            "noise when target landmarks come from another photo (avoids "
+                            "ripples/folds); clean edits stay within ~1 px. Raise if you still "
+                            "see ripples."
+                        ),
+                    },
+                ),
+            },
         }
 
     def warp(
@@ -55,6 +73,7 @@ class JHPixelProFaceWarpTPS:
         dst_landmarks: torch.Tensor,
         max_points: int = 468,
         anchor_border: bool = True,
+        smoothness: float = 1.0,
     ) -> tuple[torch.Tensor]:
         with torch.no_grad():
             output = face_warp_tps(
@@ -63,6 +82,7 @@ class JHPixelProFaceWarpTPS:
                 _first_face(dst_landmarks),
                 max_points=max_points,
                 anchor_border=anchor_border,
+                smoothness=smoothness,
                 device=image.device,
             )
         return (output,)

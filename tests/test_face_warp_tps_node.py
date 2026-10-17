@@ -58,6 +58,10 @@ def test_input_types(node_cls) -> None:
     assert required["max_points"][1]["max"] == 468
     assert required["anchor_border"][0] == "BOOLEAN"
     assert required["anchor_border"][1]["default"] is True
+    optional = node_cls.INPUT_TYPES()["optional"]
+    assert optional["smoothness"][0] == "FLOAT"
+    assert optional["smoothness"][1]["default"] == 1.0
+    assert "tooltip" in optional["smoothness"][1]
     for name in ("max_points", "anchor_border"):
         assert "tooltip" in required[name][1]
 
