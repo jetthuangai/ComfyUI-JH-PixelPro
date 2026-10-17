@@ -11,11 +11,12 @@ Unless noted, a workflow uses only core ComfyUI nodes and this pack. `-preview.p
 ComfyUI's `LoadImage` node only scans `ComfyUI/input/`.
 
 1. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
-2. For the mask workflows (Edge-Aware Mask Refiner, Alpha Matte, Trimap Builder, Mask Morphology, Mask Combine, Mask Edge Smoother, Mask Cleanup, Sub-Pixel Mask Refiner), also copy `workflows/sample_binary_mask.png` into `ComfyUI/input/`.
-3. In ComfyUI, open **Load** and pick a `.json` file, or drag it onto the canvas.
-4. Press **Queue Prompt**.
+2. For Dust & Spot Removal, also copy `workflows/sample_dust.jpg`.
+3. For the mask workflows (Edge-Aware Mask Refiner, Alpha Matte, Trimap Builder, Mask Morphology, Mask Combine, Mask Edge Smoother, Mask Cleanup, Sub-Pixel Mask Refiner), also copy `workflows/sample_binary_mask.png` into `ComfyUI/input/`.
+4. In ComfyUI, open **Load** and pick a `.json` file, or drag it onto the canvas.
+5. Press **Queue Prompt**.
 
-Tiếng Việt: chép `sample_portrait.jpg` (và `sample_binary_mask.png` cho các workflow mask) vào `ComfyUI/input/`, nạp file `.json`, rồi bấm **Queue Prompt**.
+Tiếng Việt: chép `sample_portrait.jpg` (và `sample_binary_mask.png` cho các workflow mask, `sample_dust.jpg` cho Dust & Spot Removal) vào `ComfyUI/input/`, nạp file `.json`, rồi bấm **Queue Prompt**.
 
 One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-region.json) uses the person-mask node of **A Person Mask Generator** (install it separately).
 
@@ -29,6 +30,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | [Frequency Separation and Recombine](S-01-frequency-separation.json) | Split the portrait into smooth `low` and texture `high` layers, then rebuild it with Frequency Recombine at detail 1.6. | [image](S-01-frequency-separation-preview.png) |
 | [Skin Smoother](S-03-edge-aware-smoother.json) | Edge-preserving smoothing with a before/after preview (strength 0.4). | [image](S-03-edge-aware-smoother-screenshot.png) |
 | [Smart Sharpen](N-40-smart-sharpen.json) | Luminance-only sharpening gated by the Detail Mask, with a QA heatmap of changed pixels. | [image](N-40-smart-sharpen-preview.png) |
+| [Dust & Spot Removal](N-48-dust-spot-removal.json) | Clears 70 synthetic sensor-dust specks from `sample_dust.jpg` at default settings and marks the spots it found. | [image](N-48-dust-spot-removal-preview.png) |
 
 ## Color and tone
 
@@ -37,6 +39,8 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | Workflow | What it shows | Result |
 |---|---|---|
 | [Color Matcher](S-08-color-matcher.json) | A cool-graded copy is matched to a golden-hour reference in LAB. | [image](S-08-color-matcher-preview.png) |
+| [Color Matcher: stats vs histogram](N-49-color-matcher-histogram.json) | The same pair matched with `method = stats` and `method = histogram`, side by side. | [image](N-49-color-matcher-histogram-preview.png) |
+| [Palette Extract](N-47-palette-extract.json) | Six dominant colours as a strip, a HEX list and a quantized image. | [image](N-47-palette-extract-preview.png) |
 | [Tone Curve](S-09-tone-curve.json) | The `s_curve_mild` preset on the portrait. | [image](S-09-tone-curve-preview.png) |
 | [LUT Preset](N-34-lut-preset.json) | One bundled look on the portrait; switch the `preset` dropdown to try the others. | — |
 | [LUT Export](S-14-lut-export.json) | HALD Identity, Tone Curve and LUT Export write a `.cube` file to `ComfyUI/output/`; no input image needed. | [image](S-14-lut-export-preview.png) |
@@ -70,16 +74,25 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 
 | Workflow | What it shows | Result |
 |---|---|---|
+| [SAM One-Click Mask](N-46-sam-one-click-mask.json) | Face Detect Lite's box prompts Segment Anything (vit_b); Mask Cleanup fills the holes. The checkpoint downloads to `ComfyUI/models/sams/` on first use. | [image](N-46-sam-one-click-mask-preview.png) |
 | [Sub-Pixel Mask Refiner](S-02-subpixel-mask-refiner.json) | Feather a binary mask into a sub-pixel alpha mask. | [image](S-02-subpixel-mask-refiner-screenshot.png) |
 | [Edge-Aware Mask Refiner](N-28-edge-aware-mask-refiner.json) | A soft mask is snapped onto the real hair and skin edge, guided by the portrait. | [image](N-28-edge-aware-mask-refiner-preview.png) |
 | [Alpha Matte](N-29-alpha-matte-extractor.json) | Trimap, then closed-form matting at 25% size. `compute_device = auto` stays on CPU for CPU images; pick `cuda` for roughly 5x speed. | [image](N-29-alpha-matte-extractor-preview.png) |
 | [Trimap Builder](N-30-trimap-builder.json) | Sure-subject, unknown and sure-background bands from a subject mask. | [image](N-30-trimap-builder-preview.png) |
 | [Mask Morphology](N-31-mask-morphology.json) | `close` at radius 64 seals the small shadow gap by the nose. | [image](N-31-mask-morphology-preview.png) |
 | [Mask Combine](N-32-mask-combine.json) | Subject mask intersected with Luminosity Masking highlights, with `soft_feather`. | [image](N-32-mask-combine-preview.png) |
-| [Mask Edge Smoother](N-33-mask-edge-smoother.json) | Guided smoothing of stair-stepped mask edges (`backend = gpu` uses CUDA when available, otherwise runs on CPU). | [image](N-33-mask-edge-smoother-preview.png) |
+| [Mask Edge Smoother](N-33-mask-edge-smoother.json) | Guided smoothing of stair-stepped mask edges (`backend = gpu` needs an NVIDIA GPU). | [image](N-33-mask-edge-smoother-preview.png) |
 | [Mask Cleanup](N-41-mask-cleanup.json) | Remove specks, fill the hole by the nose, add a 6 px feather. | [image](N-41-mask-cleanup-preview.png) |
 | [Mask Preview](N-43-mask-preview.json) | A saturation mask shown as a heatmap and as an overlay with contour. | [image](N-43-mask-preview-preview.png) |
 | [Detail Mask (High-Frequency Detail Masker)](S-04-hf-detail-masker.json) | A mask of textured areas such as hair, eyes and fabric. | [image](S-04-hf-detail-masker-screenshot.png) |
+
+## Depth
+
+*Độ sâu*
+
+| Workflow | What it shows | Result |
+|---|---|---|
+| [Depth Lens Blur](N-45-depth-lens-blur.json) | Depth from the built-in Depth Anything V2 Small (downloads ~100 MB on first use, needs `onnxruntime`), focus on the face, crops of the arm before and after. | [image](N-45-depth-lens-blur-preview.png) |
 
 ## Face
 
@@ -109,3 +122,4 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 
 - `sample_portrait.jpg` — Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on Pexels. Source: <https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>. License: [Pexels Content License](https://www.pexels.com/license/) (free for commercial + non-commercial redistribution; attribution is not required but recommended as best practice).
 - `sample_binary_mask.png` — derivative work: a SAM / rembg cutout (subject mask) produced from `sample_portrait.jpg`. Original image: Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on Pexels (<https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>). License: [Pexels Content License](https://www.pexels.com/license/) (derivative redistribution permitted).
+- `sample_dust.jpg` — derivative work: `sample_portrait.jpg` with 70 synthetic soft dark specks added to imitate sensor dust. Same photo, author and [Pexels Content License](https://www.pexels.com/license/).
