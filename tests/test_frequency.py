@@ -180,3 +180,39 @@ def test_float16_on_cpu_warns(caplog: pytest.LogCaptureFixture, rng: torch.Gener
     ]
     assert len(cpu_messages) == 1
     _assert_reconstruction(image, low, high, atol=1e-3)
+
+
+def test_recombine_restores_the_original() -> None:
+    from core import frequency_recombine
+
+    image = torch.rand(2, 3, 64, 48, generator=torch.Generator().manual_seed(1))
+    low, high = frequency_separation(image, radius=6)
+    assert high.min().item() < 0.0  # signed residual, must not be clamped before adding
+    assert torch.allclose(frequency_recombine(low, high), image, atol=1e-5)
+
+
+def test_recombine_detail_scales_texture() -> None:
+    from core import frequency_recombine
+
+    image = torch.rand(1, 3, 64, 64, generator=torch.Generator().manual_seed(2))
+    low, high = frequency_separation(image, radius=6)
+    assert torch.allclose(frequency_recombine(low, high, detail=0.0), low.clamp(0, 1))
+    soft = frequency_recombine(low, high, detail=0.5)
+    boosted = frequency_recombine(low, high, detail=2.0)
+    assert (soft - low).abs().mean() < (image - low).abs().mean() < (boosted - low).abs().mean()
+
+
+def test_recombine_validation() -> None:
+    from core import frequency_recombine
+
+    low = torch.zeros(1, 3, 8, 8)
+    with pytest.raises(ValueError, match="same height and width"):
+        frequency_recombine(low, torch.zeros(1, 3, 8, 9))
+    with pytest.raises(ValueError, match="detail"):
+        frequency_recombine(low, low, detail=3.5)
+    with pytest.raises(ValueError, match="detail"):
+        frequency_recombine(low, low, detail=True)
+    with pytest.raises(ValueError, match="BCHW RGB"):
+        frequency_recombine(low[:, :1], low[:, :1])
+    with pytest.raises(TypeError):
+        frequency_recombine("x", low)  # type: ignore[arg-type]

@@ -160,3 +160,18 @@ def test_run_preserves_device(node_cls):
 
     assert low.device == image_bhwc.device
     assert high.device == image_bhwc.device
+
+
+def test_recombine_node_round_trip(pack) -> None:
+    split = pack.NODE_CLASS_MAPPINGS["JHPixelProFrequencySeparation"]()
+    merge = pack.NODE_CLASS_MAPPINGS["JHPixelProFrequencyRecombine"]
+    assert pack.NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencyRecombine"] == (
+        "Frequency Recombine (low + high)"
+    )
+    assert merge.CATEGORY == "ComfyUI-JH-PixelPro/filters"
+    assert merge.INPUT_TYPES()["required"]["detail"][1]["default"] == 1.0
+    image = torch.rand(1, 40, 40, 3, generator=torch.Generator().manual_seed(3))
+    low, high = split.run(image, 4, 0.0, "float32")
+    (rebuilt,) = merge().run(low, high, 1.0)
+    assert rebuilt.shape == image.shape
+    assert torch.allclose(rebuilt, image, atol=1e-5)

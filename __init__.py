@@ -43,6 +43,7 @@ if __package__:
         JHPixelProFaceWarp,
         JHPixelProFaceWarpTPS,
         JHPixelProFacialAligner,
+        JHPixelProFrequencyRecombine,
         JHPixelProFrequencySeparation,
         JHPixelProHALDIdentity,
         JHPixelProHighFreqDetailMasker,
@@ -76,6 +77,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProFrequencySeparation"] = JHPixelProFrequencySeparation
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencySeparation"] = "GPU Frequency Separation"
+
+    NODE_CLASS_MAPPINGS["JHPixelProFrequencyRecombine"] = JHPixelProFrequencyRecombine
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFrequencyRecombine"] = "Frequency Recombine (low + high)"
 
     NODE_CLASS_MAPPINGS["JHPixelProSmartSharpen"] = JHPixelProSmartSharpen
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSmartSharpen"] = "Filters: Smart Sharpen"

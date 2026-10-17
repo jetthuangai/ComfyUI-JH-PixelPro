@@ -1,10 +1,10 @@
-"""ComfyUI wrapper for ``core.frequency.frequency_separation``."""
+"""ComfyUI wrappers for ``core.frequency`` (separation and recombination)."""
 
 from __future__ import annotations
 
 import torch
 
-from ..core import frequency_separation
+from ..core import frequency_recombine, frequency_separation
 
 
 class JHPixelProFrequencySeparation:
@@ -48,8 +48,8 @@ class JHPixelProFrequencySeparation:
                         "tooltip": (
                             "float32 = lossless reconstruction (atol 1e-5); "
                             "float16 = ~2x faster on modern GPU, reconstruction "
-                            "error ~1e-3. 'high' may contain negative values — "
-                            "use ImageAdd to reconstruct, preview may look wrong."
+                            "error ~1e-3. 'high' may contain negative values, so its "
+                            "preview looks dark; rebuild with Frequency Recombine."
                         ),
                     },
                 ),
@@ -74,3 +74,44 @@ class JHPixelProFrequencySeparation:
             low = low_bchw.permute(0, 2, 3, 1).contiguous()
             high = high_bchw.permute(0, 2, 3, 1).contiguous()
         return (low, high)
+
+
+class JHPixelProFrequencyRecombine:
+    """Rebuild an image from Frequency Separation's low and high layers."""
+
+    CATEGORY = "ComfyUI-JH-PixelPro/filters"
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "run"
+
+    @classmethod
+    def INPUT_TYPES(cls: type) -> dict:  # noqa: N802 — ComfyUI node contract mandates UPPER_CASE.
+        return {
+            "required": {
+                "low": ("IMAGE", {"tooltip": "Low layer (colour and tone), edited or not."}),
+                "high": (
+                    "IMAGE",
+                    {"tooltip": "High layer (texture). Signed values; connect it directly."},
+                ),
+                "detail": (
+                    "FLOAT",
+                    {
+                        "default": 1.0,
+                        "min": 0.0,
+                        "max": 3.0,
+                        "step": 0.05,
+                        "tooltip": (
+                            "How much texture to add back. 1 = original, above 1 boosts "
+                            "pores and fine detail, below 1 softens them."
+                        ),
+                    },
+                ),
+            },
+        }
+
+    def run(self, low: torch.Tensor, high: torch.Tensor, detail: float) -> tuple[torch.Tensor]:
+        with torch.no_grad():
+            out_bchw = frequency_recombine(
+                low.permute(0, 3, 1, 2), high.permute(0, 3, 1, 2), detail=float(detail)
+            )
+        return (out_bchw.permute(0, 2, 3, 1).contiguous(),)

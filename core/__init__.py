@@ -5,7 +5,7 @@ from .detail_masker import high_freq_detail_mask
 from .face_detect import face_detect
 from .face_pipeline import beauty_blend, extract_landmarks, face_warp_delaunay
 from .facial_aligner import facial_align
-from .frequency import frequency_separation
+from .frequency import frequency_recombine, frequency_separation
 from .lens_distortion import lens_distortion
 from .luminosity import luminosity_masks
 from .lut import export_cube, identity_hald
@@ -25,6 +25,7 @@ from .tone_match import compute_lab_histogram_match, tone_match_lut
 from .unwrap_face import unwrap_face
 
 __all__ = [
+    "frequency_recombine",
     "frequency_separation",
     "subpixel_mask_refine",
     "alpha_matte_extract",

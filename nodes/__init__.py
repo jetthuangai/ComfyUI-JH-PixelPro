@@ -13,7 +13,7 @@ from .face_landmarks_node import JHPixelProFaceLandmarks
 from .face_warp_node import JHPixelProFaceWarp
 from .face_warp_tps_node import JHPixelProFaceWarpTPS
 from .facial_aligner_node import JHPixelProFacialAligner
-from .frequency_node import JHPixelProFrequencySeparation
+from .frequency_node import JHPixelProFrequencyRecombine, JHPixelProFrequencySeparation
 from .hald_identity_node import JHPixelProHALDIdentity
 from .hue_saturation_range_node import JHPixelProHueSaturationRange
 from .layer_compositing import (
@@ -48,6 +48,7 @@ from .tone_match_lut_node import JHPixelProToneMatchLUT
 from .unwrap_face_node import JHPixelProUnwrapFace
 
 __all__ = [
+    "JHPixelProFrequencyRecombine",
     "JHPixelProQADiff",
     "JHPixelProFaceWarpTPS",
     "JHPixelProMaskPreview",
