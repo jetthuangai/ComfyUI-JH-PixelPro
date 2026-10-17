@@ -16,6 +16,25 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.6.0] — 2026-10-18
+
+### Added
+
+- **Depth Anything V2** (`JHPixelProDepthAnything`, Depth): relative depth map from one photo (1 = nearest), run with ONNX Runtime (CUDA when available). The `small` model (Apache-2.0, ~100 MB) is downloaded on first use to `ComfyUI/models/depth_anything/` from a pinned Hugging Face revision and checked by SHA256; `base` and `large` are CC-BY-NC-4.0 (non-commercial) and flagged in the tooltip.
+- **Depth Lens Blur** (`JHPixelProDepthLensBlur`, Depth): photographic background/foreground blur from depth with disc or gaussian bokeh, `focus_depth` / `depth_of_field` / `max_blur`, and a `focus_mask` that focuses on a subject (for example a face mask). Without a `depth` input it estimates depth itself with Depth Anything. 2048² on CUDA: ~35 ms, ~0.4 GB.
+- **SAM One-Click Mask** (`JHPixelProSAMMask`, Mask): Segment Anything from positive/negative points, the `bbox_json` of Face Detect / Face Detect Lite, or a rough `mask_hint`. Models: `vit_b` (default, ~3 GB VRAM), `mobile_sam` (~0.4 GB), `vit_l`, `vit_h`; checkpoints live in `ComfyUI/models/sams/` and are downloaded on first use with SHA256 checks.
+- **Palette Extract** (`JHPixelProPaletteExtract`, Color): dominant colours by k-means++ in LAB, sorted by share: a swatch strip, a HEX/RGB/share JSON and a quantized image; optional mask.
+- **Dust & Spot Removal** (`JHPixelProDustSpotRemoval`, Filters): finds small compact spots (dark, bright or both) in calm areas, skips lashes, hair and edges, and fills them from the surroundings; outputs the cleaned image and the spot mask. Optional `mask` / `protect_mask`.
+- **Color Matcher / Color Matcher Region `method`**: `stats` (default, unchanged output) or `histogram` (full per-channel distribution matching).
+- **ColorLab `exposure_mode`**: `display` (default, unchanged) or `linear` (exposure in linear light, like a camera stop).
+- `keep_model_loaded` on SAM One-Click, Depth Anything and Depth Lens Blur (default on). Turn it off to free the model's VRAM after the run; ComfyUI's *Free memory* button does not reach these models.
+- Sample workflows N-45 … N-49 (lens blur, SAM, palette, dust, stats vs histogram) with real result previews, and `workflows/sample_dust.jpg` (the sample portrait with 70 synthetic dust specks).
+- New docs category **Depth**; pack now registers **50 nodes** (color 14, mask 11, face 8, filters 5, compositing 5, geometry 3, depth 2, looks 1, qa 1).
+
+### Notes
+
+- `onnxruntime` (or `onnxruntime-gpu`) is an optional dependency, needed only for Depth Anything and for Depth Lens Blur without a `depth` input. The node raises a clear error if it is missing.
+
 ## [1.5.4] — 2026-10-18
 
 ### Added
