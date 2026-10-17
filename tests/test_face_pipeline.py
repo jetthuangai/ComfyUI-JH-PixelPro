@@ -126,6 +126,16 @@ def test_face_warp_delaunay_changes_image_for_shifted_landmarks() -> None:
     assert torch.mean(torch.abs(warped - image)).item() > 1e-3
 
 
+def test_face_warp_delaunay_returns_unchanged_when_one_side_has_no_face() -> None:
+    image = _gradient_image()
+    landmarks = _grid_landmarks()
+    nan = torch.full_like(landmarks, float("nan"))
+
+    for src, dst in ((nan, landmarks), (landmarks, nan), (nan, nan)):
+        warped = face_warp_delaunay(image, src, dst)
+        assert torch.equal(warped, image)
+
+
 def test_face_warp_delaunay_handles_out_of_bounds_landmarks() -> None:
     image = _gradient_image()
     src = _grid_landmarks()

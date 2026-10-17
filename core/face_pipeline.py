@@ -193,6 +193,9 @@ def face_warp_delaunay(
         image_np = image_prepared[batch_index].detach().to("cpu", torch.float32).numpy()
         src_points = _to_pixel_landmarks(src_prepared[batch_index], width=width, height=height)
         dst_points = _to_pixel_landmarks(dst_prepared[batch_index], width=width, height=height)
+        if src_points.shape != dst_points.shape or src_points.shape[0] == 0:
+            outputs.append(torch.from_numpy(image_np.copy()))
+            continue
         valid_mask = np.isfinite(src_points).all(axis=1) & np.isfinite(dst_points).all(axis=1)
         src_valid = src_points[valid_mask]
         dst_valid = dst_points[valid_mask]
