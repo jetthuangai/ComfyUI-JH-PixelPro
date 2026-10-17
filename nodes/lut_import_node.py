@@ -38,7 +38,7 @@ class JHPixelProLUTImport:
                             "are honored verbatim. The '.cube' extension is NOT "
                             "auto-appended on read (explicit, so the user sees "
                             "the exact filename being loaded). Pairs with the "
-                            "'pack_lut.cube' default emitted by N-13 LUT Export "
+                            "'pack_lut.cube' default emitted by LUT Export "
                             "to close the round-trip loop."
                         ),
                     },

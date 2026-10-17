@@ -126,7 +126,7 @@ if __package__:
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProAutoAlign"] = "Geometry: Auto Align"
 
     NODE_CLASS_MAPPINGS["JHPixelProFaceDetect"] = JHPixelProFaceDetect
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceDetect"] = "JHPixelProFaceDetect"
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceDetect"] = "Face Detect (MediaPipe)"
 
     NODE_CLASS_MAPPINGS["JHPixelProFaceDetectLite"] = JHPixelProFaceDetectLite
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceDetectLite"] = "Face: Detect Lite (YuNet GPU)"
@@ -144,7 +144,7 @@ if __package__:
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceBeautyBlend"] = "Face Beauty Blend"
 
     NODE_CLASS_MAPPINGS["JHPixelProUnwrapFace"] = JHPixelProUnwrapFace
-    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProUnwrapFace"] = "JHPixelProUnwrapFace"
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProUnwrapFace"] = "Unwrap Face (paste back)"
 
     NODE_CLASS_MAPPINGS["JHPixelProColorMatcher"] = JHPixelProColorMatcher
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorMatcher"] = "Color Matcher (LAB)"

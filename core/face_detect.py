@@ -107,7 +107,7 @@ def _import_mediapipe() -> tuple[object, object, object, object, object]:
         raise RuntimeError(
             "Install via 'pip install mediapipe' (tasks API >= 0.10.33 required for Python 3.12+). "
             "See https://ai.google.dev/edge/mediapipe/solutions/vision/face_landmarker. "
-            "Alternative: bypass S-10 and paste 5-point JSON manually into S-06."
+            "Alternative: skip Face Detect and paste 5-point JSON manually into Facial Aligner."
         ) from exc
 
     return mp, BaseOptions, FaceLandmarker, FaceLandmarkerOptions, RunningMode
@@ -118,7 +118,7 @@ def _ensure_model_file() -> Path:
     if model_path.exists():
         return model_path
 
-    print(f"[N-10] Downloading face_landmarker.task (~5MB) to {model_path.parent}...")
+    print(f"[Face Detect] Downloading face_landmarker.task (~5MB) to {model_path.parent}...")
     urllib.request.urlretrieve(_MODEL_URL, model_path)
     return model_path
 

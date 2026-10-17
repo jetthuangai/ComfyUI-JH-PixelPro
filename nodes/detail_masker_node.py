@@ -27,7 +27,7 @@ class JHPixelProHighFreqDetailMasker:
                         "tooltip": (
                             "High-pass operator. 'laplacian' is scale-invariant "
                             "and isotropic (default). 'sobel' is directional "
-                            "(emphasizes edges). 'fs_gaussian' reuses the N-01 "
+                            "(emphasizes edges). 'fs_gaussian' reuses the Frequency Separation "
                             "Frequency Separation high-pass path."
                         ),
                     },

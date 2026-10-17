@@ -81,10 +81,10 @@ class JHPixelProEdgeAwareSmoother:
                     {
                         "default": False,
                         "tooltip": (
-                            "Enable 512x512 tile processing to avoid OOM on "
-                            "large images. Required for 4K+ or sigma_space > 4 "
-                            "on most GPUs. Leave off for images ≤1K for max "
-                            "speed."
+                            "Process the image in tiles sized to keep peak memory near "
+                            "2 GB. Turn it on for anything larger than a small preview: "
+                            "without it the node refuses jobs whose estimate exceeds "
+                            "~2 GB (about 0.1 MP at sigma_space 6)."
                         ),
                     },
                 ),

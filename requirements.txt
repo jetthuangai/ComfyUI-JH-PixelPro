@@ -5,7 +5,7 @@ opencv-python-headless>=4.8.0
 scipy>=1.10.0
 
 # Optional: install opencv-contrib-python>=4.8.0 instead of opencv-python-headless
-# when you want cv2.ximgproc joint-bilateral acceleration for N-33.
+# when you want cv2.ximgproc joint-bilateral filtering in Mask Edge Smoother (backend=opencv).
 
 # Dev / test (install via: pip install -r requirements-dev.txt)
 # pytest>=8.0

@@ -52,7 +52,7 @@ class JHPixelProUnwrapFace:
                         "multiline": True,
                         "default": _DEFAULT_INVERSE_MATRIX_JSON,
                         "tooltip": (
-                            "Output of S-06 Facial Aligner — Bx3x3 (or Bx2x3) affine per "
+                            "Output of Facial Aligner — Bx3x3 (or Bx2x3) affine per "
                             "batch, JSON serialized. Default identity is a safe pass-through "
                             "when nothing is wired."
                         ),

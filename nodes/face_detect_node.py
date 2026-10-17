@@ -12,7 +12,7 @@ _MODE_CHOICES = ["single_largest", "multi_top_k"]
 
 
 class JHPixelProFaceDetect:
-    """Detect 5-point face landmarks via MediaPipe; output JSON compatible with S-06."""
+    """Detect 5-point face landmarks via MediaPipe; output JSON compatible with Facial Aligner."""
 
     CATEGORY = "ComfyUI-JH-PixelPro/face"
     RETURN_TYPES = ("STRING", "STRING", "INT")

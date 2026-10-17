@@ -50,7 +50,7 @@ def _get_detector(
             raise RuntimeError(
                 "Could not load the YuNet face detector weights (yunet_final.pth). Kornia "
                 "downloads them once into the torch hub cache (~/.cache/torch/hub/checkpoints); "
-                "check network access or copy the file there manually. Alternative: use N-10 "
+                "check network access or copy the file there manually. Alternative: use "
                 f"Face Detect (MediaPipe). Original error: {exc}"
             ) from exc
         _DETECTOR_CACHE[key] = detector
