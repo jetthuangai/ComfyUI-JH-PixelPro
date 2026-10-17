@@ -28,6 +28,8 @@ NODE_DISPLAY_NAME_MAPPINGS: dict[str, str] = {}
 if __package__:
     from .nodes import (
         JHPixelProAlphaMatteExtractor,
+        JHPixelProAutoAlign,
+        JHPixelProCLAHE,
         JHPixelProColorLab,
         JHPixelProColorMatcher,
         JHPixelProColorMatcherRegion,
@@ -35,6 +37,7 @@ if __package__:
         JHPixelProEdgeAwareSmoother,
         JHPixelProFaceBeautyBlend,
         JHPixelProFaceDetect,
+        JHPixelProFaceDetectLite,
         JHPixelProFaceLandmarks,
         JHPixelProFaceWarp,
         JHPixelProFacialAligner,
@@ -55,6 +58,7 @@ if __package__:
         JHPixelProMaskCombine,
         JHPixelProMaskEdgeSmoother,
         JHPixelProMaskMorphology,
+        JHPixelProPyramidBlend,
         JHPixelProSaturationMask,
         JHPixelProSkinToneTriRegion,
         JHPixelProSubPixelMaskRefiner,
@@ -103,8 +107,14 @@ if __package__:
     NODE_CLASS_MAPPINGS["JHPixelProLensDistortion"] = JHPixelProLensDistortion
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLensDistortion"] = "Lens Distortion Corrector"
 
+    NODE_CLASS_MAPPINGS["JHPixelProAutoAlign"] = JHPixelProAutoAlign
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProAutoAlign"] = "Geometry: Auto Align"
+
     NODE_CLASS_MAPPINGS["JHPixelProFaceDetect"] = JHPixelProFaceDetect
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceDetect"] = "JHPixelProFaceDetect"
+
+    NODE_CLASS_MAPPINGS["JHPixelProFaceDetectLite"] = JHPixelProFaceDetectLite
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceDetectLite"] = "Face: Detect Lite (YuNet GPU)"
 
     NODE_CLASS_MAPPINGS["JHPixelProFaceLandmarks"] = JHPixelProFaceLandmarks
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProFaceLandmarks"] = "Face Landmarks (MediaPipe 468)"
@@ -154,6 +164,9 @@ if __package__:
     NODE_CLASS_MAPPINGS["JHPixelProColorLab"] = JHPixelProColorLab
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorLab"] = "Color: ColorLab (ACR)"
 
+    NODE_CLASS_MAPPINGS["JHPixelProCLAHE"] = JHPixelProCLAHE
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProCLAHE"] = "Color: CLAHE Local Contrast"
+
     NODE_CLASS_MAPPINGS["JHPixelProSkinToneTriRegion"] = JHPixelProSkinToneTriRegion
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSkinToneTriRegion"] = "Face: Skin Tone Tri-Region"
 
@@ -168,6 +181,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProLayerFlatten"] = JHPixelProLayerFlatten
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLayerFlatten"] = "Compositing: Layer Flatten"
+
+    NODE_CLASS_MAPPINGS["JHPixelProPyramidBlend"] = JHPixelProPyramidBlend
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProPyramidBlend"] = "Compositing: Pyramid Blend"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

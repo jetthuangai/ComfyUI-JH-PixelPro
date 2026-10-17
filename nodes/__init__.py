@@ -1,10 +1,13 @@
 """ComfyUI node wrappers — wrap core math into classes exposing INPUT_TYPES / RETURN_TYPES."""  # noqa: N999
 
+from .auto_align_node import JHPixelProAutoAlign
+from .clahe_node import JHPixelProCLAHE
 from .color_lab import JHPixelProColorLab
 from .color_matcher_node import JHPixelProColorMatcher
 from .color_matcher_region_node import JHPixelProColorMatcherRegion
 from .detail_masker_node import JHPixelProHighFreqDetailMasker
 from .face_beauty_blend_node import JHPixelProFaceBeautyBlend
+from .face_detect_lite_node import JHPixelProFaceDetectLite
 from .face_detect_node import JHPixelProFaceDetect
 from .face_landmarks_node import JHPixelProFaceLandmarks
 from .face_warp_node import JHPixelProFaceWarp
@@ -31,6 +34,7 @@ from .mask_edge_smooth_node import JHPixelProMaskEdgeSmoother
 from .mask_morphology_node import JHPixelProMaskMorphology
 from .mask_refiner_node import JHPixelProSubPixelMaskRefiner
 from .mask_trimap_node import JHPixelProTrimapBuilder
+from .pyramid_blend_node import JHPixelProPyramidBlend
 from .saturation_mask_node import JHPixelProSaturationMask
 from .skin_tone_region_node import JHPixelProSkinToneTriRegion
 from .smoother_node import JHPixelProEdgeAwareSmoother
@@ -39,12 +43,15 @@ from .tone_match_lut_node import JHPixelProToneMatchLUT
 from .unwrap_face_node import JHPixelProUnwrapFace
 
 __all__ = [
+    "JHPixelProAutoAlign",
+    "JHPixelProCLAHE",
     "JHPixelProColorMatcher",
     "JHPixelProColorMatcherRegion",
     "JHPixelProColorLab",
     "JHPixelProEdgeAwareSmoother",
     "JHPixelProFaceBeautyBlend",
     "JHPixelProFaceDetect",
+    "JHPixelProFaceDetectLite",
     "JHPixelProFaceLandmarks",
     "JHPixelProFaceWarp",
     "JHPixelProFacialAligner",
@@ -67,6 +74,7 @@ __all__ = [
     "JHPixelProMaskCombine",
     "JHPixelProMaskEdgeSmoother",
     "JHPixelProMaskMorphology",
+    "JHPixelProPyramidBlend",
     "JHPixelProSubPixelMaskRefiner",
     "JHPixelProSkinToneTriRegion",
     "JHPixelProSaturationMask",
