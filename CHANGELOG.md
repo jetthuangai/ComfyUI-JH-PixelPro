@@ -16,6 +16,18 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.5.4] — 2026-10-18
+
+### Added
+
+- **Frequency Recombine** (`JHPixelProFrequencyRecombine`, Filters): rebuilds an image from Frequency Separation's `low` and `high` layers (`low + detail × high`, clamped once at the end). `detail = 1` restores the original exactly, above 1 boosts texture, below 1 softens it. ComfyUI has no non-clamping image add, so the separation could not be put back together before; the old tooltip pointed to a node that did not exist. Pack now registers **45 nodes** (`/filters` 4).
+
+### Fixed
+
+- **Layer Group:** `group_opacity` was written to both opacity and fill, which multiply, so 0.5 acted like 0.25. It is now applied once.
+- **Blend mode `dissolve`:** behaved exactly like `normal` (a smooth mix). It now scatters whole pixels like Photoshop: each pixel is either the layer or the base, with probability opacity × fill × mask, using a fixed seed so renders repeat.
+- **Sample workflows are self-contained.** 14 workflows that needed other node packs (A Person Mask Generator, Essentials, LayerStyle, image-compare and show-text nodes) or images missing from the repo were rebuilt with core ComfyUI and PixelPro nodes only, run on a live ComfyUI, and given a real `-preview.png` result. Three more now load `sample_portrait.jpg` instead of a missing `sample.jpg`. `N-35-skin-tone-tri-region.json` still uses the external person-mask node.
+
 ## [1.5.3] — 2026-10-18
 
 ### Changed
@@ -492,7 +504,8 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.5.3...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.5.4...HEAD
+[1.5.4]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.4
 [1.5.3]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.3
 [1.5.2]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.2
 [1.5.1]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.5.1
