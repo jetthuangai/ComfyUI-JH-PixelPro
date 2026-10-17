@@ -9,6 +9,7 @@ import urllib.request
 from numbers import Integral, Real
 from pathlib import Path
 
+import numpy as np
 import torch
 
 logger = logging.getLogger(__name__)
@@ -229,7 +230,10 @@ def face_detect(
         image_uint8 = (
             image[batch_index].detach().cpu().mul(255.0).round().clamp(0.0, 255.0).to(torch.uint8)
         )
-        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image_uint8.numpy())
+        # ComfyUI resize nodes hand over channel-planar strides; MediaPipe needs C order.
+        mp_image = mp.Image(
+            image_format=mp.ImageFormat.SRGB, data=np.ascontiguousarray(image_uint8.numpy())
+        )
         result = landmarker.detect(mp_image)
 
         candidates: list[tuple[list[list[float]], dict[str, float | int]]] = []

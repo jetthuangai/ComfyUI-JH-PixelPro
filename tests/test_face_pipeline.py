@@ -238,3 +238,25 @@ def test_beauty_blend_feather_preserves_mask_mass() -> None:
     applied_mask = ((feathered - base) / (retouched - base + 1e-6)).mean(dim=-1).clamp(0.0, 1.0)
 
     assert abs(applied_mask.sum().item() - mask.sum().item()) / mask.sum().item() < 0.02
+
+
+def test_extract_landmarks_passes_c_contiguous_array_for_planar_input(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # ComfyUI ImageScale returns BHWC views of BCHW storage; MediaPipe needs C order.
+    import mediapipe as mp
+
+    original = mp.Image
+    seen = []
+
+    def checking_image(*args, **kwargs):
+        seen.append(kwargs["data"].flags["C_CONTIGUOUS"])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(mp, "Image", checking_image)
+    portrait = _load_portrait()[::4, ::4].contiguous().unsqueeze(0)
+    planar = portrait.permute(0, 3, 1, 2).contiguous().movedim(1, -1)
+    assert not planar.is_contiguous()
+    landmarks, _ = extract_landmarks(planar, max_num_faces=1)
+    assert seen and all(seen)
+    assert torch.isfinite(landmarks[0, 0]).all()

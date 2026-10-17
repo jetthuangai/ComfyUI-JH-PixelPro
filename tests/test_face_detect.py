@@ -209,3 +209,22 @@ def test_cpu_inference_time() -> None:
     elapsed_ms = (time.perf_counter() - start) * 1000.0
     assert count == 1
     assert elapsed_ms < 500.0
+
+
+def test_planar_strided_input_reaches_mediapipe_c_contiguous(monkeypatch) -> None:
+    # ComfyUI ImageScale returns BHWC views of BCHW storage; older MediaPipe bindings reject
+    # non C-contiguous arrays ("incompatible constructor arguments").
+    mp, _, _, _, _ = _import_mediapipe()
+    original = mp.Image
+    seen = []
+
+    def checking_image(*args, **kwargs):
+        seen.append(kwargs["data"].flags["C_CONTIGUOUS"])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(mp, "Image", checking_image)
+    portrait = _load_portrait()[::4, ::4].contiguous().unsqueeze(0)
+    planar = portrait.permute(0, 3, 1, 2).contiguous().movedim(1, -1)
+    assert not planar.is_contiguous()
+    public_face_detect(planar, mode="single_largest", max_faces=1, confidence_threshold=0.5)
+    assert seen and all(seen)

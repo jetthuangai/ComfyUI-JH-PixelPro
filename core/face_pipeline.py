@@ -158,6 +158,8 @@ def extract_landmarks(
             .to(torch.uint8)
             .numpy()
         )
+        # ComfyUI resize nodes hand over channel-planar strides; MediaPipe needs C order.
+        image_uint8 = np.ascontiguousarray(image_uint8)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image_uint8)
         result = landmarker.detect(mp_image)
 
