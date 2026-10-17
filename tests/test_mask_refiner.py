@@ -277,3 +277,54 @@ def test_accepts_bc1hw() -> None:
 
     assert refined_bc1hw.shape == mask_bc1hw.shape
     assert torch.allclose(refined_bc1hw.squeeze(1), refined_bhw, atol=1e-6)
+
+
+def _structured_masks() -> list[torch.Tensor]:
+    border_rect = torch.zeros((1, 1, 41, 53), dtype=torch.float32)
+    border_rect[..., :17, 9:40] = 1.0
+    return [
+        _disk_mask(batch=2, size=49, radius=15).unsqueeze(1),
+        border_rect,
+        torch.ones((1, 1, 23, 31), dtype=torch.float32),
+        torch.zeros((1, 1, 3, 5), dtype=torch.float32).index_fill_(3, torch.tensor([2]), 1.0),
+    ]
+
+
+@pytest.mark.parametrize("radius", [1, 3, 16, 64])
+def test_square_morphology_matches_kornia_exactly(radius: int) -> None:
+    # Regression: square max-pool morphology must equal kornia geodesic erosion/dilation.
+    from core.mask_refiner import _dilate_square, _erode_square
+
+    kernel = torch.ones((2 * radius + 1, 2 * radius + 1), dtype=torch.float32)
+    for mask in _structured_masks():
+        assert torch.equal(_dilate_square(mask, radius), dilation(mask, kernel))
+        assert torch.equal(_erode_square(mask, radius), erosion(mask, kernel))
+
+
+@pytest.mark.parametrize(("erosion_radius", "dilation_radius"), [(2, 4), (5, 3), (0, 6), (6, 0)])
+def test_refine_output_matches_kornia_reference(erosion_radius: int, dilation_radius: int) -> None:
+    mask = _disk_mask(batch=2, size=65, radius=20)
+    refined = subpixel_mask_refine(
+        mask, erosion_radius=erosion_radius, dilation_radius=dilation_radius, feather_sigma=2.0
+    )
+    binary = _binary_mask(mask)
+    kernel_size = 2 * max(erosion_radius, dilation_radius, 1) + 1
+    feather = gaussian_blur2d(
+        binary, (kernel_size, kernel_size), (2.0, 2.0), border_type="replicate"
+    )
+    inside = _inside_core_reference(mask, erosion_radius).unsqueeze(1).float()
+    outside = _outside_core_reference(mask, dilation_radius).unsqueeze(1).float()
+    expected = (inside + (1.0 - inside - outside) * feather).clamp(0.0, 1.0).squeeze(1)
+    assert torch.equal(refined, expected)
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA memory check")
+def test_large_radius_memory_stays_bounded() -> None:
+    # Regression: kornia.morphology unfold engine needed ~H*W*k^2 floats (5.5 GB at r=16, 1024^2).
+    mask = (torch.rand((1, 1024, 1024), device="cuda") > 0.5).to(dtype=torch.float32)
+    torch.cuda.synchronize()
+    baseline = torch.cuda.memory_allocated()
+    torch.cuda.reset_peak_memory_stats()
+    subpixel_mask_refine(mask, erosion_radius=64, dilation_radius=64, feather_sigma=2.0)
+    torch.cuda.synchronize()
+    assert torch.cuda.max_memory_allocated() - baseline < 512 * 1024**2

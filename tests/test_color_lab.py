@@ -204,3 +204,11 @@ def test_gray_mix_slider_changes_luma() -> None:
     base = apply_colorlab_pipeline(image, _params(gray_enable=True, gray_orange=0.0))
     bright = apply_colorlab_pipeline(image, _params(gray_enable=True, gray_orange=200.0))
     assert bright.mean().item() > base.mean().item()
+
+
+@pytest.mark.parametrize("key", ["basic_texture", "basic_clarity"])
+def test_local_contrast_keeps_flat_image_flat_at_borders(key: str) -> None:
+    # Regression: zero-padded blur created a bright halo (0.5 -> ~0.62) along the frame.
+    image = _solid((0.5, 0.5, 0.5), size=32)
+    out = apply_colorlab_pipeline(image, _params(**{key: 100.0}))
+    assert torch.allclose(out, image, atol=1e-5)

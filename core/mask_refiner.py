@@ -6,8 +6,8 @@ import logging
 from numbers import Real
 
 import torch
+import torch.nn.functional as functional
 from kornia.filters import gaussian_blur2d
-from kornia.morphology import dilation, erosion
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +72,21 @@ def _prepare_mask(mask_bhw: torch.Tensor) -> tuple[torch.Tensor, bool]:
     return mask_bchw, preserve_channel_dim
 
 
+def _dilate_square(mask_bchw: torch.Tensor, radius: int) -> torch.Tensor:
+    # Square all-ones dilation == sliding max, which separates into a row max then a
+    # column max. O(H*W) memory, unlike kornia.morphology's unfold engine
+    # (O(H*W*k^2), multi-GB at large radii); -inf padding matches its geodesic border.
+    kernel_size = 2 * radius + 1
+    rows = functional.max_pool2d(
+        mask_bchw, kernel_size=(1, kernel_size), stride=1, padding=(0, radius)
+    )
+    return functional.max_pool2d(rows, kernel_size=(kernel_size, 1), stride=1, padding=(radius, 0))
+
+
+def _erode_square(mask_bchw: torch.Tensor, radius: int) -> torch.Tensor:
+    return -_dilate_square(-mask_bchw, radius)
+
+
 def subpixel_mask_refine(
     mask_bhw: torch.Tensor,
     erosion_radius: int = 2,
@@ -123,25 +138,12 @@ def subpixel_mask_refine(
     if erosion_radius > dilation_radius:
         logger.warning("unusual config: erosion_radius > dilation_radius.")
 
-    if erosion_radius == 0:
-        inside_core = mask_binary
-    else:
-        kernel_e = torch.ones(
-            (2 * erosion_radius + 1, 2 * erosion_radius + 1),
-            device=mask_binary.device,
-            dtype=mask_binary.dtype,
-        )
-        inside_core = erosion(mask_binary, kernel_e)
+    inside_core = mask_binary if erosion_radius == 0 else _erode_square(mask_binary, erosion_radius)
 
     if dilation_radius == 0:
         outside_core = 1.0 - mask_binary
     else:
-        kernel_d = torch.ones(
-            (2 * dilation_radius + 1, 2 * dilation_radius + 1),
-            device=mask_binary.device,
-            dtype=mask_binary.dtype,
-        )
-        outside_core = 1.0 - dilation(mask_binary, kernel_d)
+        outside_core = 1.0 - _dilate_square(mask_binary, dilation_radius)
 
     band_weight = 1.0 - inside_core - outside_core
     output = inside_core + band_weight * feather

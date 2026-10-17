@@ -61,8 +61,13 @@ def _validate_float(name: str, value: float, *, lower: float, upper: float) -> f
 
 
 def _box_filter(x: torch.Tensor, radius: int) -> torch.Tensor:
+    # Replicate padding keeps window statistics unbiased at the image border (zero
+    # padding pulled border pixels toward 0) and works for any image size. Two 1-D
+    # average pools are exact and much cheaper than one dense (2r+1)^2 window.
     kernel_size = 2 * radius + 1
-    return functional.avg_pool2d(x, kernel_size=kernel_size, stride=1, padding=radius)
+    padded = functional.pad(x, (radius, radius, radius, radius), mode="replicate")
+    rows = functional.avg_pool2d(padded, kernel_size=(1, kernel_size), stride=1)
+    return functional.avg_pool2d(rows, kernel_size=(kernel_size, 1), stride=1)
 
 
 def _guide_luma(guide_bhwc: torch.Tensor) -> torch.Tensor:

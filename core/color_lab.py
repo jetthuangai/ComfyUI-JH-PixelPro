@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 import torch
-import torch.nn.functional as functional
+from kornia.filters import box_blur
 
 HUE_ANCHORS = {
     "red": 0.0,
@@ -159,7 +159,8 @@ def _local_contrast(image: torch.Tensor, amount: float, kernel_size: int) -> tor
     if not amount:
         return image
     x = image.permute(0, 3, 1, 2)
-    blur = functional.avg_pool2d(x, kernel_size=kernel_size, stride=1, padding=kernel_size // 2)
+    # Replicate padding: zero padding brightened/darkened a halo around the frame.
+    blur = box_blur(x, (kernel_size, kernel_size), border_type="replicate")
     return (x + (x - blur) * amount).permute(0, 2, 3, 1)
 
 

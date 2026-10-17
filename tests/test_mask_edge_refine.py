@@ -63,3 +63,17 @@ def test_edge_aware_refine_validates_params(kwargs: dict[str, float | int], mess
 def test_edge_aware_refine_rejects_spatial_mismatch() -> None:
     with pytest.raises(ValueError, match="spatial"):
         edge_aware_refine(_mask(64), _guide(32))
+
+
+def test_edge_aware_refine_full_mask_stays_full_at_borders() -> None:
+    # Regression: zero-padded box filter pulled border pixels to ~0.26 for radius=16.
+    mask = torch.ones((1, 96, 96), dtype=torch.float32)
+    guide = torch.full((1, 96, 96, 3), 0.5, dtype=torch.float32)
+    out = edge_aware_refine(mask, guide, radius=16, eps=1e-3)
+    assert torch.allclose(out, mask, atol=1e-5)
+
+
+def test_edge_aware_refine_handles_radius_larger_than_image() -> None:
+    out = edge_aware_refine(torch.rand((1, 8, 8)), torch.rand((1, 8, 8, 3)), radius=32)
+    assert out.shape == (1, 8, 8)
+    assert torch.isfinite(out).all()
