@@ -37,3 +37,9 @@ Image and mask must have the same height and width. A batch of 1 on either side 
 - Use `mask_only` for a quick truth view when colours confuse you.
 - Use `cutout` to judge the final alpha as if the subject sat on a transparent layer.
 - Pick `color` to contrast with the image (for example cyan on warm skin, magenta on foliage).
+
+## Workflow JSON
+
+[workflows/N-43-mask-preview.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-43-mask-preview.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![N-43-mask-preview result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-43-mask-preview-preview.png)

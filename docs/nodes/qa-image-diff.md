@@ -40,3 +40,9 @@ description: Compare two images with SSIM, PSNR and MAE plus a visual diff.
 - **Check only the face or skin**: pass a mask so background pixels do not dilute the numbers.
 - **Rules of thumb**: SSIM >= 0.98 and PSNR >= 40 dB are visually near-identical; SSIM 0.90-0.98 / PSNR 30-40 dB is a visible but moderate change; SSIM < 0.80 or PSNR < 25 dB is a heavy change. A uniform 0.1 offset is exactly 20 dB.
 - Use a larger `window_size` to judge coarse structure, a smaller one for fine texture such as skin grain.
+
+## Workflow JSON
+
+[workflows/N-44-qa-image-diff.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-44-qa-image-diff.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![N-44-qa-image-diff result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-44-qa-image-diff-preview.png)

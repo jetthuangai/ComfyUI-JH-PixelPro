@@ -38,3 +38,9 @@ Sharpening each RGB channel separately boosts channels by different amounts at c
 - Noisy or grainy source: raise `threshold` to about 0.02 to 0.05 so grain is not amplified while real edges are still sharpened.
 - Pair with N-04 High-Frequency Detail Masker: feed its mask into `mask` to sharpen only textured regions (hair, eyes, fabric) and keep skin and sky smooth.
 - Radius is limited by image size: the image must be larger than `ceil(3 * radius)` pixels on both sides.
+
+## Workflow JSON
+
+[workflows/N-40-smart-sharpen.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-40-smart-sharpen.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![N-40-smart-sharpen result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-40-smart-sharpen-preview.png)

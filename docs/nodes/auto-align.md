@@ -40,3 +40,9 @@ If a pair has too few matches or fewer than `min_inliers` agree, the node does n
 - **Before Color Matcher:** align first, then match colour, so both images compare the same content.
 - Moving subjects (people, leaves) are ignored by RANSAC as long as the background has enough texture.
 - Raise `ransac_threshold` for slightly blurred pairs; lower it when you need a tight fit.
+
+## Workflow JSON
+
+[workflows/N-39-auto-align.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-39-auto-align.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![N-39-auto-align result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-39-auto-align-preview.png)

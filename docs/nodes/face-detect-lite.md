@@ -52,3 +52,9 @@ The image is shrunk so its long side equals `detect_size` (smaller images are le
 - Keep the default 640 for portraits. Raise `detect_size` (up to 1024) only for group shots with small faces. YuNet anchors are size-limited, so a larger value can split or misplace big faces and add false hits on close-ups.
 - Too many false hits: raise `confidence_threshold`; duplicate boxes: lower `nms_threshold`.
 - A pure black frame can trigger a false detection in YuNet; use a real image or a higher threshold.
+
+## Workflow JSON
+
+[workflows/N-38-face-detect-lite.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-38-face-detect-lite.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![N-38-face-detect-lite result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-38-face-detect-lite-preview.png)

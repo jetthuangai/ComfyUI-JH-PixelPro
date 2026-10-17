@@ -38,3 +38,9 @@ ColorLab clarity is a smooth, radius-based local contrast (a blurred copy is sub
 - Lower `strength` (0.3-0.6) is usually enough for portraits.
 - Use `mask` to keep faces or skies out of the effect, or to drive it only into shadows.
 - Flat colour areas stay flat (within 8-bit quantisation), so solid backgrounds are not tinted.
+
+## Workflow JSON
+
+[workflows/N-37-clahe-local-contrast.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-37-clahe-local-contrast.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![N-37-clahe-local-contrast result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-37-clahe-local-contrast-preview.png)

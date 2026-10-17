@@ -37,3 +37,9 @@ Pair it with masks from the mask category (for example `Mask: Edge-Aware Refiner
 - Use low values (1-3) when you want a tight edge, and high values (7-10) to hide large exposure or color differences between sources.
 - A hard binary mask is fine; the pyramid does the feathering. Very soft masks widen the transition further.
 - Large `levels` on strongly different sources can leak color across the seam; reduce `levels` if halos appear.
+
+## Workflow JSON
+
+[workflows/N-36-pyramid-blend.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-36-pyramid-blend.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+
+![N-36-pyramid-blend result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-36-pyramid-blend-preview.png)

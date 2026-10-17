@@ -35,3 +35,9 @@ Components are labelled with OpenCV (`connectedComponentsWithStats`): exact and 
 - Use `8` connectivity for natural subjects. Use `4` when thin diagonal bridges should not join separate blobs.
 - Chaining: Mask: Cleanup first, then N-02 Mask Refiner (grow/shrink the edge) or N-33 Mask Edge Smoother (clean a jagged edge). If you only need a soft edge, set `feather_px` here instead of adding a blur.
 - Feather is a distance ramp, not a Gaussian blur, so thin features stay solid and the edge position does not drift.
+
+## Workflow JSON
+
+[workflows/N-41-mask-cleanup.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-41-mask-cleanup.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`.
+
+![N-41-mask-cleanup result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-41-mask-cleanup-preview.png)
