@@ -16,7 +16,7 @@ description: Smooth skin while preserving stronger image edges.
 | `sigma_color` | Widget | `FLOAT`, default `0.1` | Intensity similarity sigma on the 0 to 1 scale. |
 | `sigma_space` | Widget | `FLOAT`, default `6.0` | Spatial smoothing sigma in pixels. |
 | `device` | Widget | `COMBO`, default `auto` | Uses `auto`, `cpu`, or `cuda`. |
-| `tile_mode` | Widget | `BOOLEAN`, default `false` | Enables tiled processing for large images. |
+| `tile_mode` | Widget | `BOOLEAN`, default `false` | Enables tiled processing for large images; tiles are sized to keep peak memory near 2 GB. |
 | `mask` | Optional input | `MASK` | Optional mask to limit smoothing. |
 | `image` | Output | `IMAGE` | Smoothed image. |
 

@@ -12,7 +12,10 @@ from kornia.filters import bilateral_blur
 logger = logging.getLogger(__name__)
 
 _MEMORY_BUDGET_BYTES = 2_000_000_000
-_TILE_SIZE = 512
+_TILE_SIZE = 512  # upper bound; the real tile side is derived from the memory budget
+# kornia.filters.bilateral_blur keeps several k*k-sized temporaries besides the unfold itself:
+# measured peak = ~4.1x the plain unfold size (2333x3500, sigma 6: 20 GB with 512 px tiles).
+_UNFOLD_OVERHEAD = 5
 _VALID_DEVICES = {"auto", "cpu", "cuda"}
 
 
@@ -159,6 +162,13 @@ def _run_bilateral(
     )
 
 
+def _tile_side(channels: int, kernel_size: int, pad: int) -> int:
+    """Largest tile side whose padded tile stays within ``_MEMORY_BUDGET_BYTES`` of VRAM/RAM."""
+    bytes_per_pixel = channels * kernel_size * kernel_size * 4 * _UNFOLD_OVERHEAD
+    padded_side = math.isqrt(max(_MEMORY_BUDGET_BYTES // bytes_per_pixel, 1))
+    return max(16, min(_TILE_SIZE, padded_side - 2 * pad))
+
+
 def _run_bilateral_tiled(
     image_bchw: torch.Tensor,
     kernel_size: int,
@@ -167,16 +177,17 @@ def _run_bilateral_tiled(
 ) -> torch.Tensor:
     batch, channels, height, width = image_bchw.shape
     pad = kernel_size // 2 + 1
+    tile_side = _tile_side(channels, kernel_size, pad)
     output = torch.empty(
         (batch, channels, height, width),
         dtype=image_bchw.dtype,
         device=image_bchw.device,
     )
 
-    for tile_y in range(0, height, _TILE_SIZE):
-        tile_height = min(_TILE_SIZE, height - tile_y)
-        for tile_x in range(0, width, _TILE_SIZE):
-            tile_width = min(_TILE_SIZE, width - tile_x)
+    for tile_y in range(0, height, tile_side):
+        tile_height = min(tile_side, height - tile_y)
+        for tile_x in range(0, width, tile_side):
+            tile_width = min(tile_side, width - tile_x)
             y0 = max(0, tile_y - pad)
             y1 = min(height, tile_y + tile_height + pad)
             x0 = max(0, tile_x - pad)

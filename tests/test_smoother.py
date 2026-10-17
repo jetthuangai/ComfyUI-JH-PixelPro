@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 
 import pytest
 import torch
@@ -274,3 +275,28 @@ def test_invalid_tile_mode_type(rng: torch.Generator, tile_mode: object) -> None
 
     with pytest.raises(ValueError, match="tile_mode must be a bool"):
         edge_aware_smooth(image, tile_mode=tile_mode)  # type: ignore[arg-type]
+
+
+def test_tile_side_respects_memory_budget() -> None:
+    # Regression (v1.5.2): 512 px tiles at sigma 6 peaked at ~20 GB and crashed ComfyUI.
+    from core.smoother import _MEMORY_BUDGET_BYTES, _UNFOLD_OVERHEAD, _tile_side
+
+    for sigma in (1.0, 6.0, 8.0):
+        kernel = 2 * math.ceil(3.0 * sigma) + 1
+        pad = kernel // 2 + 1
+        side = _tile_side(3, kernel, pad)
+        padded = side + 2 * pad
+        assert 16 <= side <= 512
+        assert padded * padded * 3 * kernel * kernel * 4 * _UNFOLD_OVERHEAD <= max(
+            _MEMORY_BUDGET_BYTES, (16 + 2 * pad) ** 2 * 3 * kernel * kernel * 4 * _UNFOLD_OVERHEAD
+        )
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required")
+def test_tile_mode_peak_vram_stays_bounded() -> None:
+    image = torch.rand(1, 3, 1024, 1024, generator=torch.Generator().manual_seed(0))
+    torch.cuda.empty_cache()
+    torch.cuda.reset_peak_memory_stats()
+    base = torch.cuda.memory_allocated()
+    edge_aware_smooth(image, sigma_space=8.0, device="cuda", tile_mode=True)
+    assert torch.cuda.max_memory_allocated() - base < 3 * 1024**3
