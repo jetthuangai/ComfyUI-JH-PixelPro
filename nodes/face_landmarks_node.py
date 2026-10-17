@@ -26,6 +26,10 @@ def _draw_overlay(image: torch.Tensor, landmarks: torch.Tensor) -> torch.Tensor:
             for x_value, y_value in valid.tolist():
                 x_int = int(round(x_value))
                 y_int = int(round(y_value))
+                # MediaPipe extrapolates landmarks past the frame on cropped faces; a negative
+                # index would turn the slice below into a full-width/height stripe.
+                if not (0 <= x_int < width and 0 <= y_int < height):
+                    continue
                 x0 = max(0, x_int - 1)
                 y0 = max(0, y_int - 1)
                 x1 = min(width, x_int + 2)

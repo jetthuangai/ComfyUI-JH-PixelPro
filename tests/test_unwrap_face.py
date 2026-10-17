@@ -87,9 +87,19 @@ def test_feather_zero_hard_edge() -> None:
 def test_feather_nonzero_soft_taper() -> None:
     edited = torch.ones((1, 3, 64, 64), dtype=torch.float32)
     original = torch.zeros((1, 3, 128, 128), dtype=torch.float32)
-    _, mask = unwrap_face(edited, original, _translated_inverse(), feather_radius=8.0)
-    assert 0.0 < mask[0, 28, 32].item() < mask[0, 32, 32].item() < 1.0
+    _, mask = unwrap_face(edited, original, _translated_inverse(), feather_radius=4.0)
+    assert mask[0, 64, 20].item() == 0.0  # nothing bleeds outside the warped frame
+    assert 0.0 < mask[0, 64, 36].item() < mask[0, 64, 40].item() < 1.0  # taper inside it
     assert mask[0, 64, 64].item() == pytest.approx(1.0, abs=1e-6)
+
+
+def test_feather_does_not_darken_the_frame_edge() -> None:
+    # Regression (v1.5.3): the feather used to straddle the frame edge, so zero padding outside
+    # the warped crop leaked in as a dark seam around every pasted-back face.
+    edited = torch.full((1, 3, 64, 64), 0.5)
+    original = torch.full((1, 3, 128, 128), 0.5)
+    composited, _ = unwrap_face(edited, original, _translated_inverse(), feather_radius=8.0)
+    assert composited.min().item() > 0.48
 
 
 def test_mask_override_ignores_feather() -> None:

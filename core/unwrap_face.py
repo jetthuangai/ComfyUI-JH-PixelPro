@@ -7,6 +7,7 @@ import math
 from numbers import Real
 
 import torch
+import torch.nn.functional as functional
 from kornia.filters import gaussian_blur2d
 from kornia.geometry.transform import warp_affine
 
@@ -182,6 +183,12 @@ def unwrap_face(
         ).clamp(0.0, 1.0)
         if feather_radius > 0.0:
             kernel_size = _gaussian_kernel_size(feather_radius)
+            # Pull the edge inside the warped frame before blurring: a blur centred on the frame
+            # edge reaches outside it, where ``warped`` is zero padding, and paints a dark seam.
+            inset = math.ceil(2.0 * feather_radius)  # Gaussian tail beyond 2 sigma < 2.3%
+            warped_indicator = -functional.max_pool2d(
+                -warped_indicator, kernel_size=2 * inset + 1, stride=1, padding=inset
+            )
             mask = gaussian_blur2d(
                 warped_indicator,
                 kernel_size=(kernel_size, kernel_size),
