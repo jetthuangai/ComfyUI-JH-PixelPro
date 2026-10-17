@@ -205,7 +205,7 @@ def assert_bench_within_threshold(
 
     within_threshold = current_ms <= threshold_ms
     status = "OK" if within_threshold else "OVER"
-    # Always emit observability line so JH/Cowork can grep [bench-report] in
+    # Always emit observability line so JH can grep [bench-report] in
     # GHA workflow log to identify drift cases per CI run.
     print(
         f"[bench-report] {case}: {status} "

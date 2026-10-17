@@ -413,7 +413,7 @@ Reinhard LAB color transfer for ComfyUI IMAGE tensors. Match the chroma of a tar
 
 ### Performance
 
-CPU 2K benchmark misses the aspirational `< 100 ms` bound on a CPU-only runner: `ab` mode `~549 ms`, `lab` mode `~456 ms`. Root cause is the Kornia `rgb_to_lab` / `lab_to_rgb` round-trip alone — about `~254 ms` at 2K — which is the library throughput ceiling, not the masked-stat math itself. CPU 1K modes pass the bound (`ab ~111 ms` / `lab ~82 ms`). The GPU path is **not evaluated** on this CPU-only runner; LAB conversion + masked stats are likely fast on CUDA. For 2K pro retouch, recommend running on GPU or the downsample → match → upsample pattern. See [`R-20260419-bench-S-08.md`](../../.agent-hub/50_reports/R-20260419-bench-S-08.md) for full numbers.
+CPU 2K benchmark misses the aspirational `< 100 ms` bound on a CPU-only runner: `ab` mode `~549 ms`, `lab` mode `~456 ms`. Root cause is the Kornia `rgb_to_lab` / `lab_to_rgb` round-trip alone — about `~254 ms` at 2K — which is the library throughput ceiling, not the masked-stat math itself. CPU 1K modes pass the bound (`ab ~111 ms` / `lab ~82 ms`). The GPU path is **not evaluated** on this CPU-only runner; LAB conversion + masked stats are likely fast on CUDA. For 2K pro retouch, recommend running on GPU or the downsample → match → upsample pattern.
 
 ## N-09 Tone Curve (RGB)
 
@@ -463,7 +463,7 @@ Photoshop-style 8-control-point tone curve baked into a 1024-step Catmull-Rom LU
 
 ### Performance
 
-CPU 2K benchmark misses the aspirational `< 30 ms` bound on a CPU-only runner: `rgb_master` `~225 ms` (applies LUT to all 3 channels then blends — memory-bandwidth-bound at 2K), single-channel `r` / `g` / `b` `~96 ms`. CPU 1K modes pass the bound (`rgb_master ~26 ms` / `r ~18 ms`). Root cause is LUT sampling + 3-channel blend at 2K hitting the CPU memory bandwidth ceiling. The GPU path is **not evaluated** on this CPU-only runner; LUT apply is embarrassingly parallel and likely fast on CUDA. For 2K pro retouch, recommend GPU device. See [`R-20260419-bench-S-09.md`](../../.agent-hub/50_reports/R-20260419-bench-S-09.md) for full numbers.
+CPU 2K benchmark misses the aspirational `< 30 ms` bound on a CPU-only runner: `rgb_master` `~225 ms` (applies LUT to all 3 channels then blends — memory-bandwidth-bound at 2K), single-channel `r` / `g` / `b` `~96 ms`. CPU 1K modes pass the bound (`rgb_master ~26 ms` / `r ~18 ms`). Root cause is LUT sampling + 3-channel blend at 2K hitting the CPU memory bandwidth ceiling. The GPU path is **not evaluated** on this CPU-only runner; LUT apply is embarrassingly parallel and likely fast on CUDA. For 2K pro retouch, recommend GPU device.
 
 ## N-10 JHPixelProFaceDetect
 
@@ -549,7 +549,7 @@ The sample workflow chains `LoadImage → S-06 → ImageInvert (mock AI edit) �
 | 1024 × 1024 | ~52 ms | Acceptable for interactive use. |
 | 2048 × 2048 | ~217 ms | Misses the aspirational `< 60 ms` target — accepted with caveat (see below). |
 
-`unwrap_face` is **warp-dominated**: even with `feather_radius = 0` (no Gaussian blur), the full-canvas `kornia.warp_affine` keeps CPU 2K runtime around ~110 ms. The Gaussian feather adds another ~100 ms on CPU. **CUDA is recommended for production 2K+** — the GPU path stays well under the 60 ms target. A bbox-crop fast path (warp only the affected canvas region instead of the full canvas) is a candidate optimization for v0.5+. See [`R-20260419-bench-S-11.md`](../../.agent-hub/50_reports/R-20260419-bench-S-11.md) for full numbers.
+`unwrap_face` is **warp-dominated**: even with `feather_radius = 0` (no Gaussian blur), the full-canvas `kornia.warp_affine` keeps CPU 2K runtime around ~110 ms. The Gaussian feather adds another ~100 ms on CPU. **CUDA is recommended for production 2K+** — the GPU path stays well under the 60 ms target. A bbox-crop fast path (warp only the affected canvas region instead of the full canvas) is a candidate optimization for v0.5+.
 
 ### Limitations
 

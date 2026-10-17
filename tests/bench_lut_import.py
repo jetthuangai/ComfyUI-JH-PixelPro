@@ -25,7 +25,7 @@ from tests.conftest import (  # noqa: E402
 )
 
 SEED = 20260420
-SKIP_REASON_CUDA = "GPU NOT EVALUATED — Codex runner CPU-only per bench_color_matcher precedent"
+SKIP_REASON_CUDA = "GPU NOT EVALUATED — CPU-only runner per bench_color_matcher precedent"
 BASELINE_PATH = Path(__file__).with_name("bench_baselines") / "bench_lut_import.json"
 WRITE_BASELINES = os.environ.get("JH_PIXELPRO_WRITE_BENCH_BASELINES") == "1"
 
@@ -127,7 +127,7 @@ def _run_cpu_case(resolution: int, lut_size: int) -> CpuBenchResult:
                 status="SKIPPED",
                 median_ms=None,
                 p95_ms=None,
-                notes="CPU OOM on Codex runner — T-N-07-a precedent",
+                notes="CPU OOM on CPU-only runner — T-N-07-a precedent",
             )
         raise
     finally:

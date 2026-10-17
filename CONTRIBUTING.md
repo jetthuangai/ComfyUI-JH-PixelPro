@@ -66,7 +66,7 @@ Regen protocol:
 1. Confirm the perf delta is intentional. Do not silence a regression with a regen.
 2. Run the regen on a clean, idle machine (close background apps; close Chrome; pause sync clients). Non-isolated CPU jitter inflates stdev and weakens the guardrail.
 3. Tag the regen commit with a `[bench-baseline-regen]` suffix and link the reason in the commit body (for example, `perf(batch-14 M1): vectorized tone_curve LUT apply [bench-baseline-regen]`).
-4. Request a review from Cowork before merging.
+4. Re-run the full test suite and note the before/after numbers in the commit body before merging.
 
 ## Commit style
 
@@ -143,12 +143,10 @@ The public docs site now carries a reference page for every live pack node. New 
 
 ## Architecture and ownership
 
-Pack authorship is split across three agents (Cowork architect, Codex core math, Claude Code integration). The detailed ownership matrix lives in the agent hub at `.agent-hub/00_charter/agent-coordination.md` (repo-local, not shipped).
+The pack has a single maintainer workflow; every directory is owned by the maintainer. The layering is:
 
-In short:
-
-- `core/**` and `tests/bench_*.py` are Codex-owned.
-- `nodes/**`, `workflows/**`, `__init__.py`, and `tests/test_*_node.py` are Claude Code-owned.
-- `.agent-hub/10_plan/`, `/20_specs/`, `/00_charter/` are Cowork-owned.
+- `core/**` — pure torch/Kornia algorithms with input validation, covered by `tests/test_<module>.py` and `tests/bench_*.py`.
+- `nodes/**` — thin ComfyUI wrappers that call `core/`, covered by `tests/test_*_node.py`.
+- `__init__.py` — node registration (inside the `if __package__:` guard), plus `workflows/**`, `presets/**`, and `docs/**`.
 
 External contributors: target `custom_nodes/ComfyUI-JH-PixelPro/` as a single pack and open a PR against `main`. Comment in the PR if you need a regen of any baseline; a pack maintainer will run it from a clean machine and push the updated JSON alongside your change.
