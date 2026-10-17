@@ -8,6 +8,7 @@ from kornia.filters import gaussian_blur2d
 from kornia.morphology import dilation, erosion
 
 from core import subpixel_mask_refine
+from core.mask_refiner import _feather_kernel_size
 
 
 def _disk_mask(batch: int, size: int, radius: int) -> torch.Tensor:
@@ -149,7 +150,7 @@ def test_erosion_dilation_both_zero(caplog: pytest.LogCaptureFixture) -> None:
     expected = (
         gaussian_blur2d(
             mask_binary,
-            kernel_size=(3, 3),
+            kernel_size=(13, 13),
             sigma=(2.0, 2.0),
             border_type="replicate",
         )
@@ -308,7 +309,7 @@ def test_refine_output_matches_kornia_reference(erosion_radius: int, dilation_ra
         mask, erosion_radius=erosion_radius, dilation_radius=dilation_radius, feather_sigma=2.0
     )
     binary = _binary_mask(mask)
-    kernel_size = 2 * max(erosion_radius, dilation_radius, 1) + 1
+    kernel_size = max(2 * max(erosion_radius, dilation_radius, 1) + 1, 13)
     feather = gaussian_blur2d(
         binary, (kernel_size, kernel_size), (2.0, 2.0), border_type="replicate"
     )
@@ -328,3 +329,29 @@ def test_large_radius_memory_stays_bounded() -> None:
     subpixel_mask_refine(mask, erosion_radius=64, dilation_radius=64, feather_sigma=2.0)
     torch.cuda.synchronize()
     assert torch.cuda.max_memory_allocated() - baseline < 512 * 1024**2
+
+
+@pytest.mark.parametrize(("feather_sigma", "expected"), [(2.0, 13), (0.1, 9), (8.0, 49)])
+def test_feather_kernel_covers_three_sigma(feather_sigma: float, expected: int) -> None:
+    assert _feather_kernel_size(feather_sigma, 4, 256, 256) == expected
+
+
+def test_feather_kernel_capped_by_image_extent() -> None:
+    assert _feather_kernel_size(500.0, 2, 16, 24) == 49
+
+
+def test_large_feather_with_small_radius_is_not_truncated() -> None:
+    # Regression: the kernel used to be sized by radius only (5 taps for r=2), turning a
+    # sigma=8 feather into a narrow box. The band must now match an untruncated Gaussian.
+    mask = _disk_mask(batch=1, size=97, radius=30)
+    refined = subpixel_mask_refine(mask, erosion_radius=2, dilation_radius=2, feather_sigma=8.0)
+    binary = _binary_mask(mask)
+    feather = gaussian_blur2d(binary, (49, 49), (8.0, 8.0), border_type="replicate")
+    truncated = gaussian_blur2d(binary, (5, 5), (8.0, 8.0), border_type="replicate")
+    inside = _inside_core_reference(mask, 2).unsqueeze(1).float()
+    outside = _outside_core_reference(mask, 2).unsqueeze(1).float()
+    band = 1.0 - inside - outside
+    expected = (inside + band * feather).clamp(0.0, 1.0).squeeze(1)
+    old = (inside + band * truncated).clamp(0.0, 1.0).squeeze(1)
+    assert torch.equal(refined, expected)
+    assert (refined - old).abs().max() > 0.05

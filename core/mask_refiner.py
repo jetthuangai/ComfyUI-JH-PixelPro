@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from numbers import Real
 
 import torch
@@ -87,6 +88,13 @@ def _erode_square(mask_bchw: torch.Tensor, radius: int) -> torch.Tensor:
     return -_dilate_square(-mask_bchw, radius)
 
 
+def _feather_kernel_size(feather_sigma: float, radius: int, height: int, width: int) -> int:
+    # Cover +-3 sigma so the Gaussian is not truncated into a box when sigma is large
+    # relative to the radii; never smaller than the band, capped at twice the image extent.
+    kernel_size = max(2 * max(radius, 1) + 1, 2 * math.ceil(3.0 * feather_sigma) + 1)
+    return min(kernel_size, 2 * max(height, width) + 1)
+
+
 def subpixel_mask_refine(
     mask_bhw: torch.Tensor,
     erosion_radius: int = 2,
@@ -122,7 +130,12 @@ def subpixel_mask_refine(
     mask_bchw, preserve_channel_dim = _prepare_mask(mask_bhw)
     mask_binary = (mask_bchw > threshold).to(dtype=torch.float32)
 
-    kernel_size = 2 * max(erosion_radius, dilation_radius, 1) + 1
+    kernel_size = _feather_kernel_size(
+        feather_sigma,
+        max(erosion_radius, dilation_radius),
+        mask_binary.shape[-2],
+        mask_binary.shape[-1],
+    )
     feather = gaussian_blur2d(
         mask_binary,
         kernel_size=(kernel_size, kernel_size),
