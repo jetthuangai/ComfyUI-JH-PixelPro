@@ -4,6 +4,7 @@ The color category covers grading, masking by color statistics, and LUT round-tr
 
 - [**N-05 Luminosity Masking**](../nodes/luminosity-masking.md) — Builds shadow, midtone, and highlight masks with a partition-of-unity style split.
 - [**N-08 Color Matcher (LAB)**](../nodes/color-matcher.md) — Transfers color statistics from a reference image with optional masked matching.
+- [**Color Matcher Region (LAB)**](../nodes/color-matcher-region.md) — Matches colors between a reference region and a target region, images of any size.
 - [**N-09 Tone Curve (RGB)**](../nodes/tone-curve.md) — Applies master or per-channel Catmull-Rom tone curves.
 - [**N-12 HALD Identity**](../nodes/hald-identity.md) — Generates identity HALD images for LUT authoring pipelines.
 - [**N-13 LUT Export (.cube)**](../nodes/lut-export.md) — Writes Adobe Cube 1.0 LUTs from graded HALD images.
@@ -14,5 +15,6 @@ The color category covers grading, masking by color statistics, and LUT round-tr
 - [**N-22 Look Select**](../nodes/look-select.md) — Applies the pack's JSON-backed creative looks from a single dropdown node.
 - [**N-23 ColorLab (ACR)**](../nodes/color-lab.md) — Packs an Adobe Camera Raw style grading stack into one node.
 - [**N-34 Preset Pack LUT**](../nodes/lut-preset.md) — Applies bundled generic Adobe Cube LUT presets from a dropdown.
+- [**N-37 CLAHE Local Contrast**](../nodes/clahe-local-contrast.md) — Adaptive local contrast on LAB lightness only, colors stay intact.
 
 Flagship pages: [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md), [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md), and [N-10 Face Detect](../nodes/n10-face-detect.md).

@@ -4,6 +4,7 @@ The face category provides the pack's portrait workflow spine: detect, align, ed
 
 - [**N-06 Landmark Facial Aligner**](../nodes/facial-aligner.md) — Aligns a detected face to a canonical square frame.
 - [**N-10 Face Detect**](../nodes/n10-face-detect.md) — Detects 5-point face landmarks and bounding boxes via MediaPipe.
+- [**N-38 Face Detect Lite**](../nodes/face-detect-lite.md) — Fast YuNet GPU detector with real confidence scores and a face mask.
 - [**N-11 Unwrap Face**](../nodes/unwrap-face.md) — Warps an edited aligned face back onto the original canvas.
 - [**N-19 Face Landmarks**](../nodes/face-landmarks.md) — Extracts dense 468-point face landmarks for downstream geometry work.
 - [**N-20 Face Warp**](../nodes/face-warp.md) — Performs Delaunay-based per-triangle face warping.

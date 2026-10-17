@@ -38,6 +38,7 @@ nav:
           - Overview: categories/color.md
           - N-05 Luminosity Masking: nodes/luminosity-masking.md
           - N-08 Color Matcher: nodes/color-matcher.md
+          - Color Matcher Region: nodes/color-matcher-region.md
           - N-09 Tone Curve: nodes/tone-curve.md
           - N-12 HALD Identity: nodes/hald-identity.md
           - N-13 LUT Export: nodes/lut-export.md
@@ -47,12 +48,14 @@ nav:
           - N-17 Tone Match LUT: nodes/tone-match-lut.md
           - N-23 ColorLab: nodes/color-lab.md
           - N-34 Preset Pack LUT: nodes/lut-preset.md
+          - N-37 CLAHE Local Contrast: nodes/clahe-local-contrast.md
       - Compositing:
           - Overview: categories/compositing.md
           - N-24 Layer Stack Start: nodes/layer-stack-start.md
           - N-25 Layer Add: nodes/layer-add.md
           - N-26 Layer Group: nodes/layer-group.md
           - N-27 Layer Flatten: nodes/layer-flatten.md
+          - N-36 Pyramid Blend: nodes/pyramid-blend.md
       - Filters:
           - Overview: categories/filters.md
           - N-01 Frequency Separation: nodes/frequency-separation.md
@@ -71,9 +74,11 @@ nav:
           - Overview: categories/geometry.md
           - N-06 Facial Aligner: nodes/facial-aligner.md
           - N-07 Lens Distortion: nodes/lens-distortion.md
+          - N-39 Auto Align: nodes/auto-align.md
       - Face:
           - Overview: categories/face.md
           - N-10 Face Detect: nodes/n10-face-detect.md
+          - N-38 Face Detect Lite: nodes/face-detect-lite.md
           - N-11 Unwrap Face: nodes/unwrap-face.md
           - N-19 Face Landmarks: nodes/face-landmarks.md
           - N-20 Face Warp: nodes/face-warp.md

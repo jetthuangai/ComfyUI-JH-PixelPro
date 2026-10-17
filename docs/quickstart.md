@@ -1,6 +1,6 @@
 # Get Started in 5 Minutes
 
-This guide gets `ComfyUI-JH-PixelPro` installed, visible in ComfyUI, and running a first workflow with the v1.3.1 node pack.
+This guide gets `ComfyUI-JH-PixelPro` installed, visible in ComfyUI, and running a first workflow with the v1.4.0 node pack.
 
 ## 1. Install ComfyUI Manager
 
@@ -27,7 +27,7 @@ Restart ComfyUI after installation. The nodes appear under:
 ComfyUI-JH-PixelPro/<category>
 ```
 
-The pack exposes 35 nodes across color, mask, face, geometry, filters, looks, and compositing.
+The pack exposes 39 nodes across color, mask, face, geometry, filters, looks, and compositing.
 
 ## 4. Load a starter workflow
 

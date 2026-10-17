@@ -16,6 +16,23 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.4.0] — 2026-10-17
+
+### Added
+
+- **N-36 `JHPixelProPyramidBlend`** (Compositing: Pyramid Blend, `/compositing`): Burt–Adelson Laplacian pyramid blending of two images through a mask, built on `kornia.geometry.transform.pyrdown` / `pyrup`. Any image size; the level count is clamped so the coarsest level stays ≥ 8 px.
+- **N-37 `JHPixelProCLAHE`** (Color: CLAHE Local Contrast, `/color`): `kornia.enhance.equalize_clahe` on LAB lightness only, with clip limit, grid size, strength and optional mask. a*/b* are preserved.
+- **N-38 `JHPixelProFaceDetectLite`** (Face: Detect Lite (YuNet GPU), `/face`): `kornia.contrib.FaceDetector` (YuNet) with N-10-compatible `landmarks_json` / `bbox_json`, real per-face confidence and a face-box `face_mask` output; `detect_size` up to 1024 (640 is best for portraits), tiny inputs are padded instead of crashing. ~31 ms on an RTX 5090 vs ~84 ms for N-10 MediaPipe on the sample portrait.
+- **N-39 `JHPixelProAutoAlign`** (Geometry: Auto Align, `/geometry`): SIFT (`kornia.feature.SIFTFeature` + `match_smnn`) or LoFTR matching, Kornia RANSAC homography with a least-squares refit on the inliers or a seeded robust affine fit, `warp_perspective`, valid-coverage mask and full-resolution matrix JSON. Corner error ≤ 0.4 px on exact-shift tests up to 3500 px. Featureless pairs fall back to a plain resize.
+- **N-33 Mask Edge Smoother `backend`** optional widget: `gpu` runs a torch joint-bilateral filter (same square window and L1 colour distance as `kornia.filters.joint_bilateral_blur`, verified to 1e-5) on CUDA with O(H·W) memory (~290 MB at 2048²), and always honours the guide image, even without opencv-contrib. About 2x faster than OpenCV from sigma 16 up, slightly slower at small sigma. Default `opencv` is unchanged.
+- Docs page for Color Matcher Region; docs pages for N-36..N-39.
+- CUDA baseline rows for `tests/bench_mask_refiner.py` (the bench failed with "baseline missing" on GPU hosts).
+- Pack now registers **39 nodes**: `/color` 13, `/compositing` 5, `/filters` 2, `/mask` 8, `/geometry` 3, `/face` 7, `/looks` 1.
+
+### Changed
+
+- **N-02 Sub-Pixel Mask Refiner:** the feather Gaussian kernel now covers ±3 sigma (`2·ceil(3σ)+1`, never smaller than the band, capped at twice the image size). It used to be sized by the radii only, so a large `feather_sigma` with small radii was truncated into a narrow box. Edge bands are slightly softer than before at the default settings (radius 4, sigma 2: 9 → 13 taps) and noticeably softer when sigma is large relative to the radii.
+
 ## [1.3.1] — 2026-10-17
 
 ### Added
@@ -424,7 +441,8 @@ First public alpha. Two MVP nodes for professional portrait retouching on GPU, w
 - **JH** ([@jetthuangai](https://github.com/jetthuangai)) — maintainer & product owner.
 - Built with AI pair-programming assistance.
 
-[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.4.0
 [1.3.1]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.1
 [1.3.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v1.3.0
 [0.3.0]: https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/tag/v0.3.0

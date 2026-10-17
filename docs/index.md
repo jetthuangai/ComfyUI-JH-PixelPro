@@ -1,11 +1,15 @@
 # ComfyUI-JH-PixelPro
 
-GPU-powered pro-grade image suite for ComfyUI. The pack ships 35 production-ready nodes across seven categories for retouch, color science, mask finishing, face workflows, and Photoshop-style compositing without leaving the tensor pipeline.
+GPU-powered pro-grade image suite for ComfyUI. The pack ships 39 production-ready nodes across seven categories for retouch, color science, mask finishing, face workflows, and Photoshop-style compositing without leaving the tensor pipeline.
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-github_pages-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-555555)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/LICENSE)
+
+## v1.4.0 Kornia expansion
+
+Version 1.4.0 adds four GPU nodes built on Kornia: [Pyramid Blend](nodes/pyramid-blend.md) for seamless composites, [CLAHE Local Contrast](nodes/clahe-local-contrast.md), [Face Detect Lite](nodes/face-detect-lite.md) (YuNet on the GPU) and [Auto Align](nodes/auto-align.md) (SIFT or LoFTR feature matching). [N-33 Mask Edge Smoother](nodes/n33-mask-edge-smoother.md) gains a `gpu` backend that always honours the guide image.
 
 ## v1.3.0 Pack Feature Complete
 
@@ -13,7 +17,7 @@ Version 1.3.0 is the first feature-complete public milestone: 34 live nodes, ful
 
 Highlights:
 
-- 35 pro-retouch nodes across color, mask, face, geometry, filters, looks, and compositing.
+- 39 pro-retouch nodes across color, mask, face, geometry, filters, looks, and compositing.
 - Levin 2008 closed-form alpha matting with CUDA-capable sparse PyTorch acceleration and CPU fallback.
 - Zero-config creative color starts through N-34 bundled LUT presets.
 - Portrait tone targeting through N-35 skin-tone shadow, midtone, and highlight masks.
@@ -38,18 +42,18 @@ Highlights:
 
 If you prefer a manual install, clone the repository into `ComfyUI/custom_nodes/` and run `pip install -e .`.
 
-## 35-node pack at a glance
+## 39-node pack at a glance
 
 | Category | Nodes | Highlights |
 |---|---:|---|
-| Color | 12 | Color matching (global and region-aware), tone curves, LUT import/export, preset LUTs, selective color, ColorLab |
-| Compositing | 4 | Photoshop-style layer stack and blend modes |
+| Color | 13 | Color matching (global and region-aware), tone curves, LUT import/export, preset LUTs, selective color, ColorLab, CLAHE local contrast |
+| Compositing | 5 | Photoshop-style layer stack, blend modes, seamless pyramid blending |
 | Filters | 2 | Frequency separation and edge-aware smoothing |
 | Mask | 8 | Sub-pixel refinement, alpha matte extraction, morphology, combine, edge smoothing |
-| Geometry | 2 | Facial alignment and lens distortion correction |
-| Face | 6 | Face detection, landmarks, warp, unwrap, beauty blend, skin-tone masks |
+| Geometry | 3 | Facial alignment, lens distortion correction, automatic image alignment |
+| Face | 7 | Face detection (MediaPipe and YuNet GPU), landmarks, warp, unwrap, beauty blend, skin-tone masks |
 | Looks | 1 | Preset-based creative look selection |
-| **Total** | **35** | Feature-complete pack, v1.3.1 |
+| **Total** | **39** | v1.4.0 |
 
 ## Lean-batch entry points
 

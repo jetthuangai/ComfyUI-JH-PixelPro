@@ -6,5 +6,6 @@ The compositing category turns ComfyUI into a Photoshop-style layer stack with b
 - [**N-25 Layer Add**](../nodes/layer-add.md) — Adds a masked layer with opacity, fill, blend mode, and clipping options.
 - [**N-26 Layer Group**](../nodes/layer-group.md) — Flattens a sub-stack into a grouped layer for nested compositing.
 - [**N-27 Layer Flatten**](../nodes/layer-flatten.md) — Renders the layer stack back to a final image.
+- [**N-36 Pyramid Blend**](../nodes/pyramid-blend.md) — Seamless multi-band Laplacian pyramid composite of two images through a mask.
 
 Flagship pages: [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md), [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md), and [N-10 Face Detect](../nodes/n10-face-detect.md).

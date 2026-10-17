@@ -5,7 +5,7 @@
 
 > GPU-powered pro-grade image suite for ComfyUI. Kornia at the core. Pure tensor, never leaves VRAM.
 
-**Status:** **v1.3.1** (2026-10-17) — 35 nodes live · border + memory fixes on top of the v1.3.0 feature-complete milestone · `/color` 12 + `/compositing` 4 + `/filters` 2 + `/mask` 8 + `/geometry` 2 + `/face` 6 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
+**Status:** **v1.4.0** (2026-10-17) — 39 nodes live · Kornia expansion: pyramid blend, CLAHE, YuNet face detect, auto align · `/color` 13 + `/compositing` 5 + `/filters` 2 + `/mask` 8 + `/geometry` 3 + `/face` 7 + `/looks` 1 under unified `ComfyUI-JH-PixelPro/*` namespace. See [CHANGELOG](./CHANGELOG.md) for details.
 
 > ⚠️ **v0.10.0 compatibility note**: M6 Looks refactored from 6 per-preset nodes into 1 `JHPixelProLookSelect` dropdown node. Workflow JSON saved from v0.9.0 will not load — re-create from `workflows/S-19-look-select-single.json` or `workflows/S-20-look-select-compare-6up.json`.
 
@@ -30,6 +30,7 @@ This pack packages GPU-friendly tensor nodes for retouching, color science, face
 
 ## Milestones
 
+- **v1.4.0 Kornia expansion:** 39 live nodes — N-36 Pyramid Blend, N-37 CLAHE Local Contrast, N-38 Face Detect Lite (YuNet GPU), N-39 Auto Align (SIFT / LoFTR), plus a `gpu` backend for N-33.
 - **v1.3.0 feature-complete milestone:** 34 live nodes, full public documentation coverage, bundled LUT presets, skin-tone tri-region masks, and a released docs site.
 - **v1.1.0 mask refinement expansion:** 32 live nodes, 8 mask nodes, 23 benchmark files, and six new mask workflow scaffolds for N-28..N-33.
 - **v1.0.0 production-ready baseline:** 10-batch development cycle, 26 live nodes, 7 ComfyUI categories, 17 benchmark files, and a 27-row smoke-test matrix.
@@ -97,6 +98,10 @@ Restart ComfyUI. The nodes appear under the `ComfyUI-JH-PixelPro/<group>` menu.
 - [x] N-34 Preset Pack LUT
 - [x] N-35 Skin Tone Tri-Region
 - [x] Color Matcher Region (LAB) — region-aware variant of N-08
+- [x] N-36 Pyramid Blend
+- [x] N-37 CLAHE Local Contrast
+- [x] N-38 Face Detect Lite (YuNet GPU)
+- [x] N-39 Auto Align
 
 ## Engineering principles
 
@@ -933,7 +938,7 @@ Classical mask finishing tools for cutout, alpha matting, compositing, and post-
 | `JHPixelProTrimapBuilder` | Builds trimaps encoded as `0.0` background, `0.5` unknown, `1.0` foreground. |
 | `JHPixelProMaskMorphology` | Dilate, erode, open, close, gradient, tophat, and blackhat with elliptical kernels. |
 | `JHPixelProMaskCombine` | Add, subtract, intersect, union, difference, xor, and multiply masks with hard or soft-feather mode. |
-| `JHPixelProMaskEdgeSmoother` | Smooths mask edges with bilateral filtering; uses OpenCV contrib joint-bilateral filtering when available. |
+| `JHPixelProMaskEdgeSmoother` | Smooths mask edges with bilateral filtering; `backend=opencv` (default, CPU) uses OpenCV contrib joint-bilateral filtering when available, `backend=gpu` runs a torch joint-bilateral filter on CUDA and always honours the guide. |
 
 **Sample workflows:** [N-28 edge-aware refiner](workflows/N-28-edge-aware-mask-refiner.json), [N-29 alpha matte](workflows/N-29-alpha-matte-extractor.json), [N-30 trimap builder](workflows/N-30-trimap-builder.json), [N-31 morphology](workflows/N-31-mask-morphology.json), [N-32 combine](workflows/N-32-mask-combine.json), [N-33 edge smoother](workflows/N-33-mask-edge-smoother.json).
 
@@ -941,7 +946,24 @@ Classical mask finishing tools for cutout, alpha matting, compositing, and post-
 
 - **Trimap convention is strict.** N-29 expects `0.0` background, `0.5` unknown, and `1.0` foreground with ±0.05 tolerance; use N-30 upstream when in doubt.
 - **N-29 is quality-first Levin matting.** Use `compute_device="cuda"` for large portraits when CUDA is available; CPU fallback remains available and exact but slower.
-- **N-33 degrades gracefully.** If `cv2.ximgproc.jointBilateralFilter` is unavailable, guided smoothing falls back to plain bilateral filtering.
+- **N-33 degrades gracefully.** With `backend=opencv`, if `cv2.ximgproc.jointBilateralFilter` is unavailable, guided smoothing falls back to plain bilateral filtering. Pick `backend=gpu` to keep the guide without opencv-contrib.
+
+## N-36..N-39 Kornia expansion (v1.4.0)
+
+GPU nodes built on Kornia modules the pack did not use before (`geometry.transform` pyramids, `enhance.equalize_clahe`, `contrib.FaceDetector`, `feature` matching + `geometry.ransac`).
+
+| Node | Purpose |
+|---|---|
+| `JHPixelProPyramidBlend` | Burt–Adelson multi-band blend of two images through a mask: seamless composites without a visible seam or exposure step. |
+| `JHPixelProCLAHE` | CLAHE on LAB lightness only, with clip limit, grid, strength and optional mask; colours stay intact. |
+| `JHPixelProFaceDetectLite` | YuNet face detector (GPU when available) with N-10-compatible 5-point JSON, real confidence scores and a face-box `MASK`. Weights (~0.4 MB) download on first use. |
+| `JHPixelProAutoAlign` | Aligns an image to a reference: SIFT (no download) or LoFTR (~45 MB weights on first use) matching, RANSAC homography or affine fit, perspective warp, coverage mask and matrix JSON. |
+
+### Caveats
+
+- **Face Detect Lite returns eye centres**, while N-10 MediaPipe returns outer eye corners; landmarks differ by a few pixels, both feed the Facial Aligner.
+- **Auto Align needs texture.** Flat or featureless pairs fall back to a plain resize (logged warning, `inliers` below `min_inliers`).
+- **CLAHE tiles stay at least 80 px.** On small images the grid is reduced automatically; images under 80 px pass through.
 
 ## License
 
