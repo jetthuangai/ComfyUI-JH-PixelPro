@@ -1,36 +1,56 @@
 ---
 title: Color Matcher Region
-description: Region-aware LAB color matching between two images of any size.
+description: Match the colour of one region of a reference image onto one region of a target, even when the images differ in size.
 ---
 
 # Color Matcher Region
 
-`JHPixelProColorMatcherRegion` is the region-aware variant of [N-08 Color Matcher](color-matcher.md). It transfers LAB color statistics from one part of a reference image onto one part of a target image, for example matching the skin of a generated face to the skin of the original plate, or the sky of one shot to the sky of another.
+Matches colour between two chosen areas, for example the skin of a generated face to the skin of the original plate, or the sky of one shot to the sky of another.
 
-## Schema
+![Color Matcher Region — before / after](../assets/nodes/color-matcher-region.jpg)
 
-| Name | Kind | Type / default | Description |
+| | |
+|---|---|
+| **In ComfyUI** | `Add Node → ComfyUI-JH-PixelPro → color → Color Matcher Region (LAB)` |
+| **Good for** | Skin-to-skin matching, sky or background matching, matching a retouched area to a different photo |
+
+## When to use it
+
+[Color Matcher](color-matcher.md) compares the whole of two same-size pictures. Often that is not what you want: a face swap has skin next to a blue wall, and the reference may be a different crop entirely. Color Matcher Region lets you draw a mask on each side. The colour "character" (average and spread) is measured only inside the reference mask, and used to recolour only the area inside the target mask. Because only statistics are compared, the two pictures do not need the same size or framing.
+
+## Quick start
+
+1. Connect your edit to `image_target` and the picture with the colours you want to `image_reference`.
+2. Make a mask over the area to fix (for example with [Skin Tone Tri-Region](skin-tone-tri-region.md)) and connect it to `target_mask`.
+3. Make a mask over the matching area of the reference and connect it to `reference_mask`.
+4. Keep `channels` on `ab`, set `strength` around 0.8, and preview `image_matched`.
+
+## Settings
+
+| Setting | Default | What it does | Tip |
 |---|---|---|---|
-| `image_target` | Input | `IMAGE` | Image to be recolored. |
-| `image_reference` | Input | `IMAGE` | Image that provides the color statistics. It may have a different size than the target. |
-| `channels` | Widget | `COMBO`, default `ab` | `ab` matches chroma only and keeps the target luminance; `lab` also matches L* for a full tone transfer. |
-| `strength` | Widget | `FLOAT`, default `1.0` | Blend amount. `0` bypasses the node, `1` applies the full match. |
-| `target_mask` | Optional input | `MASK` | Target region. It defines the target statistics and where the result is applied. Unconnected = the whole target. |
-| `reference_mask` | Optional input | `MASK` | Reference sampling region. Unconnected = the whole reference. |
-| `image_matched` | Output | `IMAGE` | Color-matched image. |
+| `image_target` | required | The picture to recolour. | |
+| `image_reference` | required | The picture that provides the colours. Can be a different size. | |
+| `channels` | `ab` | `ab` matches colour only and keeps the target's brightness. `lab` matches brightness as well. | `ab` for skin and products. |
+| `strength` | 1.0 (0 to 1) | 0 leaves the image untouched, 1 applies the full match. | 0.6 to 0.9 for natural results. |
+| `target_mask` (optional) | whole image | Area of the target that is measured and recoloured. Soft edges give soft transitions. Must match the target's size. | Feather hard selections first. |
+| `reference_mask` (optional) | whole image | Area of the reference that is measured. Must match the reference's size. | Pick a clean, evenly lit patch. |
 
-## How it works
+**Output:** `image_matched`, the recoloured image. Outside `target_mask` the picture is unchanged.
 
-1. Both images are converted to CIE LAB.
-2. Mean and standard deviation of the selected channels are measured inside each mask (weighted by the soft mask value).
-3. The target channels are shifted and scaled so their statistics match the reference region (Reinhard transfer).
-4. The result is converted back to RGB, blended by `strength`, and composited into the target only where `target_mask` is set.
+## Tips from retouching
 
-Because only statistics are compared, the two images do not need the same size or framing.
+- For faces, use `ab`: lighting and skin texture stay intact, only the colour shifts.
+- Keep the reference patch free of shadows, glasses, lipstick or hair; one clean cheek is better than the whole face.
+- Soften hard masks before use. [Mask Edge Smoother](mask-edge-smoother.md) or [Sub-Pixel Mask Refiner](sub-pixel-mask-refiner.md) avoid a visible seam at the border.
+- To match the whole frame between same-size pictures, the simpler [Color Matcher](color-matcher.md) is enough.
 
-## Tips
+??? note "Under the hood"
+    Both images go to CIE LAB (Kornia). Mean and standard deviation of the selected channels are computed with mask weights inside each mask, then the target is shifted and scaled to the reference's statistics (Reinhard transfer). The result is converted back to RGB, blended by `strength`, and finally composited with `lerp(target, matched, target_mask)`. Each mask must have the same height and width as its own image and contain at least one positive pixel; a single mask or reference is broadcast over a batch. Masks and images outside 0..1 are clamped with a logged warning.
 
-- Use `channels = ab` for skin and product color: brightness and texture stay untouched.
-- Build the masks with [N-35 Skin Tone Tri-Region](skin-tone-tri-region.md), [Saturation Mask](saturation-mask.md) or the mask category nodes.
-- Soft masks give soft transitions; refine hard selections with [N-02 Sub-Pixel Mask Refiner](sub-pixel-mask-refiner.md) first.
-- Use [N-08 Color Matcher](color-matcher.md) when you want to match the whole frame.
+## Related nodes
+
+- [Color Matcher](color-matcher.md): whole-frame version
+- [Skin Tone Tri-Region](skin-tone-tri-region.md): ready-made skin regions for masks
+- [Saturation Mask](saturation-mask.md): select areas by colour strength
+- [Mask Edge Smoother](mask-edge-smoother.md): soften mask borders

@@ -1,43 +1,61 @@
 ---
-title: N-41 Mask Cleanup
-description: Remove specks, fill small holes and feather a mask by distance.
+title: Mask Cleanup
+description: Removes specks, fills small holes and optionally feathers the edge of a segmentation mask.
 ---
 
-# N-41 Mask: Cleanup
+# Mask Cleanup
 
-`JHPixelProMaskCleanup` (display name "Mask: Cleanup") tidies a segmentation mask. It deletes tiny stray blobs, fills small pin-holes inside the subject, and can turn the hard edge into a smooth ramp whose width is measured in real pixels.
+The first stop for a mask from SAM, rembg or any other cutout tool. It deletes stray specks, fills small holes inside the subject, and can finish with an even feather.
 
-## Schema
+![Mask Cleanup — before / after](../assets/nodes/mask-cleanup.jpg)
 
-| Name | Kind | Type / default | Description |
+| | |
+|---|---|
+| **In ComfyUI** | `Add Node → ComfyUI-JH-PixelPro → mask → Mask: Cleanup` |
+| **Good for** | Removing floating dots, filling pin-holes in a subject, producing a clean evenly feathered mask |
+
+## When to use it
+
+AI segmentation often leaves two kinds of mess: tiny floating **islands** of selection in the background, and small **holes** inside the subject. Both come from the mask being a set of connected pixel groups. This node finds each group and decides by its **size in pixels** whether to keep it, instead of by a brush radius. That makes it more predictable than erode-and-dilate for tidying up.
+
+The mask is first turned into pure black and white at the `threshold`. Then islands smaller than `min_island_area` are removed, and holes smaller than `max_hole_area` are filled. A hole that touches the image border is never filled, because it is really background.
+
+## Quick start
+
+1. Connect the mask from your segmentation node.
+2. Keep the defaults (island 64, hole 64, no feather). Raise the areas for bigger images.
+3. Add `feather_px` 3 to 6 if you want a soft edge.
+4. Compare before and after with [Mask Preview](mask-preview.md).
+
+## Settings
+
+| Setting | Default | What it does | Tip |
 |---|---|---|---|
-| `mask` | Input | `MASK` | Mask to clean. |
-| `threshold` | Widget | `FLOAT`, default `0.5`, 0-1 | Pixels `> threshold` are foreground. |
-| `min_island_area` | Widget | `INT`, default `64`, 0-1000000 | Foreground blobs with fewer pixels are removed. `0` = off. |
-| `max_hole_area` | Widget | `INT`, default `64`, 0-1000000 | Enclosed holes with fewer pixels are filled. `0` = off. |
-| `feather_px` | Widget | `FLOAT`, default `0.0`, step `0.5`, 0-256 | Soft edge distance in pixels. `0` = hard black/white output. |
-| `connectivity` | Widget | `COMBO`, default `8` | Foreground connectivity: `8` (diagonals connect) or `4` (side neighbours only). Holes use the complementary connectivity, so a diagonal outline still encloses its hole. |
-| `mask` | Output | `MASK` | Cleaned mask, float32 `(B,H,W)`. |
+| `threshold` | 0.5 | Pixels above this value count as subject. | Lower it to include faint areas. |
+| `min_island_area` | 64 | Delete subject blobs smaller than this many pixels. 0 = off. | Scale with image size. Try 200 to 2000 on a 2 K photo. |
+| `max_hole_area` | 64 | Fill enclosed holes smaller than this many pixels. 0 = off. | Never fills background that touches the image border. |
+| `feather_px` | 0.0 | Soft-edge distance, measured from the cleaned edge. 0 = hard black and white. | 0 to 256. The full soft ramp spans twice this value. |
+| `connectivity` | 8 | `8` treats diagonal pixels as connected; `4` only counts side neighbours. | Leave on 8 for most masks. |
 
-## How it works
+**Output:** `mask` (MASK).
 
-1. The mask is binarised at `> threshold`.
-2. Foreground connected components smaller than `min_island_area` are deleted.
-3. Background components smaller than `max_hole_area` are filled, but only if they do not touch the image border. Background that reaches the border is the outside of the picture, never a hole.
-4. If `feather_px > 0`, the distance to the cleaned edge is computed on both sides and mapped to `alpha = clip(0.5 + d / (2 * feather_px), 0, 1)`, where `d` is positive inside and negative outside. The 0.5 line stays exactly on the binary edge; alpha reaches 1 at `feather_px` pixels inside and 0 at `feather_px` pixels outside, so the whole ramp is `2 * feather_px` pixels wide.
+## Tips from retouching
 
-Components are labelled with OpenCV (`connectedComponentsWithStats`): exact and fast even at 2048 x 2048 on CPU. Items in a batch are processed one by one.
+- Use it first in a mask chain, then [Edge-Aware Mask Refiner](edge-aware-mask-refiner.md) or [Sub-Pixel Mask Refiner](sub-pixel-mask-refiner.md).
+- Its feather is an even distance from the edge, so the half-way line stays on the original outline. A blur would shrink thin parts of the subject instead.
+- If a real part of the subject disappears (a small earring, a button), `min_island_area` is too high.
+- If a real hole disappears (a gap between an arm and the body), lower `max_hole_area`.
 
-## Tips
+??? note "Under the hood"
+    The mask is binarised with `mask > threshold`. Components are labelled with `cv2.connectedComponentsWithStats`. Holes are found on the inverted mask using the complementary connectivity (8 for the subject pairs with 4 for the holes), which is the standard pairing that stops a hole from leaking diagonally. The feather is `alpha = clip(0.5 + sd / (2 * feather_px), 0, 1)`, where `sd` is the signed distance to the boundary from `cv2.distanceTransform` (positive inside). It runs on the CPU, one batch item at a time. Source: `core/mask_cleanup.py`.
 
-- Typical use: place it right after SAM, rembg or any segmentation node, before the mask is used for inpaint, compositing or colour work.
-- Area guidance: pixels, not percent. Start at 64 for 1024 px images; use about 256 for 2048 px and 16-32 for 512 px. Raise `min_island_area` until the stray dots disappear but real small parts (earrings, fingers) stay; raise `max_hole_area` to close pin-holes in hair or clothing, but keep it below real gaps such as the space between an arm and the body.
-- Use `8` connectivity for natural subjects. Use `4` when thin diagonal bridges should not join separate blobs.
-- Chaining: Mask: Cleanup first, then N-02 Mask Refiner (grow/shrink the edge) or N-33 Mask Edge Smoother (clean a jagged edge). If you only need a soft edge, set `feather_px` here instead of adding a blur.
-- Feather is a distance ramp, not a Gaussian blur, so thin features stay solid and the edge position does not drift.
+## Related nodes
 
-## Workflow JSON
+- [Mask Morphology](mask-morphology.md) for resizing a mask by a radius
+- [Sub-Pixel Mask Refiner](sub-pixel-mask-refiner.md) for another feather method
+- [Edge-Aware Mask Refiner](edge-aware-mask-refiner.md) for snapping edges to the photo
+- [Mask Preview](mask-preview.md) for before and after checks
 
-[workflows/N-41-mask-cleanup.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-41-mask-cleanup.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`.
+## Example workflow
 
-![N-41-mask-cleanup result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-41-mask-cleanup-preview.png)
+[Mask Cleanup example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-41-mask-cleanup.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/` first.

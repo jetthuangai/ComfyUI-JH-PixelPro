@@ -1,9 +1,30 @@
 # Geometry
 
-The geometry category handles canonical framing and camera-shape cleanup before heavier portrait work begins. These nodes help normalize shots so later edits stay predictable.
+Geometry nodes fix the shape and position of the picture before you start retouching: straighten lens distortion, line up two shots, or bring a face into a standard upright frame. Doing this first keeps later edits predictable.
 
-- [**N-06 Landmark Facial Aligner**](../nodes/facial-aligner.md) — Aligns a face to an FFHQ-like frame from 5-point landmarks.
-- [**N-07 Lens Distortion Corrector**](../nodes/lens-distortion.md) — Corrects or simulates Brown-Conrady lens distortion presets.
-- [**N-39 Auto Align**](../nodes/auto-align.md) — Aligns an image to a reference with SIFT or LoFTR matching, RANSAC and a perspective warp.
+<div class="grid cards" markdown>
 
-Flagship pages: [N-10 Face Detect](../nodes/n10-face-detect.md), [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md), and [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md).
+-   ![](../assets/nodes/facial-aligner.jpg)
+
+    **[Facial Aligner](../nodes/facial-aligner.md)**
+
+    Rotates, scales and crops a face to a standard square from five landmarks.
+
+-   ![](../assets/nodes/lens-distortion.jpg)
+
+    **[Lens Distortion](../nodes/lens-distortion.md)**
+
+    Corrects (or adds) barrel and pincushion distortion with lens presets.
+
+-   ![](../assets/nodes/auto-align.jpg)
+
+    **[Auto Align](../nodes/auto-align.md)**
+
+    Matches features between two photos and warps one onto the other.
+
+</div>
+
+## Typical chains
+
+- **Wide-angle portrait to face edit:** Load Image → [Lens Distortion](../nodes/lens-distortion.md) → [Face Detect Lite](../nodes/face-detect-lite.md) → [Facial Aligner](../nodes/facial-aligner.md) → edit → [Unwrap Face](../nodes/unwrap-face.md)
+- **Match two shots:** [Auto Align](../nodes/auto-align.md) → [Color Matcher](../nodes/color-matcher.md) → [Layer Add](../nodes/layer-add.md)

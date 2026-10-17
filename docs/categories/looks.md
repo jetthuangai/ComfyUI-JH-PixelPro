@@ -1,9 +1,22 @@
 # Looks
 
-The looks category packages curated creative presets behind a single dropdown-based node. It is the fastest way to audition a finished grade without wiring a longer manual color chain.
+Looks are finished creative grades you can audition in one step. Instead of building a long colour chain, you pick a style from a dropdown, set how strong it is, and compare. This is the fastest way to find a direction before you refine it with the colour tools.
 
-- [**N-22 Look Select**](../nodes/look-select.md) — Applies one of the pack's JSON-driven creative look presets from a single node.
+<div class="grid cards" markdown>
 
-Related color tools: [N-23 ColorLab](../nodes/color-lab.md), [N-17 Tone Match LUT](../nodes/tone-match-lut.md), and [N-09 Tone Curve](../nodes/tone-curve.md).
+-   ![](../assets/nodes/look-select.jpg)
 
-Flagship pages: [N-10 Face Detect](../nodes/n10-face-detect.md), [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md), and [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md).
+    **[Look Select](../nodes/look-select.md)**
+
+    Six ready-made looks (teal and orange, golden hour, faded film and more) with an intensity slider and optional skin protection.
+
+</div>
+
+For `.cube` LUT based looks see [LUT Preset](../nodes/lut-preset.md), [LUT Import](../nodes/lut-import.md) and [Tone Match LUT](../nodes/tone-match-lut.md) in the colour group.
+
+## Typical chains
+
+- Quick audition: Load Image → [Look Select](../nodes/look-select.md) → Preview Image
+- Look with fine control: [Look Select](../nodes/look-select.md) → [Tone Curve](../nodes/tone-curve.md) → Preview Image
+- Copy a reference's feel: [Tone Match LUT](../nodes/tone-match-lut.md) → [LUT Import](../nodes/lut-import.md) on your photo
+- Build and save your own look: [HALD Identity](../nodes/hald-identity.md) → colour nodes → [LUT Export](../nodes/lut-export.md)

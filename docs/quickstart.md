@@ -1,56 +1,79 @@
-# Get Started in 5 Minutes
+---
+title: Quickstart
+description: Install PixelPro, find the nodes and run your first workflow in five minutes.
+---
 
-This guide gets `ComfyUI-JH-PixelPro` installed, visible in ComfyUI, and running a first workflow with the v1.5.0 node pack.
+# Quickstart
 
-## 1. Install ComfyUI Manager
+Five minutes from install to your first result.
 
-Install [ComfyUI Manager](https://github.com/ltdrdata/ComfyUI-Manager) if it is not already present. Restart ComfyUI after installing Manager so the manager panel is available.
+## 1. Install
 
-## 2. Install the pack
+=== "ComfyUI Manager (recommended)"
 
-Open **Manager**, choose **Custom Nodes Manager**, and search for `ComfyUI-JH-PixelPro`. Install the pack and let Manager fetch the Python dependencies.
+    1. Open **Manager → Custom Nodes Manager**.
+    2. Search for `ComfyUI-JH-PixelPro` and click **Install**.
+    3. Restart ComfyUI.
 
-Manual install is also supported:
+=== "Manual (git)"
 
-```bash
-cd ComfyUI/custom_nodes
-git clone https://github.com/jetthuangai/ComfyUI-JH-PixelPro.git
-cd ComfyUI-JH-PixelPro
-pip install -e .
-```
+    ```bash
+    cd ComfyUI/custom_nodes
+    git clone https://github.com/jetthuangai/ComfyUI-JH-PixelPro.git
+    cd ComfyUI-JH-PixelPro
+    pip install -r requirements.txt
+    ```
 
-## 3. Restart ComfyUI
+    Use the same Python that runs ComfyUI (for a portable or venv install, its own `python`). Then restart ComfyUI.
 
-Restart ComfyUI after installation. The nodes appear under:
+!!! info "Requirements"
+    Python 3.10+, the PyTorch that comes with ComfyUI, Kornia ≥ 0.7, MediaPipe ≥ 0.10, OpenCV ≥ 4.8 and SciPy ≥ 1.10.
+    An NVIDIA GPU with 8 GB VRAM or more is recommended. Everything also runs on CPU, just slower.
 
-```text
-ComfyUI-JH-PixelPro/<category>
-```
+## 2. Find the nodes
 
-The pack exposes 44 nodes across color, mask, face, geometry, filters, looks, compositing, and QA.
+Right-click the canvas (or double-click and search), then open **Add Node → ComfyUI-JH-PixelPro**. Nodes are grouped the same way as this site:
 
-## 4. Load a starter workflow
+`color` · `mask` · `face` · `compositing` · `filters` · `geometry` · `looks` · `qa`
 
-Use one of the bundled workflows:
+!!! tip
+    Type part of a node name in the search box, for example `Frequency`, `Matte` or `CLAHE`.
 
-- [N-34 LUT Preset](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-34-lut-preset.json) for a one-node color preset pass.
-- [N-35 Skin Tone Tri-Region](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-35-skin-tone-tri-region.json) for portrait tonal masks.
-- [N-10 Face Detect](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/S-10-face-detect.json) for the face pipeline entry point.
+## 3. Run your first workflow
 
-Download or drag the workflow JSON into the ComfyUI canvas.
+1. Copy `workflows/sample_portrait.jpg` from the pack folder into `ComfyUI/input/`.
+2. Drag a sample workflow onto the canvas. Good first picks:
+    - [CLAHE Local Contrast example](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-37-clahe-local-contrast.json): one node, instant result.
+    - [Face Detect Lite example](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-38-face-detect-lite.json): face box, landmarks and alignment.
+    - [Mask Cleanup example](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-41-mask-cleanup.json): also copy `workflows/sample_binary_mask.png` into `ComfyUI/input/`.
+3. Press **Queue Prompt**. Change one setting at a time and compare.
 
-## 5. Replace the placeholder image and run
+All sample workflows are listed in [Examples](examples/index.md).
 
-Replace the `LoadImage` placeholder with your portrait or source image, then queue the prompt. Start with these simple checks:
+## 4. Build your own chain
 
-- For N-34, switch the `preset` dropdown and compare the output image.
-- For N-35, preview the three returned masks: `shadow_mask`, `midtone_mask`, and `highlight_mask`.
-- For mask work, open [N-29 Alpha Matte Extractor](nodes/n29-alpha-matte-extractor.md) and [N-33 Mask Edge Smoother](nodes/n33-mask-edge-smoother.md) after you have a usable source mask.
+A good way to learn the pack is one classic retouch step per group:
 
-## Next links
+| Goal | Try |
+|---|---|
+| Even out skin but keep pores | [Frequency Separation](nodes/frequency-separation.md) or [Skin Smoother](nodes/edge-aware-smoother.md) |
+| Sharpen eyes and hair only | [Detail Mask](nodes/high-freq-detail-masker.md) → [Smart Sharpen](nodes/smart-sharpen.md) |
+| Grade colour like Camera Raw | [ColorLab](nodes/color-lab.md), [Tone Curve](nodes/tone-curve.md) |
+| Match one photo to another | [Color Matcher](nodes/color-matcher.md) or [Color Matcher Region](nodes/color-matcher-region.md) |
+| Cut out hair cleanly | [Trimap Builder](nodes/trimap-builder.md) → [Alpha Matte](nodes/alpha-matte.md) |
+| Run AI on a face, paste it back | [Face Detect Lite](nodes/face-detect-lite.md) → [Facial Aligner](nodes/facial-aligner.md) → … → [Unwrap Face](nodes/unwrap-face.md) |
+| Check what changed | [QA Image Diff](nodes/qa-image-diff.md) |
 
-- [Examples](examples/index.md)
-- [LUT preset gallery](examples/lut-preset-gallery.md)
-- [N-34 Preset Pack LUT](nodes/lut-preset.md)
-- [N-35 Skin Tone Tri-Region](nodes/skin-tone-tri-region.md)
-- [Latest release](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/latest)
+## Troubleshooting
+
+??? question "The nodes do not show up"
+    Check the ComfyUI console for an import error from `ComfyUI-JH-PixelPro`. Usually a dependency is missing: run `pip install -r requirements.txt` with ComfyUI's own Python, then restart.
+
+??? question "Face Detect Lite or Auto Align (LoFTR) downloads something"
+    Yes, on first use only. Face Detect Lite downloads its YuNet weights (about 0.4 MB) and Auto Align with `method = loftr` downloads LoFTR weights (about 45 MB) into the torch cache. Face Detect (MediaPipe) downloads its model (about 5 MB) into `ComfyUI/models/mediapipe`.
+
+??? question "The machine slows down on a big image"
+    Turn on `tile_mode` in [Skin Smoother](nodes/edge-aware-smoother.md) for anything larger than a preview. Since v1.5.2 tiles are sized to keep memory near 2 GB. Close other heavy workflows if VRAM is already full.
+
+??? question "I changed the pack but nothing changed in ComfyUI"
+    ComfyUI loads custom-node code once at start-up. Restart ComfyUI after updating the pack.

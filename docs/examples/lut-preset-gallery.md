@@ -1,22 +1,22 @@
 # LUT Preset Gallery
 
-N-34 `JHPixelProLUTPreset` ships six bundled generic Adobe Cube presets. The gallery below was generated from `workflows/sample_portrait.jpg` by invoking the actual N-34 node runtime and saving before/after previews under `docs/assets/examples/lut-preset/`.
+[LUT Preset](../nodes/lut-preset.md) ships six bundled generic Adobe Cube looks. The gallery below was generated from `workflows/sample_portrait.jpg` by running the actual node and saving before and after previews.
 
-![N-34 LUT preset before/after gallery](../assets/examples/lut-preset/lut-preset-gallery-grid.png)
+![LUT Preset before and after gallery](../assets/examples/lut-preset/lut-preset-gallery-grid.png)
 
-## Preset intent
+## What each preset is for
 
 | Preset | Use when |
 |---|---|
-| `neutral-identity` | You want to verify wiring or compare against a no-op baseline. |
+| `neutral-identity` | You want to check your wiring or compare against a no-change baseline. |
 | `warm-portrait` | You want a warmer, softer portrait direction without building a full grade. |
-| `cool-portrait` | You want a cleaner cool cast for editorial or product-adjacent portraits. |
+| `cool-portrait` | You want a cleaner, cooler cast for editorial or product-style portraits. |
 | `cinematic-teal-orange` | You want a stronger split-tone look with cooler shadows and warmer skin-adjacent tones. |
-| `soft-pastel` | You want lower-contrast, lighter color for gentle beauty or social previews. |
-| `high-contrast` | You want punchier separation for quick review images or stronger grading starts. |
+| `soft-pastel` | You want lower-contrast, lighter colour for gentle beauty or social previews. |
+| `high-contrast` | You want punchier separation for quick review images or a stronger starting grade. |
 
-## Workflow
+## Try it yourself
 
-Open the [N-34 LUT Preset workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-34-lut-preset.json), replace the `LoadImage` placeholder, and switch the `preset` dropdown. Use `intensity` below `1.0` when the full LUT is too strong.
+Open the [LUT Preset example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-34-lut-preset.json), choose your image in Load Image, and switch the `preset` dropdown. Lower `intensity` below `1.0` when the full LUT is too strong.
 
-For node details, see [N-34 Preset Pack LUT](../nodes/lut-preset.md).
+Want a look that is not on this list? Build one with [HALD Identity](../nodes/hald-identity.md) and [LUT Export](../nodes/lut-export.md), then apply it with [LUT Import](../nodes/lut-import.md).

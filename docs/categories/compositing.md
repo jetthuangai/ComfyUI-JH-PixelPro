@@ -1,11 +1,43 @@
 # Compositing
 
-The compositing category turns ComfyUI into a Photoshop-style layer stack with blend modes, grouping, and flattening. These nodes are meant for deterministic finishing passes after generation or retouch work is done.
+These nodes turn ComfyUI into a Photoshop-style layer stack: a background, layers on top with blend modes, opacity, fill, masks and clipping, groups, and a final flatten. They are meant for deterministic finishing passes after generation or retouching, where you want to adjust one layer without redoing the rest. Pyramid Blend is the odd one out: it joins two images through a mask so the seam disappears.
 
-- [**N-24 Layer Stack Start**](../nodes/layer-stack-start.md) — Starts a `LAYER_STACK` from a background image.
-- [**N-25 Layer Add**](../nodes/layer-add.md) — Adds a masked layer with opacity, fill, blend mode, and clipping options.
-- [**N-26 Layer Group**](../nodes/layer-group.md) — Flattens a sub-stack into a grouped layer for nested compositing.
-- [**N-27 Layer Flatten**](../nodes/layer-flatten.md) — Renders the layer stack back to a final image.
-- [**N-36 Pyramid Blend**](../nodes/pyramid-blend.md) — Seamless multi-band Laplacian pyramid composite of two images through a mask.
+<div class="grid cards" markdown>
 
-Flagship pages: [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md), [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md), and [N-10 Face Detect](../nodes/n10-face-detect.md).
+-   ![](../assets/nodes/layer-stack-start.jpg)
+
+    **[Layer Stack Start](../nodes/layer-stack-start.md)**
+
+    Makes the background layer of a stack from an image.
+
+-   ![](../assets/nodes/layer-add.jpg)
+
+    **[Layer Add](../nodes/layer-add.md)**
+
+    Adds a layer with blend mode, opacity, fill, mask and clipping.
+
+-   ![](../assets/nodes/layer-group.jpg)
+
+    **[Layer Group](../nodes/layer-group.md)**
+
+    Merges a sub-stack into one layer, like a Photoshop group.
+
+-   ![](../assets/nodes/layer-flatten.jpg)
+
+    **[Layer Flatten](../nodes/layer-flatten.md)**
+
+    Renders the stack back into a normal image.
+
+-   ![](../assets/nodes/pyramid-blend.jpg)
+
+    **[Pyramid Blend](../nodes/pyramid-blend.md)**
+
+    Seamless two-image composite through a mask using multi-band blending.
+
+</div>
+
+## Typical chains
+
+- **Colour grade as layers:** Load Image → [Layer Stack Start](../nodes/layer-stack-start.md) → [Layer Add](../nodes/layer-add.md) (`soft_light`) → [Layer Add](../nodes/layer-add.md) (`screen`) → [Layer Flatten](../nodes/layer-flatten.md) → Preview Image
+- **A look as one group:** two [Layer Stack Start](../nodes/layer-stack-start.md) chains → [Layer Group](../nodes/layer-group.md) (`overlay`, opacity 0.8) → [Layer Flatten](../nodes/layer-flatten.md)
+- **Paste a retouched face back:** [LUT Preset](../nodes/lut-preset.md) on the face → [Pyramid Blend](../nodes/pyramid-blend.md) through a face mask → Preview Image

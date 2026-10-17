@@ -1,60 +1,78 @@
 ---
-title: N-38 Face Detect Lite (YuNet GPU)
-description: Fast GPU face detector with 5-point landmarks, real confidence and a face mask, no MediaPipe needed.
+title: Face Detect Lite
+description: Fast GPU face detector with five key points, a real confidence score and a face mask. No MediaPipe needed.
 ---
 
-# N-38 Face: Detect Lite (YuNet GPU)
+# Face Detect Lite
 
-`JHPixelProFaceDetectLite` finds faces with the YuNet network shipped in Kornia. It runs on the GPU when one is available (CPU otherwise) and returns the same JSON shape as [N-10 Face Detect](n10-face-detect.md), plus a ready-made face mask. Landmarks are the 5 points the Facial Aligner needs, so it can replace N-10 in most face chains.
+A quick face finder that runs on the GPU. It returns the same five key points as [Face Detect](face-detect.md), plus a ready-made mask of the face area.
 
-## Schema
+![Face Detect Lite — before / after](../assets/nodes/face-detect-lite.jpg)
 
-| Name | Kind | Type / default | Description |
-|---|---|---|---|
-| `image` | Input | `IMAGE` | Source image batch. |
-| `mode` | Widget | `COMBO`, default `single_largest` | One largest face per image, or the top faces ranked by box area. |
-| `max_faces` | Widget | `INT`, default `1` (1-10) | Faces per image when `mode = multi_top_k`. |
-| `confidence_threshold` | Widget | `FLOAT`, default `0.6` (0.1-0.95) | Minimum YuNet score. |
-| `nms_threshold` | Widget | `FLOAT`, default `0.3` (0.1-0.9) | Overlap level above which duplicate boxes are merged. |
-| `detect_size` | Widget | `INT`, default `640` (160-1024, step 32) | Long side of the copy used for detection. Never upscales. 640 is best for portraits. |
-| `landmarks_json` | Output | `STRING` | Per face: `[L-eye, R-eye, nose-tip, L-mouth, R-mouth]` as pixel `[x, y]` (image-left first). |
-| `bbox_json` | Output | `STRING` | Per face: `x, y, w, h` (pixels), `conf` (real YuNet score), `batch_index`. |
-| `face_count` | Output | `INT` | Faces returned. |
-| `face_mask` | Output | `MASK` | 1 inside the selected face boxes, 0 elsewhere. |
+| | |
+|---|---|
+| **In ComfyUI** | `Add Node → ComfyUI-JH-PixelPro → face → Face: Detect Lite (YuNet GPU)` |
+| **Good for** | Batches and quick previews; feeding [Facial Aligner](facial-aligner.md); limiting a later edit to the face area |
+| **Speed** | About 31 ms on an RTX 5090 versus about 84 ms for MediaPipe on CPU (sample portrait) |
 
-## When to use Lite or N-10
+## When to use it
 
-| | Lite (YuNet) | N-10 (MediaPipe) |
+Use Lite when you want the face position fast and do not need the full 468-point mesh. It uses the YuNet network that ships with Kornia, so it works even if MediaPipe is not installed. It uses the GPU when one is available and falls back to CPU.
+
+Stay with [Face Detect](face-detect.md) and [Face Landmarks](face-landmarks.md) when you need the dense mesh (warping, reshaping) or better handling of tilted and partly hidden faces.
+
+| | Detect Lite (YuNet) | Face Detect (MediaPipe) |
 |---|---|---|
-| Speed (3500x2333 portrait) | about 30 ms on GPU, about 90 ms on CPU | about 80 ms on CPU |
 | Needs MediaPipe | No | Yes |
-| `conf` in bbox | Real detector score | The threshold you set |
-| Landmarks | 5 points only | 5 points taken from a 468-point mesh |
-| Face mask | Yes | No |
-| Feeds 468-point nodes (Landmarks, Warp, Unwrap) | No | Yes (use Face Landmarks) |
+| `conf` in `bbox_json` | Real detector score | The threshold you set |
+| Face mask output | Yes (face box) | No |
+| Eye points | Eye centres | Outer eye corners |
+| Feeds the 468-point nodes | No | Use Face Landmarks |
 
-Pick Lite for batches, quick previews, masks and plain alignment. Stay with N-10 or Face Landmarks when you need the full mesh or sharper handling of tilted or partial faces.
+Both feed the aligner. The eye points differ by roughly 10–20 % of the eye distance, which does not matter for alignment.
 
-Eye points are the eye centres (YuNet), while N-10 uses the outer eye corners, so the two differ by roughly 10-20 % of the eye distance. Both work with the aligner.
+## Quick start
 
-## Chaining into Facial Aligner
+1. Connect **Load Image** to **Face: Detect Lite (YuNet GPU)**.
+2. Connect `landmarks_json` to the `landmarks` input of [Facial Aligner](facial-aligner.md). It reads the first face.
+3. Optional: use `face_mask` to limit a later edit to the face area.
 
-1. Connect `image` to Face: Detect Lite.
-2. Send `landmarks_json` to the Landmark Facial Aligner (it reads the first face).
-3. Optionally use `face_mask` to limit a later edit to the face area.
+## Settings
 
-## How it works
+| Setting | Default | What it does | Tip |
+|---|---|---|---|
+| `mode` | `single_largest` | One largest face per image, or the top faces by box size. | Portraits: keep the default. |
+| `max_faces` | `1` (1–10) | Faces per image in `multi_top_k`. | Group shots: raise it. |
+| `confidence_threshold` | `0.6` (0.1–0.95) | Minimum detector score. | Raise to drop false hits. |
+| `nms_threshold` | `0.3` (0.1–0.9) | Overlap above which duplicate boxes are merged. | Lower it if you see duplicate boxes on one face. |
+| `detect_size` | `640` (160–1024) | Long side of the copy used for detection. Never enlarges. | Keep 640 for portraits. Raise only for group shots with small faces. |
 
-The image is shrunk so its long side equals `detect_size` (smaller images are left alone), run through YuNet, and boxes and points are scaled back to original pixels. Faces are sorted by box area; `single_largest` keeps one per image. Images smaller than 64 px are padded with their mean colour for detection only. The detector is cached per device, and the weights (`yunet_final.pth`) are downloaded once by Kornia into the torch hub cache. If loading fails the node raises a clear error.
+Outputs:
 
-## Tips
+| Output | Type | Meaning |
+|---|---|---|
+| `landmarks_json` | `STRING` | Per face: `[L-eye, R-eye, nose-tip, L-mouth, R-mouth]` in pixels. |
+| `bbox_json` | `STRING` | Per face: `x, y, w, h` (pixels), `conf` (real score) and `batch_index`. |
+| `face_count` | `INT` | Faces returned. |
+| `face_mask` | `MASK` | 1 inside the selected face boxes, 0 elsewhere. |
 
-- Keep the default 640 for portraits. Raise `detect_size` (up to 1024) only for group shots with small faces. YuNet anchors are size-limited, so a larger value can split or misplace big faces and add false hits on close-ups.
-- Too many false hits: raise `confidence_threshold`; duplicate boxes: lower `nms_threshold`.
-- A pure black frame can trigger a false detection in YuNet; use a real image or a higher threshold.
+## Tips from retouching
 
-## Workflow JSON
+- `face_mask` is a box, not a face outline. Feather it (for example with [Mask Edge Smoother](mask-edge-smoother.md)) before using it as an edit mask.
+- A larger `detect_size` is not always better. At very large values the detector can split or misplace big faces and add false hits on close-ups.
+- A pure black frame can trigger a false detection. Use a real image or a higher threshold.
+- Running a batch of portraits? Lite is the better pick: it is faster and needs no extra install.
 
-[workflows/N-38-face-detect-lite.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-38-face-detect-lite.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+??? note "Under the hood"
+    The image is shrunk so its long side equals `detect_size` (smaller images are left alone), run through YuNet via `kornia.contrib.FaceDetector`, and boxes and points are scaled back to original pixels. Faces are sorted by box area. Images smaller than 64 px are padded with their mean colour for detection only. The detector is cached per device. Kornia downloads the weights once into the torch hub cache; if loading fails, the node raises a clear error. The code lives in `core/face_detect_lite.py`.
 
-![N-38-face-detect-lite result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-38-face-detect-lite-preview.png)
+## Related nodes
+
+- [Face Detect](face-detect.md) — MediaPipe version.
+- [Facial Aligner](facial-aligner.md) — the next step in the chain.
+- [Mask Preview](mask-preview.md) — check `face_mask` as an overlay.
+- [Face category overview](../categories/face.md)
+
+## Example workflow
+
+[Face Detect Lite example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-38-face-detect-lite.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` first.

@@ -1,78 +1,124 @@
-# ComfyUI-JH-PixelPro
+---
+title: ComfyUI-JH-PixelPro
+description: Pro-grade retouch, colour and mask tools for ComfyUI, GPU-accelerated with Kornia.
+hide:
+  - navigation
+  - toc
+---
 
-GPU-powered pro-grade image suite for ComfyUI. The pack ships 44 production-ready nodes across eight categories for retouch, color science, mask finishing, face workflows, and Photoshop-style compositing without leaving the tensor pipeline.
+<div class="pp-hero" markdown>
 
-[![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
-[![Docs](https://img.shields.io/badge/docs-github_pages-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
-[![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-555555)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/LICENSE)
+# PixelPro for ComfyUI
 
-## v1.5.0 Utilities
+<p class="pp-lead">The retouching desk you already know (frequency separation, luminosity masks, LUTs, layer stacks, hair-accurate mattes, face alignment) rebuilt as 44 GPU nodes for ComfyUI.</p>
 
-Version 1.5.0 adds five everyday tools: [Smart Sharpen](nodes/smart-sharpen.md), [Mask Cleanup](nodes/mask-cleanup.md), [Face Warp (TPS smooth)](nodes/face-warp-tps.md), [Mask Preview Overlay](nodes/mask-preview.md) and [QA Image Diff](nodes/qa-image-diff.md) in the new QA category.
+[Get started :material-arrow-right:](quickstart.md){ .md-button .md-button--primary }
+[Browse the nodes](categories/color.md){ .md-button }
+[GitHub](https://github.com/jetthuangai/ComfyUI-JH-PixelPro){ .md-button }
 
-## v1.4.0 Kornia expansion
+</div>
 
-Version 1.4.0 adds four GPU nodes built on Kornia: [Pyramid Blend](nodes/pyramid-blend.md) for seamless composites, [CLAHE Local Contrast](nodes/clahe-local-contrast.md), [Face Detect Lite](nodes/face-detect-lite.md) (YuNet on the GPU) and [Auto Align](nodes/auto-align.md) (SIFT or LoFTR feature matching). [N-33 Mask Edge Smoother](nodes/n33-mask-edge-smoother.md) gains a `gpu` backend that always honours the guide image.
+![One portrait through eight PixelPro nodes](assets/hero.jpg)
 
-## v1.3.0 Pack Feature Complete
+## Why PixelPro
 
-Version 1.3.0 is the first feature-complete public milestone: 34 live nodes, full public documentation coverage, a deployed docs site, and a released pack workflow for fast onboarding.
+<div class="grid cards" markdown>
 
-Highlights:
+-   :material-palette-swatch-outline:{ .lg } **Real retouch techniques**
 
-- 44 pro-retouch nodes across color, mask, face, geometry, filters, looks, compositing, and QA.
-- Levin 2008 closed-form alpha matting with CUDA-capable sparse PyTorch acceleration and CPU fallback.
-- Zero-config creative color starts through N-34 bundled LUT presets.
-- Portrait tone targeting through N-35 skin-tone shadow, midtone, and highlight masks.
-- Active CI, docs deployment, and non-blocking expanded benchmark workflow.
+    Not filters with fancy names. Frequency separation, luminosity masking, LAB colour matching, Laplacian-pyramid blending and closed-form matting work the way a retoucher expects.
 
-## Quick Links
+-   :material-chip:{ .lg } **GPU first, CPU safe**
 
-- [Get Started in 5 Minutes](quickstart.md)
-- [Examples](examples/index.md)
-- [LUT Preset Gallery](examples/lut-preset-gallery.md)
-- [N-29 Alpha Matte Extractor](nodes/n29-alpha-matte-extractor.md)
-- [N-33 Mask Edge Smoother](nodes/n33-mask-edge-smoother.md)
-- [N-10 Face Detect](nodes/n10-face-detect.md)
-- [GitHub repository](https://github.com/jetthuangai/ComfyUI-JH-PixelPro)
-- [Latest release](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/releases/latest)
+    Built on PyTorch and [Kornia](https://kornia.github.io/). Heavy filters run on CUDA and keep their memory bounded. The same nodes still run, slower, on a CPU-only machine.
 
-## Install via ComfyUI Manager
+-   :material-vector-difference:{ .lg } **Works with your AI pipeline**
 
-1. Open **ComfyUI Manager** and search for `ComfyUI-JH-PixelPro`.
-2. Install the pack and let ComfyUI fetch the Python dependencies.
-3. Restart ComfyUI. The nodes appear under the `ComfyUI-JH-PixelPro/*` menu.
+    Align a face, run your inpaint or ControlNet pass, paste it back seamlessly. Build masks for any upstream segmenter, and check results with SSIM/PSNR.
 
-If you prefer a manual install, clone the repository into `ComfyUI/custom_nodes/` and run `pip install -e .`.
+-   :material-test-tube:{ .lg } **Tested and documented**
 
-## 44-node pack at a glance
+    800+ automated tests, a sample workflow for every recent node, and this guide in English and Vietnamese.
 
-| Category | Nodes | Highlights |
+</div>
+
+## Explore by task
+
+<div class="grid cards" markdown>
+
+-   ![](assets/nodes/color-lab.jpg)
+
+    **[Color & Tone](categories/color.md)**
+
+    ACR-style grading, tone curves, colour matching, LUT import/export and CLAHE local contrast.
+
+-   ![](assets/nodes/alpha-matte.jpg)
+
+    **[Masks](categories/mask.md)**
+
+    From a rough segmentation to a clean, hair-accurate alpha: refine, matte, clean up and preview.
+
+-   ![](assets/nodes/face-landmarks.jpg)
+
+    **[Face](categories/face.md)**
+
+    Detect, map 468 landmarks, reshape, align and paste back, plus skin-tone masks.
+
+-   ![](assets/nodes/frequency-separation.jpg)
+
+    **[Filters](categories/filters.md)**
+
+    Frequency separation, edge-aware skin smoothing and halo-free sharpening.
+
+-   ![](assets/nodes/pyramid-blend.jpg)
+
+    **[Compositing](categories/compositing.md)**
+
+    A Photoshop-style layer stack with 27 blend modes, and seamless multi-band blending.
+
+-   ![](assets/nodes/auto-align.jpg)
+
+    **[Geometry](categories/geometry.md)**
+
+    Face alignment, lens distortion correction and automatic alignment of a second shot.
+
+-   ![](assets/nodes/look-select.jpg)
+
+    **[Looks](categories/looks.md)**
+
+    Finished colour looks from one dropdown, with an intensity control.
+
+-   ![](assets/nodes/qa-image-diff.jpg)
+
+    **[QA](categories/qa.md)**
+
+    Measure what an edit changed: SSIM, PSNR, and a heatmap of where it changed.
+
+</div>
+
+## A typical portrait chain
+
+```text
+Load Image
+  → Face Detect Lite ──→ Facial Aligner ──→ (your AI or retouch pass) ──→ Unwrap Face
+  → Frequency Separation / Skin Smoother  (skin)
+  → Smart Sharpen + Detail Mask            (eyes, hair)
+  → ColorLab or LUT Preset                 (colour)
+  → QA Image Diff                          (check the result)
+```
+
+Each step is one node. Start with [Quickstart](quickstart.md), or open the [examples](examples/index.md).
+
+## At a glance
+
+| Group | Nodes | Highlights |
 |---|---:|---|
-| Color | 13 | Color matching (global and region-aware), tone curves, LUT import/export, preset LUTs, selective color, ColorLab, CLAHE local contrast |
-| Compositing | 5 | Photoshop-style layer stack, blend modes, seamless pyramid blending |
-| Filters | 3 | Frequency separation, edge-aware smoothing, smart sharpen |
-| Mask | 10 | Sub-pixel refinement, alpha matte extraction, morphology, combine, edge smoothing, cleanup, preview overlay |
-| Geometry | 3 | Facial alignment, lens distortion correction, automatic image alignment |
-| Face | 8 | Face detection (MediaPipe and YuNet GPU), landmarks, Delaunay and TPS warp, unwrap, beauty blend, skin-tone masks |
-| Looks | 1 | Preset-based creative look selection |
-| QA | 1 | SSIM / PSNR image comparison with visual diff |
-| **Total** | **44** | v1.5.2 |
-
-## Lean-batch entry points
-
-- [N-29 Alpha Matte Extractor](nodes/n29-alpha-matte-extractor.md) for quality-first Levin 2008 closed-form matting with CUDA acceleration and CPU fallback.
-- [N-33 Mask Edge Smoother](nodes/n33-mask-edge-smoother.md) for bilateral or guide-aware cleanup after person or object mask generation.
-- [N-10 Face Detect](nodes/n10-face-detect.md) for MediaPipe-powered 5-point landmarks that feed the pack's face alignment chain.
-
-## Browse by category
-
-- [Color](categories/color.md)
-- [Compositing](categories/compositing.md)
-- [Filters](categories/filters.md)
-- [Mask](categories/mask.md)
-- [Geometry](categories/geometry.md)
-- [Face](categories/face.md)
-- [Looks](categories/looks.md)
-- [QA](categories/qa.md)
+| [Color & Tone](categories/color.md) | 13 | ColorLab (ACR-style), Tone Curve, Color Matcher (global and region), LUT Preset / Import / Export, HALD, Tone Match LUT, CLAHE |
+| [Masks](categories/mask.md) | 10 | Sub-Pixel and Edge-Aware refiners, Alpha Matte, Trimap, Morphology, Combine, Edge Smoother, Cleanup, Preview, Detail Mask |
+| [Face](categories/face.md) | 8 | Face Detect (MediaPipe) and Detect Lite (YuNet GPU), 468 landmarks, Delaunay and TPS warp, Unwrap, Beauty Blend, skin-tone masks |
+| [Compositing](categories/compositing.md) | 5 | Layer stack (start, add, group, flatten), Pyramid Blend |
+| [Filters](categories/filters.md) | 3 | Frequency Separation, Skin Smoother, Smart Sharpen |
+| [Geometry](categories/geometry.md) | 3 | Facial Aligner, Lens Distortion, Auto Align |
+| [Looks](categories/looks.md) | 1 | Look Select |
+| [QA](categories/qa.md) | 1 | QA Image Diff |
+| **Total** | **44** | v1.5.x · Apache-2.0 |

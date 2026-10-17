@@ -1,45 +1,69 @@
 ---
-title: N-43 Mask Preview Overlay
-description: Visualise any MASK on top of an image for debugging, with overlay, heatmap, mask-only and cutout modes.
+title: Mask Preview
+description: Shows any mask on top of your photo as a colour tint, heatmap, black-and-white view or cutout.
 ---
 
-# N-43 Mask: Preview Overlay
+# Mask Preview
 
-`JHPixelProMaskPreview` turns a `MASK` into an `IMAGE` you can look at. Plug it after any mask node in the pack (or any other mask source) to see what the mask really contains before you feed it to matting, inpaint or compositing.
+See what a mask really does. It turns a mask into a picture you can look at, like Photoshop's quick-mask overlay or the "show mask" view.
 
-## Schema
+![Mask Preview — before / after](../assets/nodes/mask-preview.jpg)
 
-| Name | Kind | Type / default | Description |
+| | |
+|---|---|
+| **In ComfyUI** | `Add Node → ComfyUI-JH-PixelPro → mask → Mask: Preview Overlay` |
+| **Good for** | Checking a mask's coverage, spotting holes and halos, judging soft edges, previewing a cutout on a checkerboard |
+
+## When to use it
+
+A raw mask is a grey image that is hard to judge. Four views make it clear:
+
+| Mode | What you see | Best for |
+|---|---|---|
+| `overlay` | Photo tinted with a colour where the mask is on | Checking coverage |
+| `heatmap` | Mask values as a colour map (0 = cold, 1 = hot) | Finding soft or partial values |
+| `mask_only` | The mask as grey-scale | The plain view |
+| `cutout` | Photo shown only where the mask is on, over a checkerboard | Judging the cutout, like a transparent layer |
+
+The preview is for looking only. Do not feed its output back as a mask. Connect it to a `Preview Image` node.
+
+## Quick start
+
+1. Connect the mask to `mask` and your photo to the optional `image`.
+2. Choose `overlay` with `opacity` 0.5 and `show_edges` on.
+3. Connect `preview` to a `Preview Image` node.
+4. Switch to `cutout` to see how it would look on a transparent background.
+
+## Settings
+
+| Setting | Default | What it does | Tip |
 |---|---|---|---|
-| `mask` | Input | `MASK` | Mask to visualise. |
-| `image` | Optional input | `IMAGE` | Background. Omit for a neutral grey (overlay, cutout) or the bare colormap (heatmap). |
-| `mode` | Widget | `COMBO`, default `overlay` | `overlay`, `heatmap`, `mask_only`, or `cutout`. |
-| `color` | Widget | `COMBO`, default `red` | Tint and edge colour: red, green, blue, yellow, cyan, magenta, white, black. |
-| `opacity` | Widget | `FLOAT`, default `0.5` | Strength of the tint (overlay) or heatmap blend. |
-| `colormap` | Widget | `COMBO`, default `turbo` | Kornia colormap for heatmap mode (list comes from the installed Kornia). |
-| `show_edges` | Widget | `BOOLEAN`, default `false` | Draw the 0.5 contour of the mask in `color`, fully opaque. |
-| `preview` | Output | `IMAGE` | RGB preview, same size as the mask. |
+| `mode` | `overlay` | Which of the four views to draw. | See the table above. |
+| `color` | `red` | Tint colour for `overlay`, and the colour of the edge line. | Pick a colour that contrasts with the photo. Eight colours are available, from red to white and black. |
+| `opacity` | 0.5 | Strength of the tint (`overlay`) or the heatmap blend. | 0 to 1. |
+| `colormap` | `turbo` | The colour scale used by `heatmap`. | Names come from Kornia's colormap list, such as `turbo`, `viridis`, `jet`. |
+| `show_edges` | off | Draws the 0.5 contour of the mask as a thin line in `color`. | Handy for judging how tight the edge is. |
+| `image` (optional) | none | The background photo. Without it you get a neutral grey background (a bare colour map in `heatmap` mode). | A 4-channel image is accepted; the alpha channel is ignored. |
 
-Image and mask must have the same height and width. A batch of 1 on either side broadcasts to the other.
+**Output:** `preview` (IMAGE).
 
-## How it works
+## Tips from retouching
 
-- **overlay**: `lerp(image, color, opacity * mask)`. Soft mask values give a soft tint.
-- **heatmap**: the mask value is mapped through the chosen colormap, then blended with the image by `opacity`. Without an image you get the pure colormap.
-- **mask_only**: the mask as a greyscale RGB image, exactly as stored.
-- **cutout**: `image * mask` over an 8 px grey checkerboard, like a transparency grid.
-- **show_edges**: the mask is thresholded at 0.5, and dilation minus erosion (3x3 max-pool) gives a 1-2 px band along the boundary, painted over the result.
+- Use `heatmap` on a feathered mask to see exactly how wide the soft band is.
+- Use `cutout` with a contrasting checkerboard to find halos that a flat background would hide.
+- Use `show_edges` in `overlay` mode to compare two masks. Run the node twice with different colours.
+- The image and the mask must have the same width and height.
 
-## Tips
+??? note "Under the hood"
+    `overlay` mixes the photo toward the colour by `opacity * mask`. `heatmap` uses `kornia.color.apply_colormap` with the chosen colormap and blends it with the photo by `opacity`. `cutout` mixes the photo and an 8 px checkerboard by the mask. The edge line is a one-pixel band, built from dilation minus erosion of the mask thresholded at 0.5. Source: `core/mask_preview.py`.
 
-- Use `overlay` with `show_edges` to check that a selection hugs the subject.
-- Use `heatmap` to see soft values: feather width, leftover gray from a threshold, or noise a binary view hides.
-- Use `mask_only` for a quick truth view when colours confuse you.
-- Use `cutout` to judge the final alpha as if the subject sat on a transparent layer.
-- Pick `color` to contrast with the image (for example cyan on warm skin, magenta on foliage).
+## Related nodes
 
-## Workflow JSON
+- [Mask Cleanup](mask-cleanup.md) for fixing what the preview shows
+- [Alpha Matte](alpha-matte.md) for soft cutouts to view in `cutout` mode
+- [Trimap Builder](trimap-builder.md), whose three zones show clearly in `heatmap`
+- [QA Image Diff](qa-image-diff.md) for comparing two images instead
 
-[workflows/N-43-mask-preview.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-43-mask-preview.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+## Example workflow
 
-![N-43-mask-preview result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-43-mask-preview-preview.png)
+[Mask Preview example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-43-mask-preview.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` first.

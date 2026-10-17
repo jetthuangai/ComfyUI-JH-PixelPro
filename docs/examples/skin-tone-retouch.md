@@ -1,31 +1,45 @@
-# Skin Tone Retouch Chain
+---
+title: Skin Tone Retouch
+description: Split a portrait into shadow, midtone and highlight masks and retouch each tone range on its own.
+---
 
-N-35 `JHPixelProSkinToneTriRegion` is a mask-splitting node for portrait retouching. It divides a source image, or an optional upstream skin mask, into shadow, midtone, and highlight masks so downstream color or texture operations can be targeted more precisely.
+# Skin Tone Retouch
 
-## Minimal chain
+Skin rarely needs one fix everywhere. This example shows how to build three tone masks from a portrait with [Skin Tone Tri-Region](../nodes/skin-tone-tri-region.md), then use them to treat shine, mid skin tone and shadows separately.
+
+## The chain
 
 ```text
-LoadImage
-  -> JHPixelProSkinToneTriRegion
-      -> shadow_mask
-      -> midtone_mask
-      -> highlight_mask
+Load Image ──────────────────────────────┐
+                                         ▼
+Person / skin mask (optional) ──► Skin Tone Tri-Region
+                                     ├─ shadow_mask
+                                     ├─ midtone_mask
+                                     └─ highlight_mask
 ```
 
-Use the bundled [N-35 workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-35-skin-tone-tri-region.json) to place the node on the canvas quickly.
+The skin mask can come from any segmentation node. The sample workflow uses a person-mask node from another custom-node pack. Without a skin mask the whole frame is split by brightness, including hair, clothing and background.
 
-## Practical retouch pattern
+## Try it
 
-1. Feed a portrait image into N-35.
-2. Optionally connect a skin-only upstream `MASK` into `skin_mask` so the split ignores hair, clothing, and background.
-3. Use `shadow_mask` for local lift, noise control, or warm shadow correction.
-4. Use `midtone_mask` for the main skin-tone grade.
-5. Use `highlight_mask` for shine control, specular softening, or highlight color correction.
+1. Download [the sample workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-35-skin-tone-tri-region.json) and drag it onto the ComfyUI canvas.
+2. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` and pick it in **Load Image**.
+3. Run it and look at the three mask previews. White is where each range applies.
 
-## Controls
+## Using the three masks
 
-- `shadow_cutoff` defaults to `0.33`, using Rec.601 luminance.
-- `highlight_cutoff` defaults to `0.66`.
-- `soft_sigma` defaults to `1.0` and smooths region boundaries while preserving the selected mask sum.
+- **`highlight_mask`:** soften shine, or pull highlight colour back. Route it into a colour adjustment, or into [Face Beauty Blend](../nodes/face-beauty-blend.md) with a smoothed version of the image.
+- **`midtone_mask`:** the main skin-tone grade. Match colour to a reference with [Color Matcher Region](../nodes/color-matcher-region.md), or apply a LUT through [Face Beauty Blend](../nodes/face-beauty-blend.md).
+- **`shadow_mask`:** lift or warm the shadows, or limit noise reduction to dark areas.
 
-For node details, see [N-35 Skin Tone Tri-Region](../nodes/skin-tone-tri-region.md).
+The three masks always add up to your skin mask, so edits made through them never overlap or leave gaps.
+
+## Settings to try first
+
+| Setting | Default | When to change it |
+|---|---|---|
+| `shadow_cutoff` | `0.33` | Lower it if the shadow mask grabs too much of the face. |
+| `highlight_cutoff` | `0.66` | Raise it to target only the brightest shine. |
+| `soft_sigma` | `1.0` | Raise it for softer transitions between ranges. |
+
+For every setting in detail, see [Skin Tone Tri-Region](../nodes/skin-tone-tri-region.md). To check a mask before using it, add [Mask Preview](../nodes/mask-preview.md).

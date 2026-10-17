@@ -1,53 +1,66 @@
 ---
-title: N-42 Face Warp (TPS smooth)
-description: Warp a face from source to destination landmarks with one smooth thin-plate-spline field.
+title: Face Warp TPS
+description: Reshape a face with one smooth thin-plate-spline field, with no triangle seams.
 ---
 
-# N-42 Face Warp (TPS smooth)
+# Face Warp TPS
 
-`JHPixelProFaceWarpTPS` moves image content so that features at `src_landmarks` end up at `dst_landmarks`, like [Face Warp](face-warp.md) (N-20), but with a single smooth thin-plate-spline (TPS) displacement field instead of one affine patch per Delaunay triangle. Use it for subtle reshaping (slimming, eye or jaw adjustments) where triangle seams or kinks would show.
+Moves the face from source landmarks to destination landmarks with a single smooth, rubber-sheet style distortion. Use it for subtle reshaping where triangle seams or kinks would show.
 
-## Schema
+![Face Warp TPS — before / after](../assets/nodes/face-warp-tps.jpg)
 
-| Name | Kind | Type / default | Description |
-|---|---|---|---|
-| `image` | Input | `IMAGE` | Image to warp, `(B,H,W,3)`. |
-| `src_landmarks` | Input | `LANDMARKS` | Where the features are now (from Face Landmarks). |
-| `dst_landmarks` | Input | `LANDMARKS` | Where the features should go. Batch 1 broadcasts. |
-| `max_points` | Widget | `INT`, default `468`, 16 to 468 | Max landmark pairs used for the spline. Pairs that move more than 0.5 px are always kept (even beyond the budget); the rest is filled half with the unmoved pairs nearest to the edit and half with evenly spaced ones. Keep 468 unless speed matters: fewer pins let nearby features drift. |
-| `anchor_border` | Widget | `BOOLEAN`, default `True` | Pin fixed points along the image border (corners plus 3 per edge) so the background stays put. |
-| `smoothness` | Optional widget | `FLOAT`, default `1.0`, 0 to 20 | Spline regularisation. `0` lands every landmark exactly (hand-edited landmarks). `1` absorbs detection noise when the target landmarks come from another photo, which would otherwise ripple or fold the image; clean edits still land within ~1 px. Raise it if ripples remain. It also relaxes the border anchors slightly (well under 1 px at the default). |
-| `warped` | Output | `IMAGE` | Warped image, float32 in `[0,1]`. |
+| | |
+|---|---|
+| **In ComfyUI** | `Add Node → ComfyUI-JH-PixelPro → face → Face Warp (TPS smooth)` |
+| **Good for** | Slimming, eye or jaw adjustments; matching a face to another photo; edits that must look natural |
+| **Speed** | About 19 ms on CUDA and about 0.85 s on CPU for a 1536×2048 image with 468 points (RTX 5090 / desktop CPU) |
 
-Landmarks follow the same convention as N-20: normalised `[0,1]` or pixel coordinates, `(B,468,2)` or `(B,F,468,2)` (first face is used). Non-finite points are dropped; with fewer than 3 valid pairs, or when one side has no face at all (all NaN), the image is returned unchanged.
+## When to use it
 
-## How it works
+A thin-plate spline (TPS) is a smooth surface that bends like a thin metal plate: it passes through your control points and stays as flat as possible between them. Applied to an image, it gives one continuous distortion with no visible triangle edges.
 
-The spline is fitted on the output-to-input mapping (kernel `r^2 log r` plus an affine part), so every output pixel samples the source at the spot the spline points to and a feature at `src` lands on `dst` (exactly with `smoothness = 0`). The field is evaluated exactly (in memory-bounded blocks) on a grid with a 4 px step, upsampled bicubically to full size, then used to resample the image bilinearly. On a real 1536x2048 portrait with 468 landmarks plus 16 border anchors, with `smoothness = 0` control points land within about 0.6 px of their destination (independent review: max 0.57 px at landmark pixels, p99 0.11 px over the frame; the spline itself is exact to 1e-4 px). Landmarks are subsampled to `max_points` (deterministic) only when you lower it: every moved pair is kept, so a jaw or eye edit is never dropped. With `anchor_border` on, extra pairs with identical source and destination pin the border.
+Pick TPS for gentle, natural changes and when you want GPU speed. Pick [Face Warp](face-warp.md) (Delaunay) when the change must stay strictly inside the face mesh or when every one of the 468 points must be honoured locally.
 
-TPS vs Delaunay (N-20):
-
-| | Delaunay (N-20) | TPS (N-42) |
+| | Delaunay ([Face Warp](face-warp.md)) | TPS (this node) |
 |---|---|---|
-| Field | Piecewise affine, one patch per triangle | One smooth global field |
-| Seams / kinks | Possible on triangle edges for large moves | None |
-| Outside the landmarks | Unchanged | Smoothly decays only if `anchor_border` is on |
-| Cost | Grows with triangle count, CPU (OpenCV) | Grows with point count cubed for the solve, runs on GPU |
-| Follows every landmark | Exactly | Exactly for the chosen points; a long-range effect between them |
+| Field | One affine patch per triangle | One smooth global field |
+| Seams or kinks | Possible on triangle edges for large moves | None |
+| Outside the face | Unchanged | Fades out smoothly (pinned by `anchor_border`) |
+| Runs on | CPU (OpenCV) | GPU when available |
 
-Choose TPS for gentle, natural deformations and when you want GPU speed; choose Delaunay when you need the change confined strictly to the face mesh or want every one of the 468 points honoured locally.
+## Quick start
 
-## Tips
+1. Run [Face Landmarks](face-landmarks.md) on your photo and connect `landmarks` to `src_landmarks`.
+2. Run [Face Landmarks](face-landmarks.md) on the target (a second photo, or a zoomed copy) and connect it to `dst_landmarks`.
+3. Keep the defaults and check `warped` in a **Preview Image**.
+4. If you still see ripples, raise `smoothness`.
 
-- Target landmarks from a second detection (another photo, a zoomed copy) differ from the source by detector noise as well as by the real shape change — on the sample portrait the noise is about 13–17 px (median) for a 3–6% zoomed copy. Exact interpolation of that noise folds the image; keep `smoothness` at 1 or higher for such targets.
+## Settings
 
-- Leave `max_points` at 468 (the solve is only about 484x484). Lower it only for speed; moved landmarks are always kept, but fewer unmoved points means less pinning of the rest of the face.
-- Leave `anchor_border` on unless the whole frame should move with the face (pure translation or scale).
-- Large moves of a few isolated points create wide, rubbery effects; move groups of neighbouring landmarks together.
-- Measured on an RTX 5090 / desktop CPU, 1536x2048 with 468 points plus anchors (whole node incl. resampling): about 19 ms on CUDA (peak about 480 MiB, mostly image buffers), about 0.85 s on CPU.
+| Setting | Default | What it does | Tip |
+|---|---|---|---|
+| `max_points` | `468` (16–468) | Most landmark pairs used for the warp. Pairs that move are always kept. | Keep 468. Lower only for speed, since fewer pins let nearby features drift. |
+| `anchor_border` | on | Pins points along the image border so the background does not swim. | Turn off only if the whole frame should move with the face (pure shift or scale). |
+| `smoothness` | `1.0` (0–20) | `0` lands every landmark exactly. Higher values absorb detection noise. | Use `0` for hand-edited points. Keep 1 or more when targets come from another photo. Raise it if ripples remain. |
 
-## Workflow JSON
+Output: `warped` (`IMAGE`), the reshaped picture.
 
-[workflows/N-42-face-warp-tps.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-42-face-warp-tps.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
+## Tips from retouching
 
-![N-42-face-warp-tps result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-42-face-warp-tps-preview.png)
+- Landmarks from a second detection differ from the source by detector noise as well as the real shape change. On the sample portrait that noise is about 13–17 px (median) for a 3–6 % zoomed copy. Matching it exactly would fold the image, so keep `smoothness` at 1 or higher for such targets.
+- Move groups of neighbouring landmarks together. Pulling a few isolated points creates wide, rubbery effects.
+- Missing faces (NaN points) or fewer than 3 valid pairs return the image unchanged.
+- Warp first, then run skin retouch, so texture work follows the final shape.
+
+??? note "Under the hood"
+    The spline (kernel `r² log r` plus an affine part) is fitted on the output-to-input mapping, so every output pixel samples the source where the spline points. It is evaluated exactly on a grid with a 4 px step, upsampled bicubically to full size, then used to resample the image bilinearly. With `smoothness = 0`, control points land within about 0.6 px of their destination on a real 1536×2048 portrait. Moved pairs (more than 0.5 px) are never dropped when `max_points` is lowered; the rest is filled half with the unmoved pairs nearest the edit and half with evenly spaced ones. With `anchor_border` on, extra pairs with identical source and destination (corners plus 3 per edge) pin the border; higher `smoothness` relaxes them slightly (well under 1 px at the default). Peak memory is about 480 MiB at that size, mostly image buffers. The code lives in `core/face_warp_tps.py`.
+
+## Related nodes
+
+- [Face Warp](face-warp.md) — triangle-based alternative.
+- [Face Landmarks](face-landmarks.md) — supplies both point sets.
+- [Face Beauty Blend](face-beauty-blend.md) — limit the warp to the face with a mask.
+
+## Example workflow
+
+[Face Warp TPS example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-42-face-warp-tps.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` first.

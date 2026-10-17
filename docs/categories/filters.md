@@ -1,10 +1,31 @@
 # Filters
 
-The filters category focuses on image-domain operations that preserve a retoucher's core signal: texture, edges, and controllable smoothness. These are the pack's foundational cleanup nodes.
+Filters work on the picture itself: texture, edges and smoothness. Split detail from tone with frequency separation, soften skin without losing edges, and sharpen at the end. Together they cover the core of a portrait retouch.
 
-- [**N-01 GPU Frequency Separation**](../nodes/frequency-separation.md) — Splits an image into low-frequency color/form and high-frequency detail.
-- [**N-03 Edge-Aware Skin Smoother**](../nodes/edge-aware-smoother.md) — Applies bilateral smoothing with mask-aware blending and device controls.
-- [**N-04 High-Frequency Detail Masker**](../nodes/high-freq-detail-masker.md) — Builds high-frequency protection masks for retouch and inpaint passes.
-- [**N-40 Smart Sharpen**](../nodes/smart-sharpen.md) — Unsharp-mask sharpening with soft threshold, luminance-only mode and an optional mask gate.
+<div class="grid cards" markdown>
 
-Flagship pages: [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md), [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md), and [N-10 Face Detect](../nodes/n10-face-detect.md).
+-   ![](../assets/nodes/frequency-separation.jpg)
+
+    **[Frequency Separation](../nodes/frequency-separation.md)**
+
+    Splits an image into a smooth colour layer and a fine-detail layer.
+
+-   ![](../assets/nodes/edge-aware-smoother.jpg)
+
+    **[Skin Smoother](../nodes/edge-aware-smoother.md)**
+
+    Smooths skin with an edge-preserving blur, with optional mask and tiled processing.
+
+-   ![](../assets/nodes/smart-sharpen.jpg)
+
+    **[Smart Sharpen](../nodes/smart-sharpen.md)**
+
+    Unsharp mask with a noise threshold, luminance-only mode and a mask.
+
+</div>
+
+## Typical chains
+
+- **Natural skin:** Load Image → [Skin Smoother](../nodes/edge-aware-smoother.md) (strength 0.3 to 0.5, with a skin mask) → [Smart Sharpen](../nodes/smart-sharpen.md) → Preview Image
+- **Fix colour, keep pores:** Load Image → [Frequency Separation](../nodes/frequency-separation.md) → edit `low` only → add `low` and `high` back together
+- **Sharpen only the detail:** [Detail Mask](../nodes/high-freq-detail-masker.md) → `mask` of [Smart Sharpen](../nodes/smart-sharpen.md)

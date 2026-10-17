@@ -1,20 +1,91 @@
-# Color
+# Color & Tone
 
-The color category covers grading, masking by color statistics, and LUT round-tripping. It is the pack's bridge between practical retouch controls and reusable show-look workflows.
+These nodes handle everything about colour and brightness: matching one image to another, shaping contrast with curves, grading with a Camera Raw style panel, selecting by tone or colour, and saving or applying LUTs. Use them to finish a retouch, to bring AI output back to a reference photo, or to build a repeatable look.
 
-- [**N-05 Luminosity Masking**](../nodes/luminosity-masking.md) — Builds shadow, midtone, and highlight masks with a partition-of-unity style split.
-- [**N-08 Color Matcher (LAB)**](../nodes/color-matcher.md) — Transfers color statistics from a reference image with optional masked matching.
-- [**Color Matcher Region (LAB)**](../nodes/color-matcher-region.md) — Matches colors between a reference region and a target region, images of any size.
-- [**N-09 Tone Curve (RGB)**](../nodes/tone-curve.md) — Applies master or per-channel Catmull-Rom tone curves.
-- [**N-12 HALD Identity**](../nodes/hald-identity.md) — Generates identity HALD images for LUT authoring pipelines.
-- [**N-13 LUT Export (.cube)**](../nodes/lut-export.md) — Writes Adobe Cube 1.0 LUTs from graded HALD images.
-- [**N-14 LUT Import (.cube)**](../nodes/lut-import.md) — Applies external or round-tripped LUTs with optional masked blending.
-- [**N-15 Hue/Saturation per Range**](../nodes/hue-saturation-range.md) — Isolates a hue band and shifts hue or saturation inside that band only.
-- [**N-16 Saturation Mask Builder**](../nodes/saturation-mask.md) — Creates masks from HLS saturation thresholds.
-- [**N-17 Tone Match LUT**](../nodes/tone-match-lut.md) — Derives a reusable LUT from a graded reference frame.
-- [**N-22 Look Select**](../nodes/look-select.md) — Applies the pack's JSON-backed creative looks from a single dropdown node.
-- [**N-23 ColorLab (ACR)**](../nodes/color-lab.md) — Packs an Adobe Camera Raw style grading stack into one node.
-- [**N-34 Preset Pack LUT**](../nodes/lut-preset.md) — Applies bundled generic Adobe Cube LUT presets from a dropdown.
-- [**N-37 CLAHE Local Contrast**](../nodes/clahe-local-contrast.md) — Adaptive local contrast on LAB lightness only, colors stay intact.
+<div class="grid cards" markdown>
 
-Flagship pages: [N-29 Alpha Matte Extractor](../nodes/n29-alpha-matte-extractor.md), [N-33 Mask Edge Smoother](../nodes/n33-mask-edge-smoother.md), and [N-10 Face Detect](../nodes/n10-face-detect.md).
+-   ![](../assets/nodes/color-matcher.jpg)
+
+    **[Color Matcher](../nodes/color-matcher.md)**
+
+    Pull the colours of one image toward a reference in LAB space.
+
+-   ![](../assets/nodes/color-matcher-region.jpg)
+
+    **[Color Matcher Region](../nodes/color-matcher-region.md)**
+
+    Match one masked region to another, even across different image sizes.
+
+-   ![](../assets/nodes/color-lab.jpg)
+
+    **[ColorLab](../nodes/color-lab.md)**
+
+    Camera Raw style Basic, HSL, Color Grading and Gray Mix in one node.
+
+-   ![](../assets/nodes/clahe-local-contrast.jpg)
+
+    **[CLAHE Local Contrast](../nodes/clahe-local-contrast.md)**
+
+    Adaptive local contrast on lightness only; colours stay intact.
+
+-   ![](../assets/nodes/tone-curve.jpg)
+
+    **[Tone Curve](../nodes/tone-curve.md)**
+
+    Eight-point curves for contrast and colour balance, with presets.
+
+-   ![](../assets/nodes/hue-saturation-range.jpg)
+
+    **[Hue/Saturation per Range](../nodes/hue-saturation-range.md)**
+
+    Shift hue or saturation inside one chosen colour band.
+
+-   ![](../assets/nodes/luminosity-masking.jpg)
+
+    **[Luminosity Masking](../nodes/luminosity-masking.md)**
+
+    Soft shadow, midtone and highlight masks from image brightness.
+
+-   ![](../assets/nodes/saturation-mask.jpg)
+
+    **[Saturation Mask](../nodes/saturation-mask.md)**
+
+    Mask the pixels whose colour strength falls inside a range.
+
+-   ![](../assets/nodes/lut-preset.jpg)
+
+    **[LUT Preset](../nodes/lut-preset.md)**
+
+    Apply a bundled colour look from a dropdown with an intensity slider.
+
+-   ![](../assets/nodes/lut-import.jpg)
+
+    **[LUT Import](../nodes/lut-import.md)**
+
+    Load any `.cube` LUT and apply it, with strength and optional mask.
+
+-   ![](../assets/nodes/lut-export.jpg)
+
+    **[LUT Export](../nodes/lut-export.md)**
+
+    Save a graded chart as a portable `.cube` LUT.
+
+-   ![](../assets/nodes/hald-identity.jpg)
+
+    **[HALD Identity](../nodes/hald-identity.md)**
+
+    Generate the neutral colour chart you grade and bake into a LUT.
+
+-   ![](../assets/nodes/tone-match-lut.jpg)
+
+    **[Tone Match LUT](../nodes/tone-match-lut.md)**
+
+    Build a LUT automatically from the colour and tone of a reference image.
+
+</div>
+
+## Typical chains
+
+- **Match and finish:** Load Image → [Color Matcher](../nodes/color-matcher.md) → [Tone Curve](../nodes/tone-curve.md) → [ColorLab](../nodes/color-lab.md) → Preview Image
+- **Grade only the shadows:** Load Image → [Luminosity Masking](../nodes/luminosity-masking.md) → use `mask_shadows` as the mask of [Tone Curve](../nodes/tone-curve.md) or [Hue/Saturation per Range](../nodes/hue-saturation-range.md)
+- **Bake a look into a LUT:** [HALD Identity](../nodes/hald-identity.md) → [Tone Curve](../nodes/tone-curve.md) / [ColorLab](../nodes/color-lab.md) → [LUT Export](../nodes/lut-export.md), then reuse it with [LUT Import](../nodes/lut-import.md)

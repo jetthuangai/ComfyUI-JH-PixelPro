@@ -1,46 +1,65 @@
 ---
-title: N-37 Color CLAHE Local Contrast
-description: Adaptive local contrast on the LAB lightness channel while keeping colours intact.
+title: CLAHE Local Contrast
+description: Adaptive local contrast on lightness only, so dark and flat areas gain definition while colours stay put.
 ---
 
-# N-37 Color: CLAHE Local Contrast
+# CLAHE Local Contrast
 
-`JHPixelProCLAHE` applies Contrast Limited Adaptive Histogram Equalisation (CLAHE) to the lightness of an image. Dark areas open up and flat areas gain definition, without the colour shifts you get from running CLAHE on RGB channels.
+Opens up dark areas and adds definition to flat ones by adjusting contrast tile by tile, on lightness only, so hue and colour do not shift.
 
-## Schema
+![CLAHE Local Contrast — before / after](../assets/nodes/clahe-local-contrast.jpg)
 
-| Name | Kind | Type / default | Description |
+| | |
+|---|---|
+| **In ComfyUI** | `Add Node → ComfyUI-JH-PixelPro → color → Color: CLAHE Local Contrast` |
+| **Good for** | Lifting murky shadows, rescuing hazy or flat shots, adding crunch to product and texture detail |
+
+## When to use it
+
+CLAHE (Contrast Limited Adaptive Histogram Equalisation) looks at small tiles of the picture and spreads out the brightness values inside each one, with a limit so noise is not blown up. The result feels like strong local contrast: dark corners gain detail and flat surfaces gain depth.
+
+Here it runs only on the lightness channel of the CIE LAB colour space, so colours are not touched. Running it on RGB channels, as many tools do, shifts colours and tints skin.
+
+Compared with the `basic_clarity` slider in [ColorLab](color-lab.md): clarity is a gentle, radius-based punch for edges. CLAHE redistributes brightness inside each tile, so it can lift deep shadows and flatten large soft gradients that clarity leaves alone. Use clarity for gentle punch, CLAHE when a region is too flat, too dark or too hazy.
+
+## Quick start
+
+1. **Load Image** → CLAHE Local Contrast → **Preview Image**.
+2. Leave `clip_limit` at 2.0 and `grid_size` at 8.
+3. Lower `strength` to about 0.5 for portraits, then compare with the original.
+
+## Settings
+
+| Setting | Default | What it does | Tip |
 |---|---|---|---|
-| `image` | Input | `IMAGE` | Image `(B,H,W,3)` in `[0,1]`. |
-| `clip_limit` | Widget | `FLOAT`, default `2.0`, range `0.1`-`40.0` | How much each tile's histogram may be stretched. Higher = stronger contrast and more noise boost. |
-| `grid_size` | Widget | `INT`, default `8`, range `2`-`32` | Tiles per axis. Reduced automatically on small images so every tile is at least 80 px; images under 80 px pass through unchanged. |
-| `strength` | Widget | `FLOAT`, default `1.0`, range `0`-`1` | Blend between the original (`0`, exact passthrough) and the CLAHE result (`1`). |
-| `mask` | Optional input | `MASK` | Limits where the effect applies. Batch 1 broadcasts over the image batch. |
-| `image` | Output | `IMAGE` | Enhanced image, float32 in `[0,1]`. |
+| `image` | required | The picture to enhance. | |
+| `clip_limit` | 2.0 (0.1 to 40) | How strongly each tile may be stretched. Higher means more contrast and more noise. | 1.5 to 3 for most work; above about 6 grain jumps out. |
+| `grid_size` | 8 (2 to 32) | Number of tiles across and down. Fewer tiles give a broad, natural lift; more tiles give a crunchy, detailed look. | 4 to 6 natural, 12 to 24 gritty. |
+| `strength` | 1.0 (0 to 1) | Blend between the original (0) and the CLAHE result (1). | 0.3 to 0.6 for portraits. |
+| `mask` (optional) | none | Limits where the effect applies. A single mask is used for the whole batch. | Keep faces or skies out of the effect. |
 
-## How it works
+**Output:** `image`, the enhanced picture.
 
-1. The image is converted from RGB to CIE LAB.
-2. Only `L*` (divided by 100) goes through CLAHE: the image is cut into `grid_size x grid_size` tiles, each tile gets its own clipped histogram equalisation, and neighbouring tiles are blended bilinearly to avoid seams.
-3. The result is rebuilt with the **original** `a*` and `b*`, converted back to RGB and clamped to `[0,1]`.
-4. The final image is `lerp(original, enhanced, strength * mask)`.
+On small images the grid is reduced automatically so that every tile is at least 80 px wide. Images smaller than 80 px come back unchanged.
 
-Because only `L*` changes, hue and chroma stay the same; skin tones and brand colours do not drift. CLAHE runs on 8-bit histograms, so `L*` is quantised to 256 levels.
+## Tips from retouching
 
-### Compared with ColorLab clarity
+- Start gentle. `clip_limit` 2 at `strength` 0.5 is often better than 4 at full strength.
+- For portraits, mask out the face and apply it to clothing, hair or background only; skin rarely likes this much local contrast.
+- If shadows turn grainy, lower `clip_limit` first, then `strength`.
+- Combine with [Smart Sharpen](smart-sharpen.md) afterwards for crisp edges, and apply [Tone Curve](tone-curve.md) last for the final contrast shape.
+- Flat colour areas stay flat, so solid backgrounds do not get tinted.
 
-ColorLab clarity is a smooth, radius-based local contrast (a blurred copy is subtracted) that boosts mid-frequency edges and never remaps tones. CLAHE is histogram-based: it redistributes brightness inside each tile, so it can lift deep shadows and flatten large soft gradients that clarity leaves alone. Use clarity for a gentle punch, CLAHE when a region is too flat, too dark, or too hazy.
+??? note "Under the hood"
+    The image is converted to CIE LAB (Kornia). Only `L*` (divided by 100) goes through `kornia.enhance.equalize_clahe` on a `grid_size × grid_size` tile grid; the original `a*` and `b*` are kept, the result is converted back to RGB and clamped to 0..1. The final image is `lerp(original, enhanced, strength × mask)`. Kornia works with 256-bin histograms, so `L*` is quantised to 256 levels. Its clip threshold biases very small tiles (a flat image can drift brighter), which is why tiles are kept at 80 px or more. `strength = 0` returns the original.
 
-## Tips
+## Related nodes
 
-- Start with `clip_limit` 1.5-3.0. Above ~6 noise and grain are amplified quickly.
-- `grid_size` 4-6 gives a broad, natural lift; 12-24 gives a crunchy, detail-heavy look. On small images the grid is reduced automatically so each tile stays at least 80 px (small tiles bias the result).
-- Lower `strength` (0.3-0.6) is usually enough for portraits.
-- Use `mask` to keep faces or skies out of the effect, or to drive it only into shadows.
-- Flat colour areas stay flat (within 8-bit quantisation), so solid backgrounds are not tinted.
+- [ColorLab](color-lab.md): clarity, texture and dehaze in a Camera Raw style panel
+- [Smart Sharpen](smart-sharpen.md): edge sharpening after the contrast lift
+- [Tone Curve](tone-curve.md): shape global contrast
+- [Luminosity Masking](luminosity-masking.md): restrict the effect to shadows or highlights
 
-## Workflow JSON
+## Example workflow
 
-[workflows/N-37-clahe-local-contrast.json](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-37-clahe-local-contrast.json) — load it in ComfyUI after copying `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
-
-![N-37-clahe-local-contrast result](https://raw.githubusercontent.com/jetthuangai/ComfyUI-JH-PixelPro/main/workflows/N-37-clahe-local-contrast-preview.png)
+[CLAHE Local Contrast example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-37-clahe-local-contrast.json). Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/` first.
