@@ -42,6 +42,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 |---|---|---|
 | [Color Matcher](S-08-color-matcher.json) | A cool-graded copy is matched to a golden-hour reference in LAB. | [image](S-08-color-matcher-preview.png) |
 | [Color Matcher: stats vs histogram](N-49-color-matcher-histogram.json) | The same pair matched with `method = stats` and `method = histogram`, side by side. | [image](N-49-color-matcher-histogram-preview.png) |
+| [HDR Merge (bracket)](N-62-hdr-merge.json) | Three exposures (-2, 0, +2 EV) simulated from the cafe photo, fused into one image. | [image](N-62-hdr-merge-preview.png) |
 | [Defringe](N-60-defringe.json) | The church photo through Defringe; a QA heatmap shows the corrected outlines (mild lateral chromatic aberration). | [image](N-60-defringe-preview.png) |
 | [Auto: Tone & White Balance](N-55-auto-tone.json) | A dark, warm cafe photo corrected in one click; `params_json` feeds a ColorLab that adds Vibrance +15. | [image](N-55-auto-tone-preview.png) |
 | [Shadows/Highlights Pro](N-50-shadows-highlights-pro.json) | Camera Raw mode (+60 / -60) and Photoshop mode (50 / 50) side by side. | [image](N-50-shadows-highlights-pro-preview.png) |
@@ -86,6 +87,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | [Sub-Pixel Mask Refiner](S-02-subpixel-mask-refiner.json) | Feather a binary mask into a sub-pixel alpha mask. | [image](S-02-subpixel-mask-refiner-screenshot.png) |
 | [Edge-Aware Mask Refiner](N-28-edge-aware-mask-refiner.json) | A soft mask is snapped onto the real hair and skin edge, guided by the portrait. | [image](N-28-edge-aware-mask-refiner-preview.png) |
 | [Decontaminate Colors](N-54-decontaminate-colors.json) | Soft subject edge (Edge-Aware Refiner with `guide_mode = rgb`), then the background colour is removed from the edge pixels; cut-outs before and after. | [image](N-54-decontaminate-colors-preview.png) |
+| [Sky Mask](N-61-sky-mask.json) | The church sky found without AI and used to grade only the sky through Apply ColorLab Preset. | [image](N-61-sky-mask-preview.png) |
 | [Alpha Matte](N-29-alpha-matte-extractor.json) | Trimap, then closed-form matting at 25% size. `compute_device = auto` stays on CPU for CPU images; pick `cuda` for roughly 5x speed. | [image](N-29-alpha-matte-extractor-preview.png) |
 | [Trimap Builder](N-30-trimap-builder.json) | Sure-subject, unknown and sure-background bands from a subject mask. | [image](N-30-trimap-builder-preview.png) |
 | [Mask Morphology](N-31-mask-morphology.json) | `close` at radius 64 seals the small shadow gap by the nose. | [image](N-31-mask-morphology-preview.png) |
@@ -127,6 +129,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | [Lens Distortion](S-07-lens-distortion.json) | Correct barrel distortion with a lens preset. | [image](S-07-lens-distortion-screenshot.png) |
 | [Auto Align](N-39-auto-align.json) | Align a second shot to a reference with SIFT and RANSAC. | [image](N-39-auto-align-preview.png) |
 | [Auto: Upright](N-56-auto-upright.json) | A church shot looking up: verticals straightened (crop valid), then Auto Tone for a one-click base edit. | [image](N-56-auto-upright-preview.png) |
+| [Cull Score](N-63-cull-score.json) | A sharp, a blurred and an overexposed version of one shot; only the best is kept. | [image](N-63-cull-score-preview.png) |
 | [QA Image Diff](N-44-qa-image-diff.json) | SSIM, PSNR and MAE report plus a heatmap of where an edit changed the image. | [image](N-44-qa-image-diff-preview.png) |
 
 ## Image credits
