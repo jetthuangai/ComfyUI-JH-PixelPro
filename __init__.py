@@ -71,6 +71,7 @@ if __package__:
         JHPixelProQADiff,
         JHPixelProSAMMask,
         JHPixelProSaturationMask,
+        JHPixelProShadowsHighlights,
         JHPixelProSkinToneTriRegion,
         JHPixelProSmartSharpen,
         JHPixelProSubPixelMaskRefiner,
@@ -229,6 +230,9 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProPyramidBlend"] = JHPixelProPyramidBlend
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProPyramidBlend"] = "Compositing: Pyramid Blend"
+
+    NODE_CLASS_MAPPINGS["JHPixelProShadowsHighlights"] = JHPixelProShadowsHighlights
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProShadowsHighlights"] = "Color: Shadows/Highlights Pro"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

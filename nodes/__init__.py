@@ -45,6 +45,7 @@ from .pyramid_blend_node import JHPixelProPyramidBlend
 from .qa_diff_node import JHPixelProQADiff
 from .sam_mask_node import JHPixelProSAMMask
 from .saturation_mask_node import JHPixelProSaturationMask
+from .shadows_highlights_node import JHPixelProShadowsHighlights
 from .sharpen_node import JHPixelProSmartSharpen
 from .skin_tone_region_node import JHPixelProSkinToneTriRegion
 from .smoother_node import JHPixelProEdgeAwareSmoother
@@ -69,6 +70,7 @@ __all__ = [
     "JHPixelProColorLab",
     "JHPixelProDustSpotRemoval",
     "JHPixelProPaletteExtract",
+    "JHPixelProShadowsHighlights",
     "JHPixelProEdgeAwareSmoother",
     "JHPixelProFaceBeautyBlend",
     "JHPixelProFaceDetect",
