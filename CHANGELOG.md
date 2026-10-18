@@ -8,6 +8,12 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.8.1] — 2026-10-18
+
+### Changed
+
+- Auto Tone brightens more gently: dark photos are lifted toward a 12 % key (was 18 %) and by at most +1 EV (was +1.5), so moody, low-key photos keep their mood. Found on real test photos where full strength lit up an intentionally dark fashion shot.
+
 ## [1.8.0] — 2026-10-18
 
 ### Added
