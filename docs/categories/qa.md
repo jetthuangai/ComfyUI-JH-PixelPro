@@ -10,6 +10,12 @@ QA nodes measure a result instead of changing it. Add them at the end of a retou
 
     Compares two images with SSIM, PSNR and MAE and draws a heatmap, absolute or SSIM-map difference.
 
+-   ![](../assets/nodes/cull-score.jpg)
+
+    **[Cull Score](../nodes/cull-score.md)**
+
+    Ranks a batch by sharpness, exposure, closed eyes and duplicates; keeps the best.
+
 </div>
 
 For checking a *mask* rather than an image, use [Mask Preview](../nodes/mask-preview.md) from the [Masks](mask.md) group.

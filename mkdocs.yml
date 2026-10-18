@@ -107,6 +107,7 @@ nav:
           - ColorLab: nodes/color-lab.md
           - Shadows/Highlights Pro: nodes/shadows-highlights-pro.md
           - Defringe: nodes/defringe.md
+          - HDR Merge (bracket): nodes/hdr-merge.md
           - "Auto: Tone & White Balance": nodes/auto-tone.md
           - Apply ColorLab Preset: nodes/apply-colorlab-preset.md
           - Lightroom Preset (XMP): nodes/lightroom-preset.md
@@ -128,6 +129,7 @@ nav:
           - Edge-Aware Mask Refiner: nodes/edge-aware-mask-refiner.md
           - Alpha Matte: nodes/alpha-matte.md
           - Decontaminate Colors: nodes/decontaminate-colors.md
+          - Sky Mask: nodes/sky-mask.md
           - Trimap Builder: nodes/trimap-builder.md
           - Mask Morphology: nodes/mask-morphology.md
           - Mask Combine: nodes/mask-combine.md
@@ -179,3 +181,4 @@ nav:
       - QA:
           - Overview: categories/qa.md
           - QA Image Diff: nodes/qa-image-diff.md
+          - Cull Score: nodes/cull-score.md

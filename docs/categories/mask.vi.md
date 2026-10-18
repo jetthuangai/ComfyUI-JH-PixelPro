@@ -72,6 +72,12 @@ Mask quyết định chỉnh sửa xảy ra *ở đâu*: pixel nào được là
 
     Xóa màu phông xanh hoặc màu trời lem vào viền mềm của vùng tách nền.
 
+-   ![](../assets/nodes/sky-mask.jpg)
+
+    **[Sky Mask](../nodes/sky-mask.md)**
+
+    Mask mềm của bầu trời, không cần model AI.
+
 -   ![](../assets/nodes/mask-morphology.jpg)
 
     **[Mask Morphology](../nodes/mask-morphology.md)**

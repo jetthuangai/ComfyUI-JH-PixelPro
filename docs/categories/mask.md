@@ -72,6 +72,12 @@ Masks decide *where* an edit happens: which pixels get smoothed, graded, replace
 
     Removes green-screen or sky colour from a cut-out's soft edges.
 
+-   ![](../assets/nodes/sky-mask.jpg)
+
+    **[Sky Mask](../nodes/sky-mask.md)**
+
+    Soft mask of the sky without an AI model.
+
 -   ![](../assets/nodes/mask-morphology.jpg)
 
     **[Mask Morphology](../nodes/mask-morphology.md)**

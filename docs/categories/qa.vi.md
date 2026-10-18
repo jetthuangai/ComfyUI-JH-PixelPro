@@ -10,6 +10,12 @@ Các node QA đo kết quả chứ không thay đổi nó. Thêm chúng ở cu�
 
     So sánh hai ảnh bằng SSIM, PSNR và MAE, rồi vẽ ảnh khác biệt dạng heatmap, tuyệt đối hoặc bản đồ SSIM.
 
+-   ![](../assets/nodes/cull-score.jpg)
+
+    **[Cull Score](../nodes/cull-score.md)**
+
+    Chấm điểm cả lô ảnh theo độ nét, phơi sáng, mắt nhắm và ảnh trùng; giữ tấm tốt nhất.
+
 </div>
 
 Muốn kiểm tra một *mask* thay vì một ảnh, dùng [Mask Preview](../nodes/mask-preview.md) trong nhóm [Mask](mask.md).

@@ -34,6 +34,12 @@ These nodes handle everything about colour and brightness: matching one image to
 
     Removes purple and green fringes along high-contrast edges, and lateral CA.
 
+-   ![](../assets/nodes/hdr-merge.jpg)
+
+    **[HDR Merge (bracket)](../nodes/hdr-merge.md)**
+
+    Fuses bracketed exposures into one image with detail in shadows and sky.
+
 -   ![](../assets/nodes/auto-tone.jpg)
 
     **[Auto: Tone & White Balance](../nodes/auto-tone.md)**

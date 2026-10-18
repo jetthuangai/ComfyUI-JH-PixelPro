@@ -34,6 +34,12 @@ Nhóm node này lo mọi thứ về màu và độ sáng: khớp ảnh này vớ
 
     Xóa viền tím, viền xanh lá dọc các cạnh tương phản cao và quang sai màu ngang.
 
+-   ![](../assets/nodes/hdr-merge.jpg)
+
+    **[HDR Merge (bracket)](../nodes/hdr-merge.md)**
+
+    Ghép các tấm chụp bracket thành một ảnh có chi tiết cả vùng tối lẫn bầu trời.
+
 -   ![](../assets/nodes/auto-tone.jpg)
 
     **[Auto: Tone & White Balance](../nodes/auto-tone.md)**
