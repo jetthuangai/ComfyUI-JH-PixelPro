@@ -19,7 +19,13 @@ OUTPUTS = golden_maker.outputs()
 
 @pytest.mark.parametrize("key", sorted(GOLDEN))
 def test_matches_v170(key: str) -> None:
-    assert torch.equal(OUTPUTS[key], GOLDEN[key])
+    # Spot masks are binary and must match exactly; images may differ by float rounding
+    # across platforms (the golden is made on Windows, CI runs Linux).
+    if key.endswith("_spots"):
+        assert torch.equal(OUTPUTS[key], GOLDEN[key])
+    else:
+        diff = (OUTPUTS[key] - GOLDEN[key]).abs().max()
+        assert torch.allclose(OUTPUTS[key], GOLDEN[key], atol=1e-5), diff
 
 
 def test_rgb_guide_follows_isoluminant_edge() -> None:
