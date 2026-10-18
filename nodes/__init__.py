@@ -3,6 +3,7 @@
 from .auto_align_node import JHPixelProAutoAlign
 from .clahe_node import JHPixelProCLAHE
 from .color_lab import JHPixelProColorLab
+from .color_lab_apply_node import JHPixelProColorLabApply
 from .color_matcher_node import JHPixelProColorMatcher
 from .color_matcher_region_node import JHPixelProColorMatcherRegion
 from .depth_anything_node import JHPixelProDepthAnything
@@ -27,6 +28,8 @@ from .layer_compositing import (
 )
 from .lens_distortion_node import JHPixelProLensDistortion
 from .look_select import JHPixelProLookSelect
+from .lr_preset_node import JHPixelProLightroomPreset
+from .lr_preset_sheet_node import JHPixelProLightroomPresetSheet
 from .luminosity_node import JHPixelProLuminosityMasking
 from .lut_export_node import JHPixelProLUTExport
 from .lut_import_node import JHPixelProLUTImport
@@ -68,6 +71,9 @@ __all__ = [
     "JHPixelProDepthAnything",
     "JHPixelProDepthLensBlur",
     "JHPixelProColorLab",
+    "JHPixelProColorLabApply",
+    "JHPixelProLightroomPreset",
+    "JHPixelProLightroomPresetSheet",
     "JHPixelProDustSpotRemoval",
     "JHPixelProPaletteExtract",
     "JHPixelProShadowsHighlights",

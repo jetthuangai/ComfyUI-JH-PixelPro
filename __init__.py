@@ -32,6 +32,7 @@ if __package__:
         JHPixelProAutoAlign,
         JHPixelProCLAHE,
         JHPixelProColorLab,
+        JHPixelProColorLabApply,
         JHPixelProColorMatcher,
         JHPixelProColorMatcherRegion,
         JHPixelProDepthAnything,
@@ -56,6 +57,8 @@ if __package__:
         JHPixelProLayerGroup,
         JHPixelProLayerStackStart,
         JHPixelProLensDistortion,
+        JHPixelProLightroomPreset,
+        JHPixelProLightroomPresetSheet,
         JHPixelProLookSelect,
         JHPixelProLuminosityMasking,
         JHPixelProLUTExport,
@@ -197,6 +200,21 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProColorLab"] = JHPixelProColorLab
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorLab"] = "Color: ColorLab (ACR)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProColorLabApply"] = JHPixelProColorLabApply
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProColorLabApply"] = "Color: Apply ColorLab Preset"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLightroomPreset"] = JHPixelProLightroomPreset
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLightroomPreset"] = "Color: Lightroom Preset (XMP)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProLightroomPresetSheet"] = JHPixelProLightroomPresetSheet
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProLightroomPresetSheet"] = (
+        "Color: Lightroom Preset Contact Sheet"
+    )
+
+    from .nodes.lr_preset_routes import register_routes
+
+    register_routes()
 
     NODE_CLASS_MAPPINGS["JHPixelProDepthAnything"] = JHPixelProDepthAnything
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProDepthAnything"] = "Depth: Depth Anything V2"
