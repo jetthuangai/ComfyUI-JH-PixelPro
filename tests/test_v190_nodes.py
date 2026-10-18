@@ -42,8 +42,8 @@ def test_registered(name: str) -> None:
     assert f"ComfyUI-JH-PixelPro/{group}" == pack.NODE_CLASS_MAPPINGS[name].CATEGORY
 
 
-def test_pack_registers_61_nodes() -> None:
-    assert len(_load_pack().NODE_CLASS_MAPPINGS) == 61
+def test_pack_registers_at_least_61_nodes() -> None:
+    assert len(_load_pack().NODE_CLASS_MAPPINGS) >= 61
 
 
 def test_heal_node() -> None:

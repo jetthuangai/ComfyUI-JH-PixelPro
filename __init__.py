@@ -38,6 +38,7 @@ if __package__:
         JHPixelProColorLabApply,
         JHPixelProColorMatcher,
         JHPixelProColorMatcherRegion,
+        JHPixelProCullScore,
         JHPixelProDecontaminateColors,
         JHPixelProDefringe,
         JHPixelProDepthAnything,
@@ -55,6 +56,7 @@ if __package__:
         JHPixelProFrequencyRecombine,
         JHPixelProFrequencySeparation,
         JHPixelProHALDIdentity,
+        JHPixelProHDRMerge,
         JHPixelProHeal,
         JHPixelProHighFreqDetailMasker,
         JHPixelProHueSaturationRange,
@@ -83,6 +85,7 @@ if __package__:
         JHPixelProSaturationMask,
         JHPixelProShadowsHighlights,
         JHPixelProSkinToneTriRegion,
+        JHPixelProSkyMask,
         JHPixelProSmartSharpen,
         JHPixelProSubPixelMaskRefiner,
         JHPixelProToneCurve,
@@ -279,6 +282,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProDefringe"] = JHPixelProDefringe
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProDefringe"] = "Color: Defringe"
+
+    NODE_CLASS_MAPPINGS["JHPixelProSkyMask"] = JHPixelProSkyMask
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProSkyMask"] = "Mask: Sky"
+
+    NODE_CLASS_MAPPINGS["JHPixelProHDRMerge"] = JHPixelProHDRMerge
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProHDRMerge"] = "Color: HDR Merge (bracket)"
+
+    NODE_CLASS_MAPPINGS["JHPixelProCullScore"] = JHPixelProCullScore
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProCullScore"] = "QA: Cull Score"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

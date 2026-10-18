@@ -8,6 +8,7 @@ from .color_lab import JHPixelProColorLab
 from .color_lab_apply_node import JHPixelProColorLabApply
 from .color_matcher_node import JHPixelProColorMatcher
 from .color_matcher_region_node import JHPixelProColorMatcherRegion
+from .cull_node import JHPixelProCullScore
 from .decontaminate_node import JHPixelProDecontaminateColors
 from .defringe_node import JHPixelProDefringe
 from .depth_anything_node import JHPixelProDepthAnything
@@ -24,6 +25,7 @@ from .face_warp_tps_node import JHPixelProFaceWarpTPS
 from .facial_aligner_node import JHPixelProFacialAligner
 from .frequency_node import JHPixelProFrequencyRecombine, JHPixelProFrequencySeparation
 from .hald_identity_node import JHPixelProHALDIdentity
+from .hdr_merge_node import JHPixelProHDRMerge
 from .heal_node import JHPixelProHeal
 from .hue_saturation_range_node import JHPixelProHueSaturationRange
 from .layer_compositing import (
@@ -57,6 +59,7 @@ from .saturation_mask_node import JHPixelProSaturationMask
 from .shadows_highlights_node import JHPixelProShadowsHighlights
 from .sharpen_node import JHPixelProSmartSharpen
 from .skin_tone_region_node import JHPixelProSkinToneTriRegion
+from .sky_mask_node import JHPixelProSkyMask
 from .smoother_node import JHPixelProEdgeAwareSmoother
 from .tone_curve_node import JHPixelProToneCurve
 from .tone_match_lut_node import JHPixelProToneMatchLUT
@@ -64,6 +67,9 @@ from .unwrap_face_node import JHPixelProUnwrapFace
 from .upright_node import JHPixelProAutoUpright
 
 __all__ = [
+    "JHPixelProCullScore",
+    "JHPixelProHDRMerge",
+    "JHPixelProSkyMask",
     "JHPixelProAutoBlemish",
     "JHPixelProDefringe",
     "JHPixelProHeal",
