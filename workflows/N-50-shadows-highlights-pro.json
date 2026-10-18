@@ -1,0 +1,289 @@
+{
+  "id": "09489ddf-dbb3-52e5-a34c-3c7f10255cb8",
+  "revision": 0,
+  "last_node_id": 6,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            2
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "sample_portrait.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "JHPixelProShadowsHighlights",
+      "pos": [
+        380,
+        40
+      ],
+      "size": [
+        340,
+        374
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProShadowsHighlights"
+      },
+      "widgets_values": [
+        60.0,
+        -60.0,
+        "camera_raw",
+        50.0,
+        30.0,
+        50.0,
+        30.0,
+        20.0,
+        0.0
+      ],
+      "title": "Camera Raw mode"
+    },
+    {
+      "id": 3,
+      "type": "JHPixelProShadowsHighlights",
+      "pos": [
+        380,
+        330
+      ],
+      "size": [
+        340,
+        374
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProShadowsHighlights"
+      },
+      "widgets_values": [
+        50.0,
+        -50.0,
+        "photoshop",
+        50.0,
+        30.0,
+        50.0,
+        30.0,
+        20.0,
+        0.0
+      ],
+      "title": "Photoshop mode"
+    },
+    {
+      "id": 4,
+      "type": "PreviewImage",
+      "pos": [
+        760,
+        0
+      ],
+      "size": [
+        280,
+        400
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Camera Raw +60 / -60"
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        1060,
+        0
+      ],
+      "size": [
+        280,
+        400
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Photoshop 50 / 50"
+    },
+    {
+      "id": 6,
+      "type": "Note",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        1000,
+        150
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Shadows/Highlights Pro — lift shadows and recover highlights without flat halos.\n\ncamera_raw works like Lightroom / Camera Raw (a local Laplacian filter: big edges keep no halo). photoshop follows Image > Adjustments > Shadows/Highlights; open the optional ps_* inputs for Tone, Radius, Color and Midtone. Connect a mask to limit the effect."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.75,
+      "offset": [
+        40,
+        40
+      ]
+    }
+  },
+  "version": 0.4
+}

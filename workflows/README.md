@@ -40,6 +40,10 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 |---|---|---|
 | [Color Matcher](S-08-color-matcher.json) | A cool-graded copy is matched to a golden-hour reference in LAB. | [image](S-08-color-matcher-preview.png) |
 | [Color Matcher: stats vs histogram](N-49-color-matcher-histogram.json) | The same pair matched with `method = stats` and `method = histogram`, side by side. | [image](N-49-color-matcher-histogram-preview.png) |
+| [Shadows/Highlights Pro](N-50-shadows-highlights-pro.json) | Camera Raw mode (+60 / -60) and Photoshop mode (50 / 50) side by side. | [image](N-50-shadows-highlights-pro-preview.png) |
+| [Apply ColorLab Preset](N-51-apply-colorlab-preset.json) | A ColorLab look saved as `params_json` and re-applied at strength 0.5. | [image](N-51-apply-colorlab-preset-preview.png) |
+| [Lightroom Preset (XMP)](N-52-lightroom-preset.json) | The bundled `Warm Film` preset, then fine-tuned in ColorLab through `params_json`. | [image](N-52-lightroom-preset-preview.png) |
+| [Lightroom Preset Contact Sheet](N-53-lightroom-preset-contact-sheet.json) | The original and every preset in the `PixelPro samples` collection on one sheet. | [image](N-53-lightroom-preset-contact-sheet-preview.png) |
 | [Palette Extract](N-47-palette-extract.json) | Six dominant colours as a strip, a HEX list and a quantized image. | [image](N-47-palette-extract-preview.png) |
 | [Tone Curve](S-09-tone-curve.json) | The `s_curve_mild` preset on the portrait. | [image](S-09-tone-curve-preview.png) |
 | [LUT Preset](N-34-lut-preset.json) | One bundled look on the portrait; switch the `preset` dropdown to try the others. | — |
