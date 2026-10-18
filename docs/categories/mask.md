@@ -66,6 +66,12 @@ Masks decide *where* an edit happens: which pixels get smoothed, graded, replace
 
     Hair-quality soft alpha from a trimap and the photo.
 
+-   ![](../assets/nodes/decontaminate-colors.jpg)
+
+    **[Decontaminate Colors](../nodes/decontaminate-colors.md)**
+
+    Removes green-screen or sky colour from a cut-out's soft edges.
+
 -   ![](../assets/nodes/mask-morphology.jpg)
 
     **[Mask Morphology](../nodes/mask-morphology.md)**

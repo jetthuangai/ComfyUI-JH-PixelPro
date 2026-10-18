@@ -36,6 +36,9 @@ Một đốm chỉ được tính nếu nằm gọn trong `spot_size` pixel. Hì
 | `mode` | `dark` | `dark`, `bright` hoặc `both`. | `dark` cho bụi cảm biến. |
 | `mask` (tùy chọn) | không | Chỉ xóa đốm ở nơi mask lớn hơn 0.5. | Dùng mask da hoặc mask trời. |
 | `protect_mask` (tùy chọn) | không | Không bao giờ xóa đốm ở nơi mask này lớn hơn 0.5. | Tô lên tàn nhang hay nốt ruồi bạn muốn giữ. |
+| `fill_mode` (tùy chọn) | `blur` | `blur` = lấp mượt bằng màu vùng xung quanh (cách hoạt động ban đầu). `texture` = chép mảng gần đó khớp nhất, nên lỗ chân lông, hạt phim hoặc vải vẫn liền mạch qua chỗ đốm. | Dùng `texture` trên da, hạt phim, vải, nơi mảng mượt trông bị phẳng. Khoảng 2 giây ở 4K. |
+
+`fill_mode` có từ v1.8.0. Mặc định `blur` cho kết quả y hệt trước đây. Cách phát hiện đốm giống nhau ở cả hai chế độ, nên `spot_mask` y hệt.
 
 **Đầu ra**
 
@@ -54,7 +57,7 @@ Một đốm chỉ được tính nếu nằm gọn trong `spot_size` pixel. Hì
 - Những mảng bụi rất lớn (trên 64 px) cần clone thủ công.
 
 ??? note "Bên trong node hoạt động thế nào"
-    Độ sáng (luminance, trọng số Rec. 709) được so với nền trung vị (median) tính trên bản thu nhỏ (lấy trung bình vùng, rồi median 9 × 9 theo từng khối hàng), nên không bao giờ có median kernel lớn chạy ở độ phân giải gốc. Độ chênh được lấy ngưỡng (`0.01 + 0.2 × (1 − sensitivity)²`), sau đó các vùng liên thông chỉ được giữ nếu gọn: khung bao không quá `spot_size` pixel, tỉ lệ dài/rộng tối đa 2, độ lấp đầy tối thiểu 0,5 và dày khoảng 3 px trở lên (đỉnh distance transform từ 1,3 px), nên sợi tóc và lông mi bị loại. Vùng đó còn phải nằm trong môi trường yên tĩnh: độ lệch độ sáng trong cửa sổ quanh nó (không tính chính các đốm) phải nhỏ hơn 0,25 × độ tương phản của đốm, nhờ vậy đốm nằm trên cạnh hay trong vùng chi tiết bị loại. Trên ảnh chân dung sạch mẫu, node chỉ đổi khoảng 0,006 % số pixel. Các vùng này được nở thêm `max(1, spot_size // 6)` pixel và bị giới hạn bởi các mask. Phần lấp dùng tích chập Gauss chuẩn hóa của các pixel nằm ngoài đốm, tính ở kích thước thu nhỏ rồi phóng lại, sau đó hòa vào với viền mềm 1 px. Ảnh 2048 × 2048 dùng đỉnh dưới 0,5 GB bộ nhớ GPU. Nếu không tìm thấy đốm nào, ảnh gốc được trả về nguyên vẹn. Mã nguồn: `core/dust_spot.py`.
+    Độ sáng (luminance, trọng số Rec. 709) được so với nền trung vị (median) tính trên bản thu nhỏ (lấy trung bình vùng, rồi median 9 × 9 theo từng khối hàng), nên không bao giờ có median kernel lớn chạy ở độ phân giải gốc. Độ chênh được lấy ngưỡng (`0.01 + 0.2 × (1 − sensitivity)²`), sau đó các vùng liên thông chỉ được giữ nếu gọn: khung bao không quá `spot_size` pixel, tỉ lệ dài/rộng tối đa 2, độ lấp đầy tối thiểu 0,5 và dày khoảng 3 px trở lên (đỉnh distance transform từ 1,3 px), nên sợi tóc và lông mi bị loại. Vùng đó còn phải nằm trong môi trường yên tĩnh: độ lệch độ sáng trong cửa sổ quanh nó (không tính chính các đốm) phải nhỏ hơn 0,25 × độ tương phản của đốm, nhờ vậy đốm nằm trên cạnh hay trong vùng chi tiết bị loại. Trên ảnh chân dung sạch mẫu, node chỉ đổi khoảng 0,006 % số pixel. Các vùng này được nở thêm `max(1, spot_size // 6)` pixel và bị giới hạn bởi các mask. Phần lấp dùng tích chập Gauss chuẩn hóa của các pixel nằm ngoài đốm, tính ở kích thước thu nhỏ rồi phóng lại, sau đó hòa vào với viền mềm 1 px. Ảnh 2048 × 2048 dùng đỉnh dưới 0,5 GB bộ nhớ GPU. Nếu không tìm thấy đốm nào, ảnh gốc được trả về nguyên vẹn. Với `fill_mode` là `texture`, mỗi đốm được lấp bằng mảng gần đó khớp nhất, chọn bằng cách so vành pixel quanh đốm; sau đó độ sáng và màu của mảng được khớp với vùng xung quanh. Mảng nguồn có đốm riêng bị loại, và nơi không có mảng sạch nào phù hợp thì đốm quay về cách lấp blur. Mã nguồn: `core/dust_spot.py`.
 
 ## Node liên quan
 

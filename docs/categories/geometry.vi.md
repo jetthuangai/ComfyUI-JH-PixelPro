@@ -22,9 +22,16 @@ Nhóm node hình học chỉnh hình dạng và vị trí của bức ảnh trư
 
     So khớp đặc trưng giữa hai ảnh và warp ảnh này vào ảnh kia.
 
+-   ![](../assets/nodes/auto-upright.jpg)
+
+    **[Auto: Upright](../nodes/auto-upright.md)**
+
+    Cân đường chân trời và dựng thẳng các đường tòa nhà bị hội tụ.
+
 </div>
 
 ## Chuỗi node thường dùng
 
+- **Chỉnh nền một cú bấm:** Load Image → [Auto: Upright](../nodes/auto-upright.md) → [Auto: Tone & White Balance](../nodes/auto-tone.md) → `params_json` → [ColorLab](../nodes/color-lab.md) để tinh chỉnh
 - **Chân dung góc rộng đến chỉnh sửa mặt:** Load Image → [Lens Distortion](../nodes/lens-distortion.md) → [Face Detect Lite](../nodes/face-detect-lite.md) → [Facial Aligner](../nodes/facial-aligner.md) → chỉnh sửa → [Unwrap Face](../nodes/unwrap-face.md)
 - **Khớp hai ảnh chụp:** [Auto Align](../nodes/auto-align.md) → [Color Matcher](../nodes/color-matcher.md) → [Layer Add](../nodes/layer-add.md)

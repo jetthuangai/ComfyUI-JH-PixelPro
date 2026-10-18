@@ -28,6 +28,12 @@ Nhóm node này lo mọi thứ về màu và độ sáng: khớp ảnh này vớ
 
     Nâng vùng tối, kéo lại vùng sáng mà không bị quầng, kiểu Camera Raw hoặc Photoshop.
 
+-   ![](../assets/nodes/auto-tone.jpg)
+
+    **[Auto: Tone & White Balance](../nodes/auto-tone.md)**
+
+    Một cú bấm: phơi sáng, Whites/Blacks, Highlights/Shadows và ám màu, kèm thông số dạng preset ColorLab.
+
 -   ![](../assets/nodes/apply-colorlab-preset.jpg)
 
     **[Apply ColorLab Preset](../nodes/apply-colorlab-preset.md)**

@@ -34,8 +34,11 @@ It works best on edges with clear contrast between subject and background. For w
 | `radius` | 8 | How far (in pixels) the filter looks around each pixel. A larger radius can correct a looser mask. | 1 to 32. Use roughly the size of the error you want to fix. |
 | `eps` | 0.001 | Edge sensitivity. Smaller values follow the photo's edges more tightly; larger values give a smoother, softer result. | 0.000001 to 1. Try 0.0001 for crisp edges, 0.01 for soft ones. |
 | `feather_sigma` | 0.0 | Optional extra Gaussian blur after filtering, in pixels. 0 = off. | 0 to 64. Use 1 to 3 for a gentle finish. |
+| `guide_mode` (optional) | `luma` | `luma` = follows the brightness of the guide (the original behaviour). `rgb` = follows the colour guide, so it also follows edges between colours of similar brightness. | Try `rgb` for red hair on green leaves or similar colour-only edges. |
 
 **Output:** `refined_mask` (MASK).
+
+Added in v1.8.0. The default `luma` gives exactly the same results as before, so existing workflows are unchanged.
 
 ## Tips from retouching
 
@@ -45,7 +48,7 @@ It works best on edges with clear contrast between subject and background. For w
 - Run it before [Mask Combine](mask-combine.md) or compositing so every edge is already tight.
 
 ??? note "Under the hood"
-    A grey-scale guided filter (He et al.) computed on the luma of the guide image (`0.299 R + 0.587 G + 0.114 B`). Window statistics come from box filters built from two 1-D average pools with replicate padding, so pixels at the image border are not pulled towards zero. The coefficients are `a = cov(I, p) / (var(I) + eps)` and `b = mean(p) - a * mean(I)`; the output is the box-filtered `a` times the guide plus the box-filtered `b`, clamped to 0..1. An optional Gaussian blur follows. The guide must be float RGB with the same height and width as the mask; a guide batch of 1 is broadcast. Source: `core/mask_edge_refine.py`.
+    A grey-scale guided filter (He et al.) computed on the luma of the guide image (`0.299 R + 0.587 G + 0.114 B`). Window statistics come from box filters built from two 1-D average pools with replicate padding, so pixels at the image border are not pulled towards zero. The coefficients are `a = cov(I, p) / (var(I) + eps)` and `b = mean(p) - a * mean(I)`; the output is the box-filtered `a` times the guide plus the box-filtered `b`, clamped to 0..1. An optional Gaussian blur follows. The guide must be float RGB with the same height and width as the mask; a guide batch of 1 is broadcast. With `guide_mode` set to `rgb`, the colour-guide form of the filter (He et al., 2010) is used instead: it uses the pack's own guided filter and works at any image size. Source: `core/mask_edge_refine.py`.
 
 ## Related nodes
 
@@ -55,6 +58,8 @@ It works best on edges with clear contrast between subject and background. For w
 - [Mask Preview](mask-preview.md) for checking the edge
 
 ## Example workflow
+
+The [Decontaminate Colors example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-54-decontaminate-colors.json) uses `guide_mode` rgb before [Decontaminate Colors](decontaminate-colors.md).
 
 [Edge-Aware Mask Refiner example workflow](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/blob/main/workflows/N-28-edge-aware-mask-refiner.json). Copy `workflows/sample_portrait.jpg` and `workflows/sample_binary_mask.png` into `ComfyUI/input/`. A deliberately soft mask from Sub-Pixel Mask Refiner is snapped onto the real hair and skin edge, using the portrait as the guide. It uses only core ComfyUI nodes and this pack.
 

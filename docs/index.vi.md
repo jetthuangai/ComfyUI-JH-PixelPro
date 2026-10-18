@@ -10,7 +10,7 @@ hide:
 
 # PixelPro cho ComfyUI
 
-<p class="pp-lead">Những kỹ thuật hậu kỳ bạn vẫn dùng hằng ngày (tách tần số, luminosity mask, LUT, chồng layer, tách nền chuẩn từng sợi tóc, căn khuôn mặt) nay thành 54 node chạy GPU ngay trong ComfyUI.</p>
+<p class="pp-lead">Những kỹ thuật hậu kỳ bạn vẫn dùng hằng ngày (tách tần số, luminosity mask, LUT, chồng layer, tách nền chuẩn từng sợi tóc, căn khuôn mặt) nay thành 58 node chạy GPU ngay trong ComfyUI.</p>
 
 [Bắt đầu :material-arrow-right:](quickstart.md){ .md-button .md-button--primary }
 [Xem các node](categories/color.md){ .md-button }

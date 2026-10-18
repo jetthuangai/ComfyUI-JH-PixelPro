@@ -34,6 +34,12 @@ Nhóm bộ lọc làm việc trực tiếp trên bức ảnh: texture, cạnh v�
 
     Tìm và xóa đốm nhỏ tối hoặc sáng (bụi cảm biến, mụn nhỏ), không đụng vào chi tiết lớn.
 
+-   ![](../assets/nodes/motion-zoom-blur.jpg)
+
+    **[Motion / Zoom Blur](../nodes/motion-zoom-blur.md)**
+
+    Mờ chuyển động theo một góc, hoặc mờ zoom về một điểm, có mask.
+
 </div>
 
 ## Chuỗi node thường dùng

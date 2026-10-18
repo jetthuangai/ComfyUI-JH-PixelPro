@@ -28,6 +28,12 @@ These nodes handle everything about colour and brightness: matching one image to
 
     Lift shadows and recover highlights without halos, Camera Raw or Photoshop style.
 
+-   ![](../assets/nodes/auto-tone.jpg)
+
+    **[Auto: Tone & White Balance](../nodes/auto-tone.md)**
+
+    One click: exposure, Whites/Blacks, Highlights/Shadows and colour cast, with the settings as a ColorLab preset.
+
 -   ![](../assets/nodes/apply-colorlab-preset.jpg)
 
     **[Apply ColorLab Preset](../nodes/apply-colorlab-preset.md)**

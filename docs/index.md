@@ -10,7 +10,7 @@ hide:
 
 # PixelPro for ComfyUI
 
-<p class="pp-lead">The retouching desk you already know (frequency separation, luminosity masks, LUTs, layer stacks, hair-accurate mattes, face alignment) rebuilt as 54 GPU nodes for ComfyUI.</p>
+<p class="pp-lead">The retouching desk you already know (frequency separation, luminosity masks, LUTs, layer stacks, hair-accurate mattes, face alignment) rebuilt as 58 GPU nodes for ComfyUI.</p>
 
 [Get started :material-arrow-right:](quickstart.md){ .md-button .md-button--primary }
 [Browse the nodes](categories/color.md){ .md-button }

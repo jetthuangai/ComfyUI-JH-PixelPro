@@ -34,6 +34,12 @@ Filters work on the picture itself: texture, edges and smoothness. Split detail 
 
     Find and heal small dark or bright specks (sensor dust, tiny blemishes), leaving larger shapes alone.
 
+-   ![](../assets/nodes/motion-zoom-blur.jpg)
+
+    **[Motion / Zoom Blur](../nodes/motion-zoom-blur.md)**
+
+    Motion blur along an angle, or a zoom burst toward a point, with a mask.
+
 </div>
 
 ## Typical chains

@@ -2,7 +2,7 @@
 
 # PixelPro for ComfyUI
 
-**Pro-grade retouch, colour and mask tools for ComfyUI — 54 GPU nodes built on PyTorch + Kornia.**
+**Pro-grade retouch, colour and mask tools for ComfyUI — 58 GPU nodes built on PyTorch + Kornia.**
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-EN%20%7C%20VI-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
@@ -69,16 +69,17 @@ Requirements: Python 3.10+, PyTorch (from ComfyUI), Kornia ≥ 0.7, MediaPipe �
 
 Full walk-through: [Quickstart](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/quickstart/).
 
-## The 54 nodes
+## The 58 nodes
 
 Each name links to its guide (settings, tips, before/after image).
 
-### Color & Tone · 18
+### Color & Tone · 19
 
 | Node | What it does |
 |---|---|
 | [ColorLab](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/color-lab/) | Camera Raw style panel in tabs: exposure, contrast, highlights/shadows, texture, clarity, dehaze, white balance, HSL, colour-grading wheels, B&W mix; edge-aware `local` engine; outputs its settings as a preset. |
 | [Shadows/Highlights Pro](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/shadows-highlights-pro/) | Lift shadows and recover highlights without halos, Camera Raw or Photoshop style. |
+| [Auto: Tone & White Balance](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/auto-tone/) | One-click exposure, Whites/Blacks, Highlights/Shadows and colour cast; outputs the settings for ColorLab. |
 | [Apply ColorLab Preset](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/apply-colorlab-preset/) | Put a ColorLab look on any photo or batch, with strength and mask. |
 | [Lightroom Preset (XMP)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/lightroom-preset/) | Use Lightroom / Camera Raw presets (.xmp, .lrtemplate) with a thumbnail browser, favourites and a report. |
 | [Lightroom Preset Contact Sheet](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/lightroom-preset-contact-sheet/) | Compare a whole preset collection on one photo. |
@@ -96,14 +97,15 @@ Each name links to its guide (settings, tips, before/after image).
 | [Tone Match LUT](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/tone-match-lut/) | Generate a .cube from one graded reference frame. |
 | [Palette Extract](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/palette-extract/) | Dominant colours as swatches + HEX, and a flat-colour version. |
 
-### Masks · 11
+### Masks · 12
 
 | Node | What it does |
 |---|---|
 | [Sub-Pixel Mask Refiner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/sub-pixel-mask-refiner/) | Turn a hard mask into a soft alpha edge, protecting the inside and outside. |
-| [Edge-Aware Mask Refiner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/edge-aware-mask-refiner/) | Snap a mask edge to the real edges of the photo (guided filter). |
+| [Edge-Aware Mask Refiner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/edge-aware-mask-refiner/) | Snap a mask edge to the real edges of the photo (guided filter, brightness or colour edges). |
 | [Trimap Builder](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/trimap-builder/) | Foreground / unknown / background map for matting. |
 | [Alpha Matte](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/alpha-matte/) | Closed-form matting: hair-accurate alpha from a trimap. |
+| [Decontaminate Colors](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/decontaminate-colors/) | Remove green-screen or sky fringes from a cut-out's soft edges. |
 | [Mask Morphology](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/mask-morphology/) | Grow, shrink, open, close and other shape operations on a mask. |
 | [Mask Combine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/mask-combine/) | Add, subtract, intersect, union or multiply two masks. |
 | [Mask Edge Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/mask-edge-smoother/) | Bilateral cleanup of jagged mask edges (CPU or GPU). |
@@ -135,7 +137,7 @@ Each name links to its guide (settings, tips, before/after image).
 | [Layer Flatten](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/layer-flatten/) | Render the stack to an image. |
 | [Pyramid Blend](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/pyramid-blend/) | Multi-band blending for seamless composites. |
 
-### Filters · 5 · Depth · 2 · Geometry · 3 · Looks · 1 · QA · 1
+### Filters · 6 · Depth · 2 · Geometry · 4 · Looks · 1 · QA · 1
 
 | Node | What it does |
 |---|---|
@@ -143,12 +145,14 @@ Each name links to its guide (settings, tips, before/after image).
 | [Frequency Recombine](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/frequency-recombine/) | Rebuild the image from low + high, with a texture amount. |
 | [Skin Smoother](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/edge-aware-smoother/) | Edge-preserving skin smoothing with mask and strength. |
 | [Smart Sharpen](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/smart-sharpen/) | Unsharp mask on luminance, with threshold and mask. |
-| [Dust & Spot Removal](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/dust-spot-removal/) | Heal small specks and dust, leave larger details alone. |
+| [Dust & Spot Removal](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/dust-spot-removal/) | Heal small specks and dust, leave larger details alone; smooth or texture-keeping fill. |
+| [Motion / Zoom Blur](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/motion-zoom-blur/) | Directional motion blur or zoom burst, with a mask. |
 | [Depth Anything V2](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/depth-anything/) | Depth map from a single photo (Small model: Apache-2.0). |
 | [Depth Lens Blur](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/depth-lens-blur/) | Bokeh from depth, focus picked by a face or subject mask. |
 | [Facial Aligner](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/facial-aligner/) | Align a face to a standard square crop; outputs the matrix Unwrap Face needs to paste it back. |
 | [Lens Distortion](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/lens-distortion/) | Correct or add barrel/pincushion distortion. |
 | [Auto Align](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/auto-align/) | Align a second shot to a reference (SIFT or LoFTR). |
+| [Auto: Upright](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/auto-upright/) | Level horizons and make converging verticals parallel, from the photo's lines. |
 | [Look Select](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/look-select/) | Finished colour looks with intensity. |
 | [QA Image Diff](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/qa-image-diff/) | SSIM, PSNR and a diff heatmap between two images. |
 

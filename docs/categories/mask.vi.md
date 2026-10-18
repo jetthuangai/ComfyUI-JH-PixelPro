@@ -66,6 +66,12 @@ Mask quyết định chỉnh sửa xảy ra *ở đâu*: pixel nào được là
 
     Alpha mềm cỡ tóc từ trimap và ảnh gốc.
 
+-   ![](../assets/nodes/decontaminate-colors.jpg)
+
+    **[Decontaminate Colors](../nodes/decontaminate-colors.md)**
+
+    Xóa màu phông xanh hoặc màu trời lem vào viền mềm của vùng tách nền.
+
 -   ![](../assets/nodes/mask-morphology.jpg)
 
     **[Mask Morphology](../nodes/mask-morphology.md)**
