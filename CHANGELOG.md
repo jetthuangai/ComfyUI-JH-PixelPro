@@ -16,6 +16,30 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.7.0] — 2026-10-18
+
+### Added
+
+- **Shadows/Highlights Pro** (`JHPixelProShadowsHighlights`, Color): lift shadows and recover highlights without the flat "cheap HDR" look. `camera_raw` mode is a local Laplacian filter on log luminance (big edges keep no halo); `photoshop` mode follows Image › Adjustments › Shadows/Highlights (Tone, Radius, Color, Midtone in the optional `ps_*` inputs). Optional mask; runs on the GPU when there is one (4K ≈ 0.1 s, < 1 GB).
+- **ColorLab, all optional and off by default** (old workflows render exactly as in v1.6.0, checked against a golden made from the v1.6.0 code):
+  - `tone_engine = local`: edge-aware Highlights/Shadows, Clarity from a guided filter, dark-channel Dehaze and a Contrast curve that keeps black and white in place.
+  - `wb_temperature` / `wb_tint` (relative, luminance kept).
+  - A second output, `params_json`, with every changed setting, and a `params_json` input whose numbers add onto the sliders, so one ColorLab can feed another.
+  - Preset-only settings carried in `params_json`: point curves (master and R/G/B), camera calibration, film grain, post-crop vignette and a magenta B&W mixer.
+  - Tabbed layout: Basic / HSL / Grading / B&W / Options, edited-tab dots, per-tab Reset, an 8-colour HSL picker and three Lightroom-style colour-grading wheels. Display only: saved workflows and API prompts are unchanged.
+- **Apply ColorLab Preset** (`JHPixelProColorLabApply`, Color): put a ColorLab look on any image or batch, with `strength` (0–2) and an optional mask.
+- **Lightroom Preset (XMP)** (`JHPixelProLightroomPreset`, Color): applies Lightroom / Camera Raw presets (`.xmp`, and classic `.lrtemplate` read as data only) from `ComfyUI/models/lightroom_presets/`. Translates Basic, presence, white balance (Kelvin approximated against the as-shot white), HSL, colour grading, B&W, point and parametric curves, calibration, grain and vignette; outputs the image, `params_json` and a report of anything not supported (creative profiles, local masks, lens and detail settings). Thumbnail browser on the node: collections from sub-folders plus Favorites and Recent, search, paging, favourite stars, thumbnails of your own photo after the first run. Two sample presets ship in `presets/lightroom/`.
+- **Lightroom Preset Contact Sheet** (`JHPixelProLightroomPresetSheet`, Color): a labelled grid of a whole preset collection on one photo.
+- Sample workflows N-50 … N-53 with real result previews. Pack now registers **54 nodes** (color 18, mask 11, face 8, filters 5, compositing 5, geometry 3, depth 2, looks 1, qa 1).
+
+### Changed
+
+- `mediapipe>=0.10.33` (the face nodes need the Tasks API of that release; `0.10.0` was too loose).
+
+### Notes
+
+- Shadows/Highlights and the Camera Raw tone tools translate constants from PhotoCraft (MIT); see `THIRD_PARTY_NOTICES.md`. Matches to Lightroom/Photoshop are approximations measured on test charts, not guarantees.
+
 ## [1.6.0] — 2026-10-18
 
 ### Added

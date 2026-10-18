@@ -1,6 +1,6 @@
 [project]
 name = "comfyui-jh-pixelpro"
-version = "1.6.0"
+version = "1.7.0"
 description = "Production-ready GPU-powered pro-grade image suite for ComfyUI (Kornia core)."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -8,7 +8,7 @@ license = { text = "Apache-2.0" }
 authors = [{ name = "JH" }]
 dependencies = [
     "kornia>=0.7.0",
-    "mediapipe>=0.10.0",
+    "mediapipe>=0.10.33",
     "opencv-python-headless>=4.8.0",
     "scipy>=1.10.0",
 ]

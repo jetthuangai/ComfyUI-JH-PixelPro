@@ -1,6 +1,6 @@
 # Runtime deps — PyTorch is provided by ComfyUI.
 kornia>=0.7.0
-mediapipe>=0.10.0
+mediapipe>=0.10.33
 opencv-python-headless>=4.8.0
 scipy>=1.10.0
 
