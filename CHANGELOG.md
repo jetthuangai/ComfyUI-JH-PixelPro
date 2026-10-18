@@ -8,6 +8,19 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.9.0] — 2026-10-18
+
+### Added
+
+- **Filters: Heal / Content-Aware Fill** (`JHPixelProHeal`): paint a mask over what should go and it is rebuilt from the rest of the photo. `content_aware` is exemplar-based completion (Wexler et al. 2007) with a parallel PatchMatch search over an image pyramid, so texture and structure continue into the hole; `smooth` is a soft colour fill. `grow`, `feather` and `context`; parts of a mask far apart are healed separately. GPU 1–3 s for typical masks on an 8 MP photo, under 1.1 GB at 4K.
+- **Face: Auto Blemish** (`JHPixelProAutoBlemish`): finds faces (YuNet) and heals pimples, spots and small marks on their skin with the Dust & Spot texture fill, so pores continue. Eyes, brows and mouth are protected from the landmarks; each face is processed in its own crop with a spot size from its own width. Optional skin `mask` (body, hands) and `protect_mask`. Outputs the image, the healed-spot mask and the face count.
+- **Color: Defringe** (`JHPixelProDefringe`): removes purple (and optionally green) fringes along high-contrast edges by moving their colour toward the nearby non-fringe colour, lightness kept, and corrects lateral chromatic aberration (red/blue plane scale measured automatically, applied only when it clearly helps).
+- Sample workflows N-58 … N-60 and `sample_heal_mask.png`. Pack now registers **61 nodes** (color 20, mask 12, face 9, filters 7, compositing 5, geometry 4, depth 2, looks 1, qa 1).
+
+### Changed
+
+- Dust & Spot Removal is faster on large spots (separable dilation); results are unchanged (checked against the v1.7.0 golden).
+
 ## [1.8.1] — 2026-10-18
 
 ### Changed
