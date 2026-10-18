@@ -88,6 +88,10 @@ def test_reconstruction_invariant_float32(
 def test_reconstruction_invariant_float16(
     shape: tuple[int, int, int, int], case_name: str, rng: torch.Generator
 ) -> None:
+    if shape[-1] >= 2048 and not torch.cuda.is_available():
+        # On some GitHub runner CPUs float16 convolution has no fast kernel: this case
+        # alone took over 20 minutes and hung CI. The 512 px float16 cases cover the CPU.
+        pytest.skip("float16 2048 px needs CUDA (CPU fp16 conv can take minutes)")
     image = _make_case_image(case_name, shape, rng)
     low, high = frequency_separation(image, radius=8, sigma=0.0, precision="float16")
 
