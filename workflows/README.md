@@ -11,12 +11,12 @@ Unless noted, a workflow uses only core ComfyUI nodes and this pack. `-preview.p
 ComfyUI's `LoadImage` node only scans `ComfyUI/input/`.
 
 1. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
-2. For Dust & Spot Removal, also copy `workflows/sample_dust.jpg`.
+2. For Dust & Spot Removal, also copy `workflows/sample_dust.jpg`; for Auto Tone and Auto Upright, `workflows/sample_cafe.jpg` and `workflows/sample_architecture.jpg`.
 3. For the mask workflows (Edge-Aware Mask Refiner, Alpha Matte, Trimap Builder, Mask Morphology, Mask Combine, Mask Edge Smoother, Mask Cleanup, Sub-Pixel Mask Refiner), also copy `workflows/sample_binary_mask.png` into `ComfyUI/input/`.
 4. In ComfyUI, open **Load** and pick a `.json` file, or drag it onto the canvas.
 5. Press **Queue Prompt**.
 
-Tiếng Việt: chép `sample_portrait.jpg` (và `sample_binary_mask.png` cho các workflow mask, `sample_dust.jpg` cho Dust & Spot Removal) vào `ComfyUI/input/`, nạp file `.json`, rồi bấm **Queue Prompt**.
+Tiếng Việt: chép `sample_portrait.jpg` (và `sample_binary_mask.png` cho các workflow mask, `sample_dust.jpg` cho Dust & Spot Removal, `sample_cafe.jpg` và `sample_architecture.jpg` cho Auto Tone và Auto Upright) vào `ComfyUI/input/`, nạp file `.json`, rồi bấm **Queue Prompt**.
 
 One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-region.json) uses the person-mask node of **A Person Mask Generator** (install it separately).
 
@@ -31,6 +31,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | [Skin Smoother](S-03-edge-aware-smoother.json) | Edge-preserving smoothing with a before/after preview (strength 0.4). | [image](S-03-edge-aware-smoother-screenshot.png) |
 | [Smart Sharpen](N-40-smart-sharpen.json) | Luminance-only sharpening gated by the Detail Mask, with a QA heatmap of changed pixels. | [image](N-40-smart-sharpen-preview.png) |
 | [Dust & Spot Removal](N-48-dust-spot-removal.json) | Clears 70 synthetic sensor-dust specks from `sample_dust.jpg` at default settings and marks the spots it found. | [image](N-48-dust-spot-removal-preview.png) |
+| [Motion / Zoom Blur](N-57-motion-zoom-blur.json) | Motion blur on the background only (inverted subject mask) and a zoom burst toward the eyes. | [image](N-57-motion-zoom-blur-preview.png) |
 
 ## Color and tone
 
@@ -40,6 +41,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 |---|---|---|
 | [Color Matcher](S-08-color-matcher.json) | A cool-graded copy is matched to a golden-hour reference in LAB. | [image](S-08-color-matcher-preview.png) |
 | [Color Matcher: stats vs histogram](N-49-color-matcher-histogram.json) | The same pair matched with `method = stats` and `method = histogram`, side by side. | [image](N-49-color-matcher-histogram-preview.png) |
+| [Auto: Tone & White Balance](N-55-auto-tone.json) | A dark, warm cafe photo corrected in one click; `params_json` feeds a ColorLab that adds Vibrance +15. | [image](N-55-auto-tone-preview.png) |
 | [Shadows/Highlights Pro](N-50-shadows-highlights-pro.json) | Camera Raw mode (+60 / -60) and Photoshop mode (50 / 50) side by side. | [image](N-50-shadows-highlights-pro-preview.png) |
 | [Apply ColorLab Preset](N-51-apply-colorlab-preset.json) | A ColorLab look saved as `params_json` and re-applied at strength 0.5. | [image](N-51-apply-colorlab-preset-preview.png) |
 | [Lightroom Preset (XMP)](N-52-lightroom-preset.json) | The bundled `Warm Film` preset, then fine-tuned in ColorLab through `params_json`. | [image](N-52-lightroom-preset-preview.png) |
@@ -81,6 +83,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | [SAM One-Click Mask](N-46-sam-one-click-mask.json) | Face Detect Lite's box prompts Segment Anything (vit_b); Mask Cleanup fills the holes. The checkpoint downloads to `ComfyUI/models/sams/` on first use. | [image](N-46-sam-one-click-mask-preview.png) |
 | [Sub-Pixel Mask Refiner](S-02-subpixel-mask-refiner.json) | Feather a binary mask into a sub-pixel alpha mask. | [image](S-02-subpixel-mask-refiner-screenshot.png) |
 | [Edge-Aware Mask Refiner](N-28-edge-aware-mask-refiner.json) | A soft mask is snapped onto the real hair and skin edge, guided by the portrait. | [image](N-28-edge-aware-mask-refiner-preview.png) |
+| [Decontaminate Colors](N-54-decontaminate-colors.json) | Soft subject edge (Edge-Aware Refiner with `guide_mode = rgb`), then the background colour is removed from the edge pixels; cut-outs before and after. | [image](N-54-decontaminate-colors-preview.png) |
 | [Alpha Matte](N-29-alpha-matte-extractor.json) | Trimap, then closed-form matting at 25% size. `compute_device = auto` stays on CPU for CPU images; pick `cuda` for roughly 5x speed. | [image](N-29-alpha-matte-extractor-preview.png) |
 | [Trimap Builder](N-30-trimap-builder.json) | Sure-subject, unknown and sure-background bands from a subject mask. | [image](N-30-trimap-builder-preview.png) |
 | [Mask Morphology](N-31-mask-morphology.json) | `close` at radius 64 seals the small shadow gap by the nose. | [image](N-31-mask-morphology-preview.png) |
@@ -120,6 +123,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 |---|---|---|
 | [Lens Distortion](S-07-lens-distortion.json) | Correct barrel distortion with a lens preset. | [image](S-07-lens-distortion-screenshot.png) |
 | [Auto Align](N-39-auto-align.json) | Align a second shot to a reference with SIFT and RANSAC. | [image](N-39-auto-align-preview.png) |
+| [Auto: Upright](N-56-auto-upright.json) | A church shot looking up: verticals straightened (crop valid), then Auto Tone for a one-click base edit. | [image](N-56-auto-upright-preview.png) |
 | [QA Image Diff](N-44-qa-image-diff.json) | SSIM, PSNR and MAE report plus a heatmap of where an edit changed the image. | [image](N-44-qa-image-diff-preview.png) |
 
 ## Image credits
@@ -127,3 +131,5 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 - `sample_portrait.jpg` — Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on Pexels. Source: <https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>. License: [Pexels Content License](https://www.pexels.com/license/) (free for commercial + non-commercial redistribution; attribution is not required but recommended as best practice).
 - `sample_binary_mask.png` — derivative work: a SAM / rembg cutout (subject mask) produced from `sample_portrait.jpg`. Original image: Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on Pexels (<https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>). License: [Pexels Content License](https://www.pexels.com/license/) (derivative redistribution permitted).
 - `sample_dust.jpg` — derivative work: `sample_portrait.jpg` with 70 synthetic soft dark specks added to imitate sensor dust. Same photo, author and [Pexels Content License](https://www.pexels.com/license/).
+- `sample_cafe.jpg` — photo on Pexels, resized to 1200 x 1600. Source: <https://www.pexels.com/photo/cozy-urban-cafe-interior-with-warm-lighting-34094296/>. License: [Pexels Content License](https://www.pexels.com/license/).
+- `sample_architecture.jpg` — photo on Pexels, resized to 1067 x 1600. Source: <https://www.pexels.com/photo/low-angle-shot-of-an-orange-and-white-church-8405238/>. License: [Pexels Content License](https://www.pexels.com/license/).
