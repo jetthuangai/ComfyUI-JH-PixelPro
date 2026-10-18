@@ -52,6 +52,12 @@ The face group covers everything a portrait retouch needs around the face itself
 
     Splits skin into shadow, midtone and highlight masks.
 
+-   ![](../assets/nodes/auto-blemish.jpg)
+
+    **[Auto Blemish](../nodes/auto-blemish.md)**
+
+    Finds faces and heals pimples and small marks, keeping skin texture.
+
 </div>
 
 ## The align → edit → paste-back pipeline

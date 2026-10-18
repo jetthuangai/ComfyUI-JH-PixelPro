@@ -34,6 +34,12 @@ Filters work on the picture itself: texture, edges and smoothness. Split detail 
 
     Find and heal small dark or bright specks (sensor dust, tiny blemishes), leaving larger shapes alone.
 
+-   ![](../assets/nodes/heal.jpg)
+
+    **[Heal / Content-Aware Fill](../nodes/heal.md)**
+
+    Paint what should go; it is rebuilt from the rest of the photo.
+
 -   ![](../assets/nodes/motion-zoom-blur.jpg)
 
     **[Motion / Zoom Blur](../nodes/motion-zoom-blur.md)**

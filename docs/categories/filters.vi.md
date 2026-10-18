@@ -34,6 +34,12 @@ Nhóm bộ lọc làm việc trực tiếp trên bức ảnh: texture, cạnh v�
 
     Tìm và xóa đốm nhỏ tối hoặc sáng (bụi cảm biến, mụn nhỏ), không đụng vào chi tiết lớn.
 
+-   ![](../assets/nodes/heal.jpg)
+
+    **[Heal / Content-Aware Fill](../nodes/heal.md)**
+
+    Tô vùng cần xóa, node dựng lại vùng đó từ phần còn lại của ảnh.
+
 -   ![](../assets/nodes/motion-zoom-blur.jpg)
 
     **[Motion / Zoom Blur](../nodes/motion-zoom-blur.md)**

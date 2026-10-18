@@ -106,6 +106,7 @@ nav:
           - Color Matcher Region: nodes/color-matcher-region.md
           - ColorLab: nodes/color-lab.md
           - Shadows/Highlights Pro: nodes/shadows-highlights-pro.md
+          - Defringe: nodes/defringe.md
           - "Auto: Tone & White Balance": nodes/auto-tone.md
           - Apply ColorLab Preset: nodes/apply-colorlab-preset.md
           - Lightroom Preset (XMP): nodes/lightroom-preset.md
@@ -145,6 +146,7 @@ nav:
           - Unwrap Face: nodes/unwrap-face.md
           - Face Beauty Blend: nodes/face-beauty-blend.md
           - Skin Tone Tri-Region: nodes/skin-tone-tri-region.md
+          - Auto Blemish: nodes/auto-blemish.md
       - Compositing:
           - Overview: categories/compositing.md
           - Layer Stack Start: nodes/layer-stack-start.md
@@ -159,6 +161,7 @@ nav:
           - Skin Smoother: nodes/edge-aware-smoother.md
           - Smart Sharpen: nodes/smart-sharpen.md
           - Dust & Spot Removal: nodes/dust-spot-removal.md
+          - Heal / Content-Aware Fill: nodes/heal.md
           - Motion / Zoom Blur: nodes/motion-zoom-blur.md
       - Depth:
           - Overview: categories/depth.md

@@ -52,6 +52,12 @@ Nhóm Face gồm mọi thứ một lần retouch chân dung cần quanh khuôn m
 
     Tách da thành mask shadow, midtone và highlight.
 
+-   ![](../assets/nodes/auto-blemish.jpg)
+
+    **[Auto Blemish](../nodes/auto-blemish.md)**
+
+    Tìm khuôn mặt và xóa mụn, vết nhỏ trên da mà vẫn giữ vân da.
+
 </div>
 
 ## Chuỗi căn chỉnh → chỉnh sửa → dán lại

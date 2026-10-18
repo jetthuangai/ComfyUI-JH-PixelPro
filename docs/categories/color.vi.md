@@ -28,6 +28,12 @@ Nhóm node này lo mọi thứ về màu và độ sáng: khớp ảnh này vớ
 
     Nâng vùng tối, kéo lại vùng sáng mà không bị quầng, kiểu Camera Raw hoặc Photoshop.
 
+-   ![](../assets/nodes/defringe.jpg)
+
+    **[Defringe](../nodes/defringe.md)**
+
+    Xóa viền tím, viền xanh lá dọc các cạnh tương phản cao và quang sai màu ngang.
+
 -   ![](../assets/nodes/auto-tone.jpg)
 
     **[Auto: Tone & White Balance](../nodes/auto-tone.md)**

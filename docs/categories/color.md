@@ -28,6 +28,12 @@ These nodes handle everything about colour and brightness: matching one image to
 
     Lift shadows and recover highlights without halos, Camera Raw or Photoshop style.
 
+-   ![](../assets/nodes/defringe.jpg)
+
+    **[Defringe](../nodes/defringe.md)**
+
+    Removes purple and green fringes along high-contrast edges, and lateral CA.
+
 -   ![](../assets/nodes/auto-tone.jpg)
 
     **[Auto: Tone & White Balance](../nodes/auto-tone.md)**
