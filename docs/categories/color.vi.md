@@ -22,6 +22,30 @@ Nhóm node này lo mọi thứ về màu và độ sáng: khớp ảnh này vớ
 
     Basic, HSL, Color Grading và Gray Mix kiểu Camera Raw trong một node.
 
+-   ![](../assets/nodes/shadows-highlights-pro.jpg)
+
+    **[Shadows/Highlights Pro](../nodes/shadows-highlights-pro.md)**
+
+    Nâng vùng tối, kéo lại vùng sáng mà không bị quầng, kiểu Camera Raw hoặc Photoshop.
+
+-   ![](../assets/nodes/apply-colorlab-preset.jpg)
+
+    **[Apply ColorLab Preset](../nodes/apply-colorlab-preset.md)**
+
+    Áp look ColorLab lên ảnh khác hoặc cả loạt ảnh, có strength và mask.
+
+-   ![](../assets/nodes/lightroom-preset.jpg)
+
+    **[Lightroom Preset (XMP)](../nodes/lightroom-preset.md)**
+
+    Dùng preset Lightroom / Camera Raw, có lưới ảnh xem trước và báo cáo.
+
+-   ![](../assets/nodes/lightroom-preset-contact-sheet.jpg)
+
+    **[Lightroom Preset Contact Sheet](../nodes/lightroom-preset-contact-sheet.md)**
+
+    So sánh cả bộ preset trên một tấm ảnh.
+
 -   ![](../assets/nodes/clahe-local-contrast.jpg)
 
     **[CLAHE Local Contrast](../nodes/clahe-local-contrast.md)**

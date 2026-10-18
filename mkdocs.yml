@@ -105,6 +105,10 @@ nav:
           - Color Matcher: nodes/color-matcher.md
           - Color Matcher Region: nodes/color-matcher-region.md
           - ColorLab: nodes/color-lab.md
+          - Shadows/Highlights Pro: nodes/shadows-highlights-pro.md
+          - Apply ColorLab Preset: nodes/apply-colorlab-preset.md
+          - Lightroom Preset (XMP): nodes/lightroom-preset.md
+          - Lightroom Preset Contact Sheet: nodes/lightroom-preset-contact-sheet.md
           - CLAHE Local Contrast: nodes/clahe-local-contrast.md
           - Tone Curve: nodes/tone-curve.md
           - Hue/Saturation per Range: nodes/hue-saturation-range.md

@@ -22,6 +22,30 @@ These nodes handle everything about colour and brightness: matching one image to
 
     Camera Raw style Basic, HSL, Color Grading and Gray Mix in one node.
 
+-   ![](../assets/nodes/shadows-highlights-pro.jpg)
+
+    **[Shadows/Highlights Pro](../nodes/shadows-highlights-pro.md)**
+
+    Lift shadows and recover highlights without halos, Camera Raw or Photoshop style.
+
+-   ![](../assets/nodes/apply-colorlab-preset.jpg)
+
+    **[Apply ColorLab Preset](../nodes/apply-colorlab-preset.md)**
+
+    Put a ColorLab look on any photo or batch, with strength and mask.
+
+-   ![](../assets/nodes/lightroom-preset.jpg)
+
+    **[Lightroom Preset (XMP)](../nodes/lightroom-preset.md)**
+
+    Your Lightroom / Camera Raw presets with a thumbnail browser and a report.
+
+-   ![](../assets/nodes/lightroom-preset-contact-sheet.jpg)
+
+    **[Lightroom Preset Contact Sheet](../nodes/lightroom-preset-contact-sheet.md)**
+
+    Compare a whole preset collection on one photo.
+
 -   ![](../assets/nodes/clahe-local-contrast.jpg)
 
     **[CLAHE Local Contrast](../nodes/clahe-local-contrast.md)**

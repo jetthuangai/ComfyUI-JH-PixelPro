@@ -2,7 +2,7 @@
 
 # PixelPro for ComfyUI
 
-**Pro-grade retouch, colour and mask tools for ComfyUI — 50 GPU nodes built on PyTorch + Kornia.**
+**Pro-grade retouch, colour and mask tools for ComfyUI — 54 GPU nodes built on PyTorch + Kornia.**
 
 [![CI](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml/badge.svg)](https://github.com/jetthuangai/ComfyUI-JH-PixelPro/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-EN%20%7C%20VI-0A84FF?logo=materialformkdocs&logoColor=white)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/)
@@ -69,15 +69,19 @@ Requirements: Python 3.10+, PyTorch (from ComfyUI), Kornia ≥ 0.7, MediaPipe �
 
 Full walk-through: [Quickstart](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/quickstart/).
 
-## The 50 nodes
+## The 54 nodes
 
 Each name links to its guide (settings, tips, before/after image).
 
-### Color & Tone · 14
+### Color & Tone · 18
 
 | Node | What it does |
 |---|---|
-| [ColorLab](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/color-lab/) | Camera Raw style panel: exposure, contrast, highlights/shadows, texture, clarity, dehaze, HSL, colour grading, B&W mix. |
+| [ColorLab](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/color-lab/) | Camera Raw style panel in tabs: exposure, contrast, highlights/shadows, texture, clarity, dehaze, white balance, HSL, colour-grading wheels, B&W mix; edge-aware `local` engine; outputs its settings as a preset. |
+| [Shadows/Highlights Pro](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/shadows-highlights-pro/) | Lift shadows and recover highlights without halos, Camera Raw or Photoshop style. |
+| [Apply ColorLab Preset](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/apply-colorlab-preset/) | Put a ColorLab look on any photo or batch, with strength and mask. |
+| [Lightroom Preset (XMP)](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/lightroom-preset/) | Use Lightroom / Camera Raw presets (.xmp, .lrtemplate) with a thumbnail browser, favourites and a report. |
+| [Lightroom Preset Contact Sheet](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/lightroom-preset-contact-sheet/) | Compare a whole preset collection on one photo. |
 | [Tone Curve](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/tone-curve/) | Smooth master or per-channel RGB curves with presets. |
 | [Color Matcher](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/color-matcher/) | Transfer the colour of a reference photo in LAB. |
 | [Color Matcher Region](https://jetthuangai.github.io/ComfyUI-JH-PixelPro/nodes/color-matcher-region/) | Match colour between two masked regions, any image sizes. |
