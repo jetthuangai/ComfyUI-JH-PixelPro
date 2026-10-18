@@ -1,0 +1,33 @@
+/* PixelPro docs — light touch on top of Material */
+:root {
+  --pp-radius: 10px;
+}
+.md-typeset img {
+  border-radius: var(--pp-radius);
+}
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: var(--pp-radius);
+}
+.md-typeset .grid.cards img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin-bottom: 0.4rem;
+}
+.pp-hero {
+  padding: 1.6rem 0 0.6rem;
+}
+.pp-hero h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.3rem;
+}
+.pp-hero p.pp-lead {
+  font-size: 1.15rem;
+  opacity: 0.85;
+  max-width: 46rem;
+}
+.md-typeset table:not([class]) {
+  font-size: 0.78rem;
+}
