@@ -1,0 +1,28 @@
+s = {
+	id = "8A1B2C3D-0000-4000-8000-000000000001",
+	internalName = "Classic BW",
+	title = "$$$/Presets/ClassicBW=Classic \"Silver\" B&W",
+	type = "Develop",
+	value = {
+		settings = {
+			ConvertToGrayscale = true,
+			Contrast2012 = 25,
+			Blacks2012 = -10,
+			GrayMixerRed = 20,
+			GrayMixerBlue = -30,
+			GrayMixerMagenta = 5,
+			ToneCurvePV2012 = {
+				0,
+				0,
+				128,
+				140,
+				255,
+				255,
+			},
+			LensProfileEnable = 1,
+			ProcessVersion = "11.0",
+		},
+		uuid = "8A1B2C3D-0000-4000-8000-000000000002",
+	},
+	version = 0,
+}

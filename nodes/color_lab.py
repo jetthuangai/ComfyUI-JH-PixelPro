@@ -94,8 +94,8 @@ class JHPixelProColorLab:
                 {
                     "forceInput": True,
                     "tooltip": (
-                        "Settings from an Auto or Lightroom Preset node. Numbers are added to "
-                        "the sliders above, so the sliders fine-tune the automatic result."
+                        "Settings from another ColorLab or a Lightroom Preset node. Numbers are "
+                        "added to the sliders above, so the sliders fine-tune the preset."
                     ),
                 },
             ),

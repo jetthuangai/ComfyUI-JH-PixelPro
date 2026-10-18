@@ -4,13 +4,7 @@ from __future__ import annotations
 
 import torch
 
-from ..core.color_lab import (
-    TONE_ENGINES,
-    apply_colorlab_pipeline,
-    merge_params_json,
-    params_to_json,
-    scale_params_json,
-)
+from ..core.color_lab import TONE_ENGINES, apply_preset, params_to_json
 from ..core.lr_preset import list_presets, load_lightroom_preset, preset_dirs, resolve_preset
 from ..core.lr_preset_library import add_recent, remember_source
 
@@ -101,10 +95,9 @@ class JHPixelProLightroomPreset:
         base = params_to_json(
             {**loaded.params, "tone_engine": tone_engine, "exposure_mode": "linear"}
         )
-        params_json = scale_params_json(base, float(strength))
+        out, params_json = apply_preset(image, base, float(strength))
         if float(strength) == 0.0:
             return {"ui": ui, "result": (image, params_json, loaded.report())}
-        out = apply_colorlab_pipeline(image, merge_params_json({}, params_json))
         if mask is not None:
             if mask.ndim != 3 or mask.shape[1:] != image.shape[1:3]:
                 raise ValueError("mask must have shape (B,H,W) matching the image.")

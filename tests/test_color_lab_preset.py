@@ -128,3 +128,15 @@ def test_apply_rejects_bad_json() -> None:
     apply = _load_pack().NODE_CLASS_MAPPINGS["JHPixelProColorLabApply"]()
     with pytest.raises(ValueError):
         apply.apply(_image(), "{oops", 1.0)
+
+
+def test_bw_preset_fades_in_with_strength() -> None:
+    from core.color_lab import apply_preset
+
+    image = _image()
+    bw = json.dumps({"gray_enable": True, "gray_red": 20.0})
+    full, _ = apply_preset(image, bw, 1.0)
+    half, _ = apply_preset(image, bw, 0.5)
+    spread = lambda x: (x.amax(-1) - x.amin(-1)).mean().item()  # noqa: E731
+    assert spread(full) < 1e-6  # fully grey
+    assert 0.2 * spread(image) < spread(half) < 0.8 * spread(image)  # half the colour left

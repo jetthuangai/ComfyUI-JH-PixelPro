@@ -139,7 +139,7 @@ def _curve_is_identity(points: object) -> bool:
 
 
 def merge_params_json(params: Mapping[str, object], text: str | None) -> dict[str, object]:
-    """Merge a ``params_json`` object (from Auto / Lightroom Preset nodes) into ``params``.
+    """Merge a ``params_json`` object (from ColorLab / Lightroom Preset nodes) into ``params``.
 
     Numbers are added to the matching slider (so manual sliders act as offsets on
     top of the automatic values); booleans and strings replace the setting. Unknown
@@ -217,6 +217,26 @@ def scale_params_json(text: str | None, strength: float) -> str:
         else:
             scaled[key] = value
     return params_to_json(scaled)
+
+
+def apply_preset(
+    image: torch.Tensor, params_json: str | None, strength: float
+) -> tuple[torch.Tensor, str]:
+    """Apply a ``params_json`` preset at ``strength`` -> (image, preset at that strength).
+
+    B&W is a switch, so below strength 1 the black-and-white result is faded in over the
+    colour one (like Lightroom's preset Amount) instead of turning fully grey at once.
+    """
+
+    preset = scale_params_json(params_json, strength)
+    if strength == 0.0:
+        return image, preset
+    params = merge_params_json({}, preset)
+    out = apply_colorlab_pipeline(image, params)
+    if bool(params.get("gray_enable", False)) and strength < 1.0:
+        colour = apply_colorlab_pipeline(image, {**params, "gray_enable": False})
+        out = torch.lerp(colour, out, float(strength))
+    return out, preset
 
 
 def apply_colorlab_pipeline(

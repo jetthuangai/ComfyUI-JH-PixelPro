@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import torch
 
-from ..core.color_lab import apply_colorlab_pipeline, merge_params_json, scale_params_json
+from ..core.color_lab import apply_preset
 
 
 class JHPixelProColorLabApply:
-    """Re-apply ColorLab settings (from a ColorLab, Auto or Preset node) to any image."""
+    """Re-apply ColorLab settings (from a ColorLab or Lightroom Preset node) to any image."""
 
     CATEGORY = "ComfyUI-JH-PixelPro/color"
     RETURN_TYPES = ("IMAGE", "STRING")
@@ -25,7 +25,7 @@ class JHPixelProColorLabApply:
                     "STRING",
                     {
                         "forceInput": True,
-                        "tooltip": "Preset from a ColorLab / Auto / Lightroom Preset node.",
+                        "tooltip": "Preset from a ColorLab or Lightroom Preset node.",
                     },
                 ),
                 "strength": (
@@ -51,10 +51,9 @@ class JHPixelProColorLabApply:
         strength: float,
         mask: torch.Tensor | None = None,
     ) -> tuple[torch.Tensor, str]:
-        preset = scale_params_json(params_json, float(strength))
+        out, preset = apply_preset(image, params_json, float(strength))
         if float(strength) == 0.0:
-            return image, preset  # grading hues survive scaling but tint nothing
-        out = apply_colorlab_pipeline(image, merge_params_json({}, preset))
+            return image, preset
         if mask is not None:
             if mask.ndim != 3 or mask.shape[1:] != image.shape[1:3]:
                 raise ValueError("mask must have shape (B,H,W) matching the image.")

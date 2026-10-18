@@ -9,9 +9,11 @@ Formats:
 
 Mapping notes (Lightroom Classic 10+): Shadows / Highlights colour-grading hue and
 saturation are still stored as ``SplitToning*``; ``ColorGrade*`` holds midtones,
-luminance and the global wheel. Anything ColorLab cannot reproduce (local masks,
-lens profiles, grain, vignette, sharpening, absolute Kelvin white balance, ...) is
-listed in the report instead of being silently dropped.
+luminance and the global wheel. Grain, post-crop vignette, calibration and point /
+parametric curves map to ColorLab's params_json-only settings; absolute Kelvin white
+balance is approximated against the as-shot white (noted in the report). Anything
+ColorLab cannot reproduce (creative profiles, local masks, lens and detail settings,
+...) is listed in the report instead of being silently dropped.
 """
 
 from __future__ import annotations
@@ -574,17 +576,27 @@ def _folder_paths():  # noqa: ANN202 - optional ComfyUI module
     return folder_paths
 
 
+# Presets bundled with the pack (written for PixelPro, listed after the user's own).
+BUNDLED_PRESETS = Path(__file__).resolve().parents[1] / "presets" / "lightroom"
+
+
 def preset_dirs() -> list[Path]:
-    """Folders searched for presets: ``<ComfyUI>/models/lightroom_presets`` (or its mapping)."""
+    """Folders searched for presets: the user's folder first, then the bundled samples.
+
+    The user's folder is ``<ComfyUI>/models/lightroom_presets`` (or its
+    ``extra_model_paths.yaml`` mapping); favourites and recents are stored there.
+    """
 
     fp = _folder_paths()
     if fp is None:
-        return [Path(__file__).resolve().parents[3] / "models" / PRESET_FOLDER]
-    if PRESET_FOLDER in getattr(fp, "folder_names_and_paths", {}):
-        paths = [Path(p) for p in fp.get_folder_paths(PRESET_FOLDER)]
-        if paths:
-            return paths
-    return [Path(fp.models_dir) / PRESET_FOLDER]
+        user = [Path(__file__).resolve().parents[3] / "models" / PRESET_FOLDER]
+    elif PRESET_FOLDER in getattr(fp, "folder_names_and_paths", {}):
+        user = [Path(p) for p in fp.get_folder_paths(PRESET_FOLDER)] or [
+            Path(fp.models_dir) / PRESET_FOLDER
+        ]
+    else:
+        user = [Path(fp.models_dir) / PRESET_FOLDER]
+    return [*user, BUNDLED_PRESETS]
 
 
 def list_presets(dirs: list[Path] | None = None) -> list[str]:
