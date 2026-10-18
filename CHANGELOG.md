@@ -8,13 +8,22 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
-### Changed
+## [1.8.0] — 2026-10-18
 
-- Nothing yet.
+### Added
 
-### Fixed
+- **Auto: Tone & White Balance** (`JHPixelProAutoTone`, Color): one-click exposure, Whites/Blacks, Highlights/Shadows and colour-cast correction, measured on a 512 px copy (same result at any size). Bright photos are darkened only when really overexposed; on a mostly white frame (product on white, high-key) only the subject is judged. White balance uses only near-grey pixels, so skin, foliage or a sunset never pull it, and a photo without any is left alone. Optional automatic B&W mix. Outputs the image and `params_json` (ColorLab settings) to fine-tune in ColorLab or reuse with Apply ColorLab Preset. Constants are hand-tuned on test photos, not fitted to Adobe's Auto.
+- **Auto: Upright** (`JHPixelProAutoUpright`, Geometry): levels horizons (`level`) and makes converging verticals parallel (`vertical`, `full`; `auto` picks) from straight lines (OpenCV LSD, vanishing points by RANSAC, virtual camera rotation). A confidence gate leaves photos without enough straight lines untouched (`confidence` 0); `max_angle` caps steep corrections; `crop = valid` zooms until no empty corners remain. Also outputs the applied matrices.
+- **Mask: Decontaminate Colors** (`JHPixelProDecontaminateColors`, Mask): removes the background colour (green screen, sky) from a cut-out's soft edges by solving the compositing equation from nearby subject and background colours; alpha 0 and 1 pixels are untouched.
+- **Filters: Motion / Zoom Blur** (`JHPixelProMotionZoomBlur`, Filters): motion blur along an angle or a zoom burst toward a point, optional mask; about 2·√length warps, runs on the GPU when there is one.
+- Edge-Aware Mask Refiner: optional `guide_mode = rgb` (colour guide; also follows edges between colours of similar brightness). Default `luma` is unchanged.
+- Dust & Spot Removal: optional `fill_mode = texture` (copies the best-matching nearby patch and matches its brightness, so skin pores and grain continue through the spot). Default `blur` is unchanged.
+- Sample workflows N-54 … N-57 and two Pexels sample photos (`sample_cafe.jpg`, `sample_architecture.jpg`). Pack now registers **58 nodes** (color 19, mask 12, face 8, filters 6, compositing 5, geometry 4, depth 2, looks 1, qa 1).
 
-- Nothing yet.
+### Notes
+
+- Old workflows render exactly as in v1.7.0: the Refiner and Dust & Spot defaults are checked against a golden made from the v1.7.0 code.
+- Peak VRAM at 4K: Auto Tone about 1 GB, Decontaminate about 0.9 GB, Motion / Zoom under 0.9 GB, Upright under 0.3 GB, Dust texture fill under 0.2 GB.
 
 ## [1.7.0] — 2026-10-18
 
