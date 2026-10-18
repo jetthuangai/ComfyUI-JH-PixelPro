@@ -1,14 +1,17 @@
 """ComfyUI node wrappers — wrap core math into classes exposing INPUT_TYPES / RETURN_TYPES."""  # noqa: N999
 
 from .auto_align_node import JHPixelProAutoAlign
+from .auto_tone_node import JHPixelProAutoTone
 from .clahe_node import JHPixelProCLAHE
 from .color_lab import JHPixelProColorLab
 from .color_lab_apply_node import JHPixelProColorLabApply
 from .color_matcher_node import JHPixelProColorMatcher
 from .color_matcher_region_node import JHPixelProColorMatcherRegion
+from .decontaminate_node import JHPixelProDecontaminateColors
 from .depth_anything_node import JHPixelProDepthAnything
 from .depth_lens_blur_node import JHPixelProDepthLensBlur
 from .detail_masker_node import JHPixelProHighFreqDetailMasker
+from .directional_blur_node import JHPixelProMotionZoomBlur
 from .dust_spot_node import JHPixelProDustSpotRemoval
 from .face_beauty_blend_node import JHPixelProFaceBeautyBlend
 from .face_detect_lite_node import JHPixelProFaceDetectLite
@@ -55,8 +58,13 @@ from .smoother_node import JHPixelProEdgeAwareSmoother
 from .tone_curve_node import JHPixelProToneCurve
 from .tone_match_lut_node import JHPixelProToneMatchLUT
 from .unwrap_face_node import JHPixelProUnwrapFace
+from .upright_node import JHPixelProAutoUpright
 
 __all__ = [
+    "JHPixelProAutoTone",
+    "JHPixelProAutoUpright",
+    "JHPixelProDecontaminateColors",
+    "JHPixelProMotionZoomBlur",
     "JHPixelProFrequencyRecombine",
     "JHPixelProQADiff",
     "JHPixelProSAMMask",

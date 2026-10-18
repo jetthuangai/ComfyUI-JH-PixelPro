@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 
-from ..core.dust_spot import dust_spot_removal
+from ..core.dust_spot import FILL_MODES, dust_spot_removal
 
 
 class JHPixelProDustSpotRemoval:
@@ -62,6 +62,16 @@ class JHPixelProDustSpotRemoval:
                     "MASK",
                     {"tooltip": "Never touch spots inside this mask (e.g. freckles, eyes)."},
                 ),
+                "fill_mode": (
+                    list(FILL_MODES),
+                    {
+                        "default": "blur",
+                        "tooltip": (
+                            "blur = smooth fill (original). texture = copy a matching patch "
+                            "from nearby so skin pores, grain or fabric continue through."
+                        ),
+                    },
+                ),
             },
         }
 
@@ -73,6 +83,7 @@ class JHPixelProDustSpotRemoval:
         mode: str,
         mask: torch.Tensor | None = None,
         protect_mask: torch.Tensor | None = None,
+        fill_mode: str = "blur",
     ) -> tuple[torch.Tensor, torch.Tensor]:
         with torch.no_grad():
             cleaned, spot_mask = dust_spot_removal(
@@ -82,5 +93,6 @@ class JHPixelProDustSpotRemoval:
                 spot_size=spot_size,
                 sensitivity=sensitivity,
                 mode=mode,
+                fill_mode=fill_mode,
             )
         return (cleaned, spot_mask)

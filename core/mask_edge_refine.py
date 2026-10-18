@@ -8,6 +8,10 @@ import torch
 import torch.nn.functional as functional
 from kornia.filters import gaussian_blur2d
 
+from .guided import guided_filter
+
+GUIDE_MODES = ("luma", "rgb")
+
 
 def _validate_mask(mask: torch.Tensor) -> tuple[torch.Tensor, bool]:
     if not isinstance(mask, torch.Tensor):
@@ -82,8 +86,9 @@ def edge_aware_refine(
     radius: int = 8,
     eps: float = 1e-3,
     feather_sigma: float = 0.0,
+    guide_mode: str = "luma",
 ) -> torch.Tensor:
-    """Refine a mask with a grayscale guided filter and optional Gaussian feather.
+    """Refine a mask with a guided filter and optional Gaussian feather.
 
     Args:
         mask: ComfyUI mask tensor shaped ``(B,H,W)`` or ``(B,1,H,W)`` in ``[0,1]``.
@@ -91,6 +96,9 @@ def edge_aware_refine(
         radius: Guided-filter window radius in pixels.
         eps: Regularization term controlling edge adherence.
         feather_sigma: Optional post-filter Gaussian sigma. ``0`` disables feathering.
+        guide_mode: ``luma`` (grey guide, the original behaviour) or ``rgb`` (colour
+            guide, He et al. 2010 Eq. 19-21): also follows edges between colours of
+            similar brightness, e.g. red hair against green leaves.
 
     Returns:
         Refined mask in ``[0,1]`` preserving the input mask rank.
@@ -108,20 +116,26 @@ def edge_aware_refine(
     radius = _validate_int("radius", radius, lower=1, upper=32)
     eps = _validate_float("eps", eps, lower=1e-6, upper=1.0)
     feather_sigma = _validate_float("feather_sigma", feather_sigma, lower=0.0, upper=64.0)
+    if guide_mode not in GUIDE_MODES:
+        raise ValueError(f"guide_mode must be one of {GUIDE_MODES}, got {guide_mode!r}.")
 
-    guide_luma = _guide_luma(guide_prepared)
-    mean_i = _box_filter(guide_luma, radius)
-    mean_p = _box_filter(mask_bchw, radius)
-    corr_i = _box_filter(guide_luma * guide_luma, radius)
-    corr_ip = _box_filter(guide_luma * mask_bchw, radius)
-    var_i = corr_i - mean_i * mean_i
-    cov_ip = corr_ip - mean_i * mean_p
+    if guide_mode == "rgb":
+        guide_rgb = guide_prepared.permute(0, 3, 1, 2)
+        refined = guided_filter(guide_rgb, mask_bchw, radius=radius, eps=eps).clamp(0.0, 1.0)
+    else:
+        guide_luma = _guide_luma(guide_prepared)
+        mean_i = _box_filter(guide_luma, radius)
+        mean_p = _box_filter(mask_bchw, radius)
+        corr_i = _box_filter(guide_luma * guide_luma, radius)
+        corr_ip = _box_filter(guide_luma * mask_bchw, radius)
+        var_i = corr_i - mean_i * mean_i
+        cov_ip = corr_ip - mean_i * mean_p
 
-    a = cov_ip / (var_i + eps)
-    b = mean_p - a * mean_i
-    mean_a = _box_filter(a, radius)
-    mean_b = _box_filter(b, radius)
-    refined = (mean_a * guide_luma + mean_b).clamp(0.0, 1.0)
+        a = cov_ip / (var_i + eps)
+        b = mean_p - a * mean_i
+        mean_a = _box_filter(a, radius)
+        mean_b = _box_filter(b, radius)
+        refined = (mean_a * guide_luma + mean_b).clamp(0.0, 1.0)
 
     if feather_sigma > 0.0:
         kernel_size = max(3, 2 * int(round(feather_sigma * 3.0)) + 1)

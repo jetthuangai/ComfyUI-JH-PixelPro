@@ -3,8 +3,10 @@
 Detection: luminance outliers against a median background computed on a reduced-resolution
 copy, thresholded and filtered by connected-component extent (only blobs that fit inside
 ``spot_size`` pixels survive). Fill: normalised-convolution inpainting from the ring around
-every spot, computed at the same reduced resolution. Memory is O(H*W): the only
-window-based op (the median) runs on the reduced copy in row chunks.
+every spot, computed at the same reduced resolution; or (``fill_mode="texture"``) the
+best-matching nearby patch, chosen by SSD on the ring and healed to the ring's brightness
+and colour. Memory is O(H*W): the only window-based op (the median) runs on the reduced
+copy in row chunks.
 """
 
 from __future__ import annotations
@@ -28,6 +30,10 @@ _MIN_FILL = 0.5
 _MIN_THICKNESS = 1.3
 _RING_RATIO = 0.25
 _RING_FLOOR = 0.004
+FILL_MODES = ("blur", "texture")
+_SOURCE_DISTANCES = (1.5, 2.5, 4.0)  # candidate source offsets, in spot extents
+_SOURCE_DIRECTIONS = 16
+_SOURCE_OUTLIER = 0.03  # max deviation (plus 3 ring std) of a source pixel from its patch
 
 
 def _validate_image(image: torch.Tensor) -> torch.Tensor:
@@ -232,6 +238,86 @@ def _fill(image: torch.Tensor, spots: torch.Tensor, spot_size: int, factor: int)
     return fill
 
 
+def _heal_component(
+    image: np.ndarray,
+    labels: np.ndarray,
+    label: int,
+    blocked: np.ndarray,
+    box: tuple[int, int, int, int],
+) -> tuple[tuple[np.ndarray, np.ndarray], np.ndarray] | None:
+    """Texture fill of one spot: copy the best nearby patch, matched on the ring around it.
+
+    ``image`` (H,W,3) float32, ``labels`` (H,W) component labels (this spot is ``label``),
+    ``blocked`` (H,W) bool for every spot pixel. Returns ``(rows_cols, values)`` for the spot
+    pixels, or ``None`` when no clean source patch fits (the blur fill is kept).
+    """
+    height, width = blocked.shape
+    x, y, w, h = box
+    extent = max(w, h)
+    ring_width = max(2, extent // 2)
+    x0, y0 = max(0, x - ring_width), max(0, y - ring_width)
+    x1, y1 = min(width, x + w + ring_width), min(height, y + h + ring_width)
+    target_spot = labels[y0:y1, x0:x1] == label
+    kernel = np.ones((2 * ring_width + 1, 2 * ring_width + 1), np.uint8)
+    ring = (cv2.dilate(target_spot.astype(np.uint8), kernel) > 0) & ~blocked[y0:y1, x0:x1]
+    if ring.sum() < 4:
+        return None
+    target = image[y0:y1, x0:x1]
+    # A source patch must not carry its own (undetected) speck into the spot.
+    outlier = 3.0 * float(target[ring].std(0).max()) + _SOURCE_OUTLIER
+    best, best_cost = None, math.inf
+    for distance in _SOURCE_DISTANCES:
+        step = distance * (extent + ring_width)
+        for k in range(_SOURCE_DIRECTIONS):
+            angle = 2.0 * math.pi * k / _SOURCE_DIRECTIONS
+            dx, dy = round(step * math.cos(angle)), round(step * math.sin(angle))
+            sx0, sy0, sx1, sy1 = x0 + dx, y0 + dy, x1 + dx, y1 + dy
+            if sx0 < 0 or sy0 < 0 or sx1 > width or sy1 > height:
+                continue
+            if blocked[sy0:sy1, sx0:sx1][target_spot | ring].any():
+                continue
+            source = image[sy0:sy1, sx0:sx1]
+            patch = source[target_spot]
+            if float(np.abs(patch - patch.mean(0)).max()) > outlier:
+                continue
+            cost = float(((source[ring] - target[ring]) ** 2).mean())
+            if cost < best_cost:
+                best, best_cost = source, cost
+    if best is None:
+        return None
+    # Heal: the patch keeps its texture, its brightness/colour follows the ring
+    # (normalised-convolution spread of target - source from the ring into the spot).
+    sigma = max(1.0, 0.5 * extent)
+    weight = ring.astype(np.float32)
+    diff = (target - best) * weight[..., None]
+    spread = cv2.GaussianBlur(diff, (0, 0), sigma)
+    norm = cv2.GaussianBlur(weight, (0, 0), sigma)[..., None]
+    healed = best + spread / np.maximum(norm, 1e-4)
+    rows, cols = np.nonzero(target_spot)
+    return (rows + y0, cols + x0), healed[rows, cols]
+
+
+def _texture_fill(image: torch.Tensor, spots: torch.Tensor, fill: torch.Tensor) -> torch.Tensor:
+    """Replace the blur ``fill`` inside each spot with a healed nearby patch (B,3,H,W)."""
+    pixels = image.permute(0, 2, 3, 1).cpu().numpy().astype(np.float32)
+    out = fill.permute(0, 2, 3, 1).cpu().numpy().copy()
+    masks = spots.squeeze(1).cpu().numpy() > 0.5
+    for index in range(pixels.shape[0]):
+        blocked = masks[index]
+        if not blocked.any():
+            continue
+        count, labels, stats, _ = cv2.connectedComponentsWithStats(
+            blocked.astype(np.uint8), connectivity=8
+        )
+        for label in range(1, count):
+            box = tuple(int(v) for v in stats[label, :4])
+            healed = _heal_component(pixels[index], labels, label, blocked, box)
+            if healed is not None:
+                (rows, cols), values = healed
+                out[index, rows, cols] = values
+    return torch.from_numpy(out).to(device=fill.device).permute(0, 3, 1, 2)
+
+
 def dust_spot_removal(
     image: torch.Tensor,
     mask: torch.Tensor | None = None,
@@ -240,6 +326,7 @@ def dust_spot_removal(
     spot_size: int = 12,
     sensitivity: float = 0.5,
     mode: str = "dark",
+    fill_mode: str = "blur",
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Remove small dust specks and blemishes by filling them from their surroundings.
 
@@ -257,6 +344,10 @@ def dust_spot_removal(
         sensitivity: 0..1; higher catches fainter spots (luma threshold
             ``0.01 + 0.2 * (1 - sensitivity) ** 2``).
         mode: ``"dark"``, ``"bright"`` or ``"both"``.
+        fill_mode: ``"blur"`` (smooth estimate from the ring, the original behaviour) or
+            ``"texture"`` (copy the best-matching nearby patch, matched on the ring, and
+            heal its brightness/colour to the surroundings, so skin pores, film grain or
+            fabric continue through the spot). Falls back to blur where no clean patch fits.
 
     Returns:
         ``(image, spot_mask)``: cleaned image ``(B,H,W,3)`` and the binary (0/1) mask
@@ -273,6 +364,8 @@ def dust_spot_removal(
     sensitivity = _validate_float("sensitivity", sensitivity, lower=0.0, upper=1.0)
     if mode not in _MODES:
         raise ValueError(f"mode must be one of {_MODES}, got {mode!r}.")
+    if fill_mode not in FILL_MODES:
+        raise ValueError(f"fill_mode must be one of {FILL_MODES}, got {fill_mode!r}.")
 
     threshold = 0.01 + 0.2 * (1.0 - sensitivity) ** 2
     factor = max(2, math.ceil(spot_size / 4))
@@ -292,6 +385,8 @@ def dust_spot_removal(
         return prepared, spots.squeeze(1)
 
     fill = _fill(channels, spots, spot_size, factor)
+    if fill_mode == "texture":
+        fill = _texture_fill(channels, spots, fill)
     kernel = (5, 5)
     soft = kornia.filters.gaussian_blur2d(spots, kernel, (1.0, 1.0), border_type="replicate")
     soft = soft * spots

@@ -30,11 +30,14 @@ if __package__:
     from .nodes import (
         JHPixelProAlphaMatteExtractor,
         JHPixelProAutoAlign,
+        JHPixelProAutoTone,
+        JHPixelProAutoUpright,
         JHPixelProCLAHE,
         JHPixelProColorLab,
         JHPixelProColorLabApply,
         JHPixelProColorMatcher,
         JHPixelProColorMatcherRegion,
+        JHPixelProDecontaminateColors,
         JHPixelProDepthAnything,
         JHPixelProDepthLensBlur,
         JHPixelProDustSpotRemoval,
@@ -69,6 +72,7 @@ if __package__:
         JHPixelProMaskEdgeSmoother,
         JHPixelProMaskMorphology,
         JHPixelProMaskPreview,
+        JHPixelProMotionZoomBlur,
         JHPixelProPaletteExtract,
         JHPixelProPyramidBlend,
         JHPixelProQADiff,
@@ -251,6 +255,18 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProShadowsHighlights"] = JHPixelProShadowsHighlights
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProShadowsHighlights"] = "Color: Shadows/Highlights Pro"
+
+    NODE_CLASS_MAPPINGS["JHPixelProDecontaminateColors"] = JHPixelProDecontaminateColors
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProDecontaminateColors"] = "Mask: Decontaminate Colors"
+
+    NODE_CLASS_MAPPINGS["JHPixelProAutoTone"] = JHPixelProAutoTone
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProAutoTone"] = "Auto: Tone & White Balance"
+
+    NODE_CLASS_MAPPINGS["JHPixelProAutoUpright"] = JHPixelProAutoUpright
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProAutoUpright"] = "Auto: Upright"
+
+    NODE_CLASS_MAPPINGS["JHPixelProMotionZoomBlur"] = JHPixelProMotionZoomBlur
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMotionZoomBlur"] = "Filters: Motion / Zoom Blur"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 
-from ..core.mask_edge_refine import edge_aware_refine
+from ..core.mask_edge_refine import GUIDE_MODES, edge_aware_refine
 
 
 class JHPixelProEdgeAwareMaskRefiner:
@@ -31,6 +31,16 @@ class JHPixelProEdgeAwareMaskRefiner:
                     {"default": 0.0, "min": 0.0, "max": 64.0, "step": 0.1},
                 ),
             },
+            "optional": {
+                "guide_mode": (
+                    list(GUIDE_MODES),
+                    {
+                        "default": "luma",
+                        "tooltip": "luma = brightness edges (original). rgb = also colour "
+                        "edges of similar brightness, e.g. red hair on green leaves.",
+                    },
+                ),
+            },
         }
 
     def refine(
@@ -40,6 +50,7 @@ class JHPixelProEdgeAwareMaskRefiner:
         radius: int,
         eps: float,
         feather_sigma: float,
+        guide_mode: str = "luma",
     ) -> tuple[torch.Tensor]:
         with torch.no_grad():
             refined = edge_aware_refine(
@@ -48,5 +59,6 @@ class JHPixelProEdgeAwareMaskRefiner:
                 radius=radius,
                 eps=eps,
                 feather_sigma=feather_sigma,
+                guide_mode=guide_mode,
             )
         return (refined,)
