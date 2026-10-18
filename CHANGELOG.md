@@ -8,6 +8,15 @@ All notable changes to this pack are recorded here. Format follows [Keep a Chang
 
 - Nothing yet.
 
+## [1.10.0] — 2026-10-18
+
+### Added
+
+- **Mask: Sky** (`JHPixelProSkyMask`): soft sky mask without an AI model, from sky colours (blue, overcast, sunset at half weight), smooth texture and openness to the top of the frame; in a blue-sky photo warm whites (sunlit walls) are left out; edges refined on the full image with a colour guided filter. About 0.2 s per photo.
+- **Color: HDR Merge (bracket)** (`JHPixelProHDRMerge`): fuses a bracketed batch (any order) by exposure fusion (Mertens et al. 2007), with MTB alignment for hand-held shifts and deghosting against the middle exposure. Display-ready output, no tone mapping step.
+- **QA: Cull Score** (`JHPixelProCullScore`): ranks a batch by sharpness (tile Laplacian, faces when found, relative to the sharpest shot of the same scene), exposure, closed eyes (MediaPipe, optional) and near-duplicates (dHash); outputs the keepers best first, a JSON report and the count.
+- Sample workflows N-61 … N-63. Pack now registers **64 nodes** (color 21, mask 13, face 9, filters 7, compositing 5, geometry 4, depth 2, qa 2, looks 1).
+
 ## [1.9.0] — 2026-10-18
 
 ### Added
