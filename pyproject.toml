@@ -37,3 +37,5 @@ python_files = ["test_*.py"]
 # ``ComfyUI-JH-PixelPro`` is not a valid Python module name).
 addopts = "-ra --strict-markers --import-mode=importlib"
 pythonpath = ["."]
+# Dump every thread's stack if one test runs over 2 minutes (CI hang diagnostics).
+faulthandler_timeout = 120
