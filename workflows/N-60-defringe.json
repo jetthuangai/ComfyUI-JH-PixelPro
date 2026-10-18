@@ -1,0 +1,349 @@
+{
+  "id": "f9af213d-be74-5496-a580-19d956e897a9",
+  "revision": 0,
+  "last_node_id": 7,
+  "last_link_id": 6,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        315,
+        314
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            2,
+            4
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "sample_architecture.jpg",
+        "image"
+      ],
+      "title": "Load Image (church against the sky)"
+    },
+    {
+      "id": 2,
+      "type": "JHPixelProDefringe",
+      "pos": [
+        380,
+        40
+      ],
+      "size": [
+        340,
+        208
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            3,
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProDefringe"
+      },
+      "widgets_values": [
+        1.0,
+        0.0,
+        true,
+        0
+      ]
+    },
+    {
+      "id": 3,
+      "type": "JHPixelProQADiff",
+      "pos": [
+        380,
+        330
+      ],
+      "size": [
+        340,
+        258
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "name": "image_b",
+          "type": "IMAGE",
+          "link": 3
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "diff",
+          "type": "IMAGE",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "ssim",
+          "type": "FLOAT",
+          "links": null,
+          "slot_index": 1
+        },
+        {
+          "name": "psnr",
+          "type": "FLOAT",
+          "links": null,
+          "slot_index": 2
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": null,
+          "slot_index": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JHPixelProQADiff"
+      },
+      "widgets_values": [
+        "heatmap",
+        4.0,
+        11
+      ],
+      "title": "Where it changed"
+    },
+    {
+      "id": 4,
+      "type": "PreviewImage",
+      "pos": [
+        760,
+        0
+      ],
+      "size": [
+        280,
+        400
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Original"
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        1060,
+        0
+      ],
+      "size": [
+        280,
+        400
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Defringe"
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        1360,
+        0
+      ],
+      "size": [
+        280,
+        400
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "title": "Change heatmap"
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        1000,
+        160
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Color: Defringe: removes purple (and, if you raise green, green) fringes along high-contrast edges, and lines up the red and blue planes when the lens shows lateral chromatic aberration.\n\nOnly fringe pixels change; lightness is kept. This photo has mild red/cyan edges toward the corners; the heatmap shows the outlines that were corrected."
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      4,
+      1,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      2,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      3,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.75,
+      "offset": [
+        40,
+        40
+      ]
+    }
+  },
+  "version": 0.4
+}

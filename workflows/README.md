@@ -11,7 +11,7 @@ Unless noted, a workflow uses only core ComfyUI nodes and this pack. `-preview.p
 ComfyUI's `LoadImage` node only scans `ComfyUI/input/`.
 
 1. Copy `workflows/sample_portrait.jpg` into `ComfyUI/input/`.
-2. For Dust & Spot Removal, also copy `workflows/sample_dust.jpg`; for Auto Tone and Auto Upright, `workflows/sample_cafe.jpg` and `workflows/sample_architecture.jpg`.
+2. For Dust & Spot Removal, also copy `workflows/sample_dust.jpg`; for Heal, `workflows/sample_heal_mask.png`; for Auto Tone and Auto Upright, `workflows/sample_cafe.jpg` and `workflows/sample_architecture.jpg`.
 3. For the mask workflows (Edge-Aware Mask Refiner, Alpha Matte, Trimap Builder, Mask Morphology, Mask Combine, Mask Edge Smoother, Mask Cleanup, Sub-Pixel Mask Refiner), also copy `workflows/sample_binary_mask.png` into `ComfyUI/input/`.
 4. In ComfyUI, open **Load** and pick a `.json` file, or drag it onto the canvas.
 5. Press **Queue Prompt**.
@@ -31,6 +31,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 | [Skin Smoother](S-03-edge-aware-smoother.json) | Edge-preserving smoothing with a before/after preview (strength 0.4). | [image](S-03-edge-aware-smoother-screenshot.png) |
 | [Smart Sharpen](N-40-smart-sharpen.json) | Luminance-only sharpening gated by the Detail Mask, with a QA heatmap of changed pixels. | [image](N-40-smart-sharpen-preview.png) |
 | [Dust & Spot Removal](N-48-dust-spot-removal.json) | Clears 70 synthetic sensor-dust specks from `sample_dust.jpg` at default settings and marks the spots it found. | [image](N-48-dust-spot-removal-preview.png) |
+| [Heal / Content-Aware Fill](N-58-heal.json) | A freckle cluster on the arm and a mole on the cheek, painted in `sample_heal_mask.png`, rebuilt from the surrounding skin. | [image](N-58-heal-preview.png) |
 | [Motion / Zoom Blur](N-57-motion-zoom-blur.json) | Motion blur on the background only (inverted subject mask) and a zoom burst toward the eyes. | [image](N-57-motion-zoom-blur-preview.png) |
 
 ## Color and tone
@@ -41,6 +42,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 |---|---|---|
 | [Color Matcher](S-08-color-matcher.json) | A cool-graded copy is matched to a golden-hour reference in LAB. | [image](S-08-color-matcher-preview.png) |
 | [Color Matcher: stats vs histogram](N-49-color-matcher-histogram.json) | The same pair matched with `method = stats` and `method = histogram`, side by side. | [image](N-49-color-matcher-histogram-preview.png) |
+| [Defringe](N-60-defringe.json) | The church photo through Defringe; a QA heatmap shows the corrected outlines (mild lateral chromatic aberration). | [image](N-60-defringe-preview.png) |
 | [Auto: Tone & White Balance](N-55-auto-tone.json) | A dark, warm cafe photo corrected in one click; `params_json` feeds a ColorLab that adds Vibrance +15. | [image](N-55-auto-tone-preview.png) |
 | [Shadows/Highlights Pro](N-50-shadows-highlights-pro.json) | Camera Raw mode (+60 / -60) and Photoshop mode (50 / 50) side by side. | [image](N-50-shadows-highlights-pro-preview.png) |
 | [Apply ColorLab Preset](N-51-apply-colorlab-preset.json) | A ColorLab look saved as `params_json` and re-applied at strength 0.5. | [image](N-51-apply-colorlab-preset-preview.png) |
@@ -107,6 +109,7 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 
 | Workflow | What it shows | Result |
 |---|---|---|
+| [Auto Blemish](N-59-auto-blemish.json) | The portrait through Auto Blemish at default settings, with the healed spots shown on the photo. | [image](N-59-auto-blemish-preview.png) |
 | [Face Detect](S-10-face-detect.json) | MediaPipe detection with landmarks and boxes as JSON. | [image](S-10-face-detect-screenshot.png) |
 | [Face Detect Lite](N-38-face-detect-lite.json) | YuNet detection with a face-box mask and landmarks fed to the Facial Aligner. | [image](N-38-face-detect-lite-preview.png) |
 | [Face pipeline (Face Landmarks, Face Warp, Face Beauty Blend)](S-18-face-pipeline-v2.json) | Dense landmarks, a Delaunay warp, then a blend back onto the base. | [image](S-18-face-pipeline-v2-screenshot.png) |
@@ -131,5 +134,6 @@ One workflow needs another pack: [Skin Tone Tri-Region](N-35-skin-tone-tri-regio
 - `sample_portrait.jpg` — Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on Pexels. Source: <https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>. License: [Pexels Content License](https://www.pexels.com/license/) (free for commercial + non-commercial redistribution; attribution is not required but recommended as best practice).
 - `sample_binary_mask.png` — derivative work: a SAM / rembg cutout (subject mask) produced from `sample_portrait.jpg`. Original image: Photo by [cottonbro studio](https://www.pexels.com/@cottonbro/) on Pexels (<https://www.pexels.com/photo/close-up-photo-of-woman-s-beautiful-face-6567969/>). License: [Pexels Content License](https://www.pexels.com/license/) (derivative redistribution permitted).
 - `sample_dust.jpg` — derivative work: `sample_portrait.jpg` with 70 synthetic soft dark specks added to imitate sensor dust. Same photo, author and [Pexels Content License](https://www.pexels.com/license/).
+- `sample_heal_mask.png` — mask drawn for `sample_portrait.jpg` (an arm freckle cluster and a cheek mole). Same photo, author and [Pexels Content License](https://www.pexels.com/license/).
 - `sample_cafe.jpg` — photo on Pexels, resized to 1200 x 1600. Source: <https://www.pexels.com/photo/cozy-urban-cafe-interior-with-warm-lighting-34094296/>. License: [Pexels Content License](https://www.pexels.com/license/).
 - `sample_architecture.jpg` — photo on Pexels, resized to 1067 x 1600. Source: <https://www.pexels.com/photo/low-angle-shot-of-an-orange-and-white-church-8405238/>. License: [Pexels Content License](https://www.pexels.com/license/).
