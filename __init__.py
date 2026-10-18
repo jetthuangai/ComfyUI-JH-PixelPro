@@ -30,6 +30,7 @@ if __package__:
     from .nodes import (
         JHPixelProAlphaMatteExtractor,
         JHPixelProAutoAlign,
+        JHPixelProAutoBlemish,
         JHPixelProAutoTone,
         JHPixelProAutoUpright,
         JHPixelProCLAHE,
@@ -38,6 +39,7 @@ if __package__:
         JHPixelProColorMatcher,
         JHPixelProColorMatcherRegion,
         JHPixelProDecontaminateColors,
+        JHPixelProDefringe,
         JHPixelProDepthAnything,
         JHPixelProDepthLensBlur,
         JHPixelProDustSpotRemoval,
@@ -53,6 +55,7 @@ if __package__:
         JHPixelProFrequencyRecombine,
         JHPixelProFrequencySeparation,
         JHPixelProHALDIdentity,
+        JHPixelProHeal,
         JHPixelProHighFreqDetailMasker,
         JHPixelProHueSaturationRange,
         JHPixelProLayerAdd,
@@ -267,6 +270,15 @@ if __package__:
 
     NODE_CLASS_MAPPINGS["JHPixelProMotionZoomBlur"] = JHPixelProMotionZoomBlur
     NODE_DISPLAY_NAME_MAPPINGS["JHPixelProMotionZoomBlur"] = "Filters: Motion / Zoom Blur"
+
+    NODE_CLASS_MAPPINGS["JHPixelProHeal"] = JHPixelProHeal
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProHeal"] = "Filters: Heal / Content-Aware Fill"
+
+    NODE_CLASS_MAPPINGS["JHPixelProAutoBlemish"] = JHPixelProAutoBlemish
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProAutoBlemish"] = "Face: Auto Blemish"
+
+    NODE_CLASS_MAPPINGS["JHPixelProDefringe"] = JHPixelProDefringe
+    NODE_DISPLAY_NAME_MAPPINGS["JHPixelProDefringe"] = "Color: Defringe"
 
 # Web extensions (JS/CSS) — not used in Phase 1.
 WEB_DIRECTORY = "./web"

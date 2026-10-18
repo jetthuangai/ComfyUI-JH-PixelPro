@@ -114,7 +114,11 @@ def _median_filter(x: torch.Tensor, window: int) -> torch.Tensor:
 
 
 def _dilate(mask: torch.Tensor, radius: int) -> torch.Tensor:
-    return nnf.max_pool2d(mask, 2 * radius + 1, stride=1, padding=radius)
+    # A square max filter is separable: two 1-D passes give the same result, far faster
+    # for large radii on the CPU.
+    size = 2 * radius + 1
+    rows = nnf.max_pool2d(mask, (1, size), stride=1, padding=(0, radius))
+    return nnf.max_pool2d(rows, (size, 1), stride=1, padding=(radius, 0))
 
 
 def _component_mean(labels: np.ndarray, count: int, values: np.ndarray) -> np.ndarray:
@@ -181,7 +185,12 @@ def _calm_surroundings(
 
 
 def _detect(
-    luma: torch.Tensor, spot_size: int, threshold: float, mode: str, factor: int
+    luma: torch.Tensor,
+    spot_size: int,
+    threshold: float,
+    mode: str,
+    factor: int,
+    ring_ratio: float = _RING_RATIO,
 ) -> torch.Tensor:
     """Binary ``(B,1,H,W)`` map of compact luminance outliers inside calm surroundings."""
     height, width = luma.shape[-2:]
@@ -210,7 +219,7 @@ def _detect(
                 diffs[index].astype(np.float32),
                 shaped,
                 radius,
-                _RING_RATIO,
+                ring_ratio,
             )
     return torch.from_numpy(out).to(device=luma.device, dtype=torch.float32).unsqueeze(1)
 

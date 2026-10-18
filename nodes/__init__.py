@@ -2,12 +2,14 @@
 
 from .auto_align_node import JHPixelProAutoAlign
 from .auto_tone_node import JHPixelProAutoTone
+from .blemish_node import JHPixelProAutoBlemish
 from .clahe_node import JHPixelProCLAHE
 from .color_lab import JHPixelProColorLab
 from .color_lab_apply_node import JHPixelProColorLabApply
 from .color_matcher_node import JHPixelProColorMatcher
 from .color_matcher_region_node import JHPixelProColorMatcherRegion
 from .decontaminate_node import JHPixelProDecontaminateColors
+from .defringe_node import JHPixelProDefringe
 from .depth_anything_node import JHPixelProDepthAnything
 from .depth_lens_blur_node import JHPixelProDepthLensBlur
 from .detail_masker_node import JHPixelProHighFreqDetailMasker
@@ -22,6 +24,7 @@ from .face_warp_tps_node import JHPixelProFaceWarpTPS
 from .facial_aligner_node import JHPixelProFacialAligner
 from .frequency_node import JHPixelProFrequencyRecombine, JHPixelProFrequencySeparation
 from .hald_identity_node import JHPixelProHALDIdentity
+from .heal_node import JHPixelProHeal
 from .hue_saturation_range_node import JHPixelProHueSaturationRange
 from .layer_compositing import (
     JHPixelProLayerAdd,
@@ -61,6 +64,9 @@ from .unwrap_face_node import JHPixelProUnwrapFace
 from .upright_node import JHPixelProAutoUpright
 
 __all__ = [
+    "JHPixelProAutoBlemish",
+    "JHPixelProDefringe",
+    "JHPixelProHeal",
     "JHPixelProAutoTone",
     "JHPixelProAutoUpright",
     "JHPixelProDecontaminateColors",
