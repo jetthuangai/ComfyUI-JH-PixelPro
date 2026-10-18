@@ -9,10 +9,11 @@ settings can be shown as ``params_json`` and fine-tuned in a ColorLab node.
   uniform colour areas such as skin never count), solved for ColorLab's relative
   Temp/Tint gains, scaled by how many near-grey pixels there are and limited to
   ``max_wb_shift``.
-- Exposure: log-average luminance. Dark photos are brightened toward an 18 % key, capped
-  so the brightest 0.5 % does not blow out by more than half a stop (Highlights recovers
-  it); bright photos are only darkened above a 65 % key (high-key is bright on purpose),
-  and when 40 % or more of the frame is near-white only the rest (the subject) is judged.
+- Exposure: log-average luminance. Dark photos are brightened toward a 12 % key (up to
+  +1 EV), capped so the brightest 0.5 % does not blow out by more than half a stop
+  (Highlights recovers it). Bright photos are only darkened above a 65 % key (high-key
+  is bright on purpose), and when 40 % or more of the frame is near-white only the rest
+  (the subject) is judged.
 - Tone: Whites/Blacks move the 99.5th/0.5th luma percentiles toward 0.96/0.02 by inverting
   ColorLab's Whites/Blacks formula; Highlights/Shadows follow the clipped fractions.
 - B&W mix (optional): hue bands brighter than the image mean get brighter in grey and
@@ -41,14 +42,14 @@ _WB_FULL_CONFIDENCE = 0.25  # share of near-grey pixels that earns the full corr
 _WB_DAMPING = 0.8  # correct most, not all, of the estimated cast
 _TEMP_GAIN, _TINT_GAIN = 0.3, 0.22  # ColorLab's relative Temp/Tint gains (per 100)
 # Exposure
-_KEY = 0.18
+_KEY = 0.12  # a little below mid-grey: moody, low-key photos keep their mood
 _KEY_HIGH = 0.65  # log-average luminance above which a photo counts as overexposed
 _NEAR_WHITE = 0.6  # linear luminance (about sRGB 0.8) counted as white background
 _WHITE_BACKGROUND_SHARE = 0.4  # share of near-white pixels that marks a white background
 _KEY_SUBJECT = 0.3  # on a white background, darken only a subject brighter than this
 _EV_DAMPING = 0.6
 _EV_DEADBAND = 0.1
-_EV_UP, _EV_DOWN = 1.5, 1.0
+_EV_UP, _EV_DOWN = 1.0, 1.0
 # Tone
 _WHITE_TARGET, _BLACK_TARGET = 0.96, 0.02
 _TONE_GAIN = 0.45  # ColorLab _tone_region scale
@@ -122,7 +123,7 @@ def _white_balance(linear: torch.Tensor, max_shift: float) -> dict[str, float]:
 def _exposure(luma: torch.Tensor) -> float:
     """EV from the log-average luminance (``luma`` linear).
 
-    Dark photos are brightened toward an 18 % key. Bright photos are only darkened above a
+    Dark photos are brightened toward a 12 % key. Bright photos are only darkened above a
     much higher key: white backgrounds and high-key portraits are bright on purpose.
     """
     log_mean = math.exp(float(torch.log(luma.clamp_min(1e-4)).mean()))

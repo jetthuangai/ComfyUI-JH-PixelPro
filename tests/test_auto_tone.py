@@ -39,7 +39,7 @@ def test_balanced_photo_changes_little() -> None:
 
 def test_dark_photo_is_brightened() -> None:
     dark = _linear_gain(_scene(), (0.25, 0.25, 0.25))
-    assert float(auto_tone_params(dark)[0]["basic_exposure"]) > 0.8
+    assert float(auto_tone_params(dark)[0]["basic_exposure"]) > 0.5
 
 
 def test_warm_cast_is_cooled() -> None:

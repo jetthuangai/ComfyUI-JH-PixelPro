@@ -64,7 +64,7 @@ Node cố ý thận trọng:
 ??? note "Bên trong node hoạt động thế nào"
     Mọi phép đo chạy trên bản sao có cạnh dài tối đa 512 px, nên kết quả không phụ thuộc kích thước ảnh. Mã nguồn: `core/auto_tone.py`, wrapper `nodes/auto_tone_node.py`.
 
-    **Exposure**: tính từ độ sáng trung bình theo log, hướng về xám 18 %. Ảnh tối được làm sáng tối đa +1,5 EV, bị giới hạn để 0,5 % điểm sáng nhất không cháy quá nửa stop. Ảnh sáng chỉ bị làm tối khi thật sự thừa sáng (tối đa -1 EV). Khi từ 40 % khung trở lên là màu gần trắng (sản phẩm nền trắng, studio high-key), node chỉ xét phần còn lại của ảnh (chủ thể) và chỉ làm tối nếu chính chủ thể quá sáng; khung trắng hoàn toàn được giữ nguyên. Các chỉnh quá nhỏ bị bỏ qua.
+    **Exposure**: tính từ độ sáng trung bình theo log, hướng về mức 12 %, thấp hơn xám trung tính một chút để ảnh low-key, ảnh có không khí giữ được tâm trạng. Ảnh tối được làm sáng tối đa +1 EV, bị giới hạn để 0,5 % điểm sáng nhất không cháy quá nửa stop. Ảnh sáng chỉ bị làm tối khi thật sự thừa sáng (tối đa -1 EV). Khi từ 40 % khung trở lên là màu gần trắng (sản phẩm nền trắng, studio high-key), node chỉ xét phần còn lại của ảnh (chủ thể) và chỉ làm tối nếu chính chủ thể quá sáng; khung trắng hoàn toàn được giữ nguyên. Các chỉnh quá nhỏ bị bỏ qua.
 
     **Cân bằng trắng**: màu trung bình của các pixel gần xám trong ánh sáng tuyến tính, tìm qua vài vòng với ngưỡng dung sai nới dần. Mức chỉnh được nhân theo tỷ lệ pixel gần xám, giảm nhẹ, và bị giới hạn bởi `max_wb_shift`.
 

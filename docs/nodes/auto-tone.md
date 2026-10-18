@@ -64,7 +64,7 @@ It is careful on purpose:
 ??? note "Under the hood"
     Everything is measured on a copy whose long edge is at most 512 px, so the result does not depend on image size. Source: `core/auto_tone.py`, wrapper `nodes/auto_tone_node.py`.
 
-    **Exposure**: from the log-average brightness, steering toward 18 % grey. Dark photos are brightened by up to +1.5 EV, limited so the brightest 0.5 % does not clip by more than half a stop. Bright photos are darkened only when really overexposed (up to -1 EV). When 40 % or more of the frame is near-white (product on white, high-key studio), only the rest of the photo (the subject) is judged, and it is darkened only if the subject itself is too bright; an all-white frame is left alone. Tiny corrections are skipped.
+    **Exposure**: from the log-average brightness, steering toward a 12 % key, a little below mid-grey, so moody and low-key photos keep their mood. Dark photos are brightened by up to +1 EV, limited so the brightest 0.5 % does not clip by more than half a stop. Bright photos are darkened only when really overexposed (up to -1 EV). When 40 % or more of the frame is near-white (product on white, high-key studio), only the rest of the photo (the subject) is judged, and it is darkened only if the subject itself is too bright; an all-white frame is left alone. Tiny corrections are skipped.
 
     **White balance**: the mean colour of near-grey pixels in linear light, found over several rounds with a widening tolerance. The correction is scaled by the share of near-grey pixels, damped, and limited by `max_wb_shift`.
 
